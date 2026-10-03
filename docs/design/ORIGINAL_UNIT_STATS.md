@@ -82,7 +82,7 @@ weapon/AA/spread laws): [`BALANCE_SYNTHESIS.md`](BALANCE_SYNTHESIS.md).**
 | **TS GDI / Nod / Forgotten / CABAL** | TS + FS | **Shattered Paradise + CnC Reloaded** | SP has GDI/Nod/CABAL/Mutant; CnCR adds TS depth |
 | **TD GDI / Nod** | Tiberian Dawn | **Combined Arms + DTA** | both crossover the TD factions |
 | **RA1 Allies / Soviets / Japan** | RA1 (Japan ← RA3 Empire + WW2 + **Touhou**) | **Combined Arms + DTA** | CA/DTA field the RA1 rosters |
-| **Scrin** (future add) | — | **Shattered Paradise + Combined Arms** (synthesis) | two independent Scrin → richer Cameo Scrin, OUR assets |
+| **Scrin** (structures foundation; roster future) | — | **Shattered Paradise + Combined Arms** (synthesis) | two independent Scrin → richer Cameo Scrin, OUR assets |
 | **Steel Consortium** | — | **MO Foehn Revolt** | inspired, not identical; Foehn = tankiest infantry → durable lean ✓ |
 | **Latin Syndicate** | — | **MO Latin Confederation** (Soviet subfaction) | "basically the same" — black-market Soviet surplus, explosives |
 | **Asian Alliance** | Generals China | **Generals China + MO China (Soviet subfaction) + CA** | mass horde |

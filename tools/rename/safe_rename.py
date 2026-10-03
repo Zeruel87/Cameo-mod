@@ -194,8 +194,8 @@ def main() -> int:
     actors, files = load_map(args.map_path)
     sub = build_replacer(actors)
     print(f"map: {len(actors)} actor ids, {len(files)} files")
-    if not actors:
-        print("No actor renames in map. Nothing to do.")
+    if not actors and not files:
+        print("Empty rename map. Nothing to do.")
         return 0
 
     # Pre-flight: check for voice set clashes

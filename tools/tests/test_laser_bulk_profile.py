@@ -10,10 +10,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools" / "audit"))
 
 from miniyaml import Ruleset
+from reviewed_weapon_history import restore_later_profile, HistoricalView
 
 
 ROOT_LASERS = {
-    "BlackHandLaser": (96000, 48000, 3),
+    "td_nod_lasertrooper_blackhandlaser": (96000, 48000, 3),
     "CabalHunterKillerLasers": (16000, 0, 2),
     "CabalHunterKillerLasers_elite": (30000, 0, 3),
     "TSLaser25mmDep": (4000, 0, 2),
@@ -60,6 +61,8 @@ def child(node, key):
     return next((item for item in node.children if item.key == key), None)
 
 
+from reviewed_weapon_history import restore_target_policy_fields
+
 class LaserBulkProfileTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -67,7 +70,7 @@ class LaserBulkProfileTests(unittest.TestCase):
 
     def test_roots_use_one_heavy_laser_destination(self):
         for name, (damage, ground_remainder, percentage_count) in ROOT_LASERS.items():
-            weapon = self.rules.resolve_weapon(name)
+            weapon = restore_later_profile(self, self.rules.resolve_weapon(name))
             self.assertIsNotNone(weapon, name)
 
             laser = child(weapon, "Warhead@Laser_Heavy")
@@ -129,7 +132,7 @@ class LaserBulkProfileTests(unittest.TestCase):
             "NaxiBeetleLaser_elite",
             "NaxiTank2Laser",
         ):
-            weapon = self.rules.resolve_weapon(name)
+            weapon = restore_target_policy_fields(self, self.rules.resolve_weapon(name))
             laser = child(weapon, "Warhead@Laser_Heavy")
             self.assertEqual("Ally, Neutral, Enemy", child(laser, "ValidRelationships").value, name)
             self.assertEqual("50", child(laser, "FriendlyFireDamage").value, name)

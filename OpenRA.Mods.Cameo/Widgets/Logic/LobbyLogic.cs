@@ -291,7 +291,7 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 
 				slotsButton.OnMouseDown = _ =>
 				{
-					var allBots = map.PlayerActorInfo.TraitInfos<IBotInfo>().ToArray();
+					var allBots = CameoLobbyBots.Selectable(map).ToArray();
 					var options = new Dictionary<string, IEnumerable<DropDownOption>>();
 
 					var botController = orderManager.LobbyInfo.Clients.FirstOrDefault(c => c.IsAdmin);
@@ -348,7 +348,11 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 						{
 							Title = FluentProvider.GetMessage(NumberTeams, "count", d),
 							IsSelected = () => false,
-							OnClick = () => orderManager.IssueOrder(Order.Command($"assignteams {d}"))
+							OnClick = () =>
+							{
+								orderManager.IssueOrder(Order.Command($"assignteams {d}"));
+								IssueAutoTeamColors(d);
+							}
 						}).ToList();
 
 						if (orderManager.LobbyInfo.Slots.Any(s => s.Value.AllowBots))
@@ -357,7 +361,11 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 							{
 								Title = FluentProvider.GetMessage(HumanVsBots),
 								IsSelected = () => false,
-								OnClick = () => orderManager.IssueOrder(Order.Command("assignteams 1"))
+								OnClick = () =>
+								{
+									orderManager.IssueOrder(Order.Command("assignteams 1"));
+									IssueAutoTeamColors(1);
+								}
 							});
 						}
 
@@ -365,7 +373,11 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 						{
 							Title = FluentProvider.GetMessage(FreeForAll),
 							IsSelected = () => false,
-							OnClick = () => orderManager.IssueOrder(Order.Command("assignteams 0"))
+							OnClick = () =>
+							{
+								orderManager.IssueOrder(Order.Command("assignteams 0"));
+								IssueAutoTeamColors(0);
+							}
 						});
 
 						options.Add(FluentProvider.GetMessage(ConfigureTeams), teamOptions);
@@ -739,7 +751,10 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 						template = emptySlotTemplate.Clone();
 
 					if (isHost)
+					{
 						LobbyUtils.SetupEditableSlotWidget(template, slot, client, orderManager, map, modData);
+						CameoLobbyBots.UseFilteredSlotDropDown(template, slot, client, orderManager, map);
+					}
 					else
 						LobbyUtils.SetupSlotWidget(template, modData, slot, client);
 
@@ -758,7 +773,10 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 					LobbyUtils.SetupLatencyWidget(template, client, orderManager);
 
 					if (client.Bot != null)
+					{
 						LobbyUtils.SetupEditableSlotWidget(template, slot, client, orderManager, map, modData);
+						CameoLobbyBots.UseFilteredSlotDropDown(template, slot, client, orderManager, map);
+					}
 					else
 						LobbyUtils.SetupEditableNameWidget(template, client, orderManager, worldRenderer);
 
@@ -976,6 +994,150 @@ namespace OpenRA.Mods.Cameo.Widgets.Logic
 			DiscordService.UpdateStatus(state, details);
 
 			onStart();
+		}
+
+		void IssueAutoTeamColors(int teamCount)
+		{
+			var slots = orderManager.LobbyInfo.Slots;
+
+			// Mirror the client ordering used by LobbyCommands.AssignTeams
+			var assignableClients = slots
+				.Select(s => orderManager.LobbyInfo.ClientInSlot(s.Key))
+				.Where(c => c != null && !slots[c.Slot].LockTeam)
+				.ToList();
+
+			if (assignableClients.Count == 0)
+				return;
+
+			var clientCount = assignableClients.Count;
+			var colorGroups = teamCount == 0 ? clientCount : teamCount == 1 ? 2 : teamCount;
+
+			// Filter near-black presets (V < 0.4), sort by hue for even visual distribution
+			var validPresets = colorManager.PresetColors
+				.Where(c => c.ToAhsv().V >= 0.4f)
+				.OrderBy(c => c.ToAhsv().H)
+				.ToArray();
+
+			if (validPresets.Length == 0)
+				return;
+
+			// Divide the hue-sorted preset list into one pool per color group.
+			// Each pool is a contiguous hue slice, so same-team players stay in the same hue zone.
+			// Shuffle which pool each group gets so team colors are random each time.
+			var poolOrder = Enumerable.Range(0, colorGroups).ToArray();
+			for (var i = poolOrder.Length - 1; i > 0; i--)
+			{
+				var j = Game.CosmeticRandom.Next(i + 1);
+				(poolOrder[i], poolOrder[j]) = (poolOrder[j], poolOrder[i]);
+			}
+
+			Color[] PoolForGroup(int group)
+			{
+				var poolIdx = poolOrder[group];
+				var start = poolIdx * validPresets.Length / colorGroups;
+				var end = (poolIdx + 1) * validPresets.Length / colorGroups;
+				return validPresets[start..Math.Min(end, validPresets.Length)];
+			}
+
+			var clientColorGroup = new Dictionary<int, int>();
+			var assignedIdx = 0;
+
+			foreach (var client in assignableClients)
+			{
+				int colorGroup;
+				if (teamCount == 0)
+					colorGroup = assignedIdx;
+				else if (teamCount == 1)
+					colorGroup = client.Bot == null ? 0 : 1;
+				else
+					colorGroup = assignedIdx * teamCount / clientCount;
+
+				clientColorGroup[client.Index] = colorGroup;
+				assignedIdx++;
+			}
+
+			// Read threshold so our check matches the server's IsInvalidColor exactly
+			var threshold = modRules.Actors[SystemActors.World].TraitInfo<ColorPickerManagerInfo>().SimilarityThreshold;
+
+			// Map player colors are included in the server's blocker list
+			var mapColors = map.Players?.Players.Values.Select(p => p.Color).ToList() ?? [];
+
+			// Clients whose colors we will actually issue commands for
+			var clientsToRecolor = new HashSet<int>();
+			foreach (var slot in slots)
+			{
+				if (slot.Value.LockColor) continue;
+				var c = orderManager.LobbyInfo.ClientInSlot(slot.Key);
+				if (c != null && clientColorGroup.ContainsKey(c.Index))
+					clientsToRecolor.Add(c.Index);
+			}
+
+			// Permanent blockers: colors of clients we are NOT changing + map player colors.
+			// These never leave the blocker list.
+			var permanentBlockers = orderManager.LobbyInfo.Clients
+				.Where(c => !clientsToRecolor.Contains(c.Index))
+				.Select(c => c.Color)
+				.Concat(mapColors)
+				.ToList();
+
+			// Old colors of clients we will change. Each is removed once we process that client,
+			// matching how the server's state evolves as it applies our commands in order.
+			var pendingOldColors = orderManager.LobbyInfo.Clients
+				.Where(c => clientsToRecolor.Contains(c.Index))
+				.ToDictionary(c => c.Index, c => c.Color);
+
+			var assignedNewColors = new List<Color>();
+			var resolvedColors = new Dictionary<int, Color>();
+
+			foreach (var slot in slots)
+			{
+				if (slot.Value.LockColor) continue;
+				var client = orderManager.LobbyInfo.ClientInSlot(slot.Key);
+				if (client == null || !clientColorGroup.TryGetValue(client.Index, out var group))
+					continue;
+
+				// Mirrors exactly what the server sees when it processes this client's color command:
+				// new colors already set + remaining old colors (excluding this client's own) + permanents
+				var blockers = assignedNewColors
+					.Concat(pendingOldColors.Where(kv => kv.Key != client.Index).Select(kv => kv.Value))
+					.Concat(permanentBlockers)
+					.ToList();
+
+				// Try presets from the team's hue pool first to preserve team color identity,
+				// then fall back to the rest only if the entire pool is exhausted.
+				var pool = PoolForGroup(group);
+				var chosen = pool
+					.Concat(validPresets.Except(pool))
+					.FirstOrDefault(p => !IsColorTooSimilar(p, blockers, threshold));
+
+				if (chosen == default)
+					chosen = pool[0];
+
+				resolvedColors[client.Index] = chosen;
+				assignedNewColors.Add(chosen);
+				pendingOldColors.Remove(client.Index);
+			}
+
+			foreach (var (clientIndex, color) in resolvedColors)
+				orderManager.IssueOrder(Order.Command($"color {clientIndex} {color}"));
+		}
+
+		static bool IsColorTooSimilar(Color color, List<Color> others, int threshold)
+		{
+			foreach (var candidate in others)
+			{
+				var rmean = (color.R + candidate.R) >> 1;
+				var rdelta = color.R - candidate.R;
+				var gdelta = color.G - candidate.G;
+				var bdelta = color.B - candidate.B;
+				var weightR = ((512 + rmean) * rdelta * rdelta) >> 8;
+				var weightG = 4 * gdelta * gdelta;
+				var weightB = ((767 - rmean) * bdelta * bdelta) >> 8;
+				if (Math.Sqrt(weightR + weightG + weightB) < threshold)
+					return true;
+			}
+
+			return false;
 		}
 
 		public static void SetupEditableGameWidget(Widget parent, Session.Slot s, Session.Client c,

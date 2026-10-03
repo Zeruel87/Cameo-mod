@@ -1,247 +1,37 @@
-# ai.yaml â€” RA2 faction AI configuration
+# AI configuration owned by this ContentPack (RedAlert2/Shared).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files â€”
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits â€”
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (9 entries for ra2_allies) ---
-# 			ra2_allies_alliedorerefinery: 10
-# 			ra2_allies_alliedbarracks: 10
-# 			ra2_allies_alliedwarfactory: 10
-# 			ra2_allies_airforcecommandhq: 10
-# 			ra2_allies_spysatelliteuplink: 1
-# 			ra2_allies_alliedbattlelab: 2
-# 			ra2_allies_orepurifier: 1
-# 			ra2_allies_alliedservicedepot: 1
-# 			ra2_allies_weathercontrolcenter: 1
-#
-# --- BuildingFractions (16 entries for ra2_allies) ---
-# 			ra2_allies_alliedconstructionyard: 5
-# 			ra2_allies_alliedorerefinery: 15
-# 			ra2_allies_alliedbarracks: 15
-# 			ra2_allies_alliedwarfactory: 15
-# 			ra2_allies_airforcecommandhq: 15
-# 			ra2_allies_spysatelliteuplink: 1
-# 			ra2_allies_alliedbattlelab: 5
-# 			ra2_allies_orepurifier: 1
-# 			ra2_allies_alliedservicedepot: 1
-# 			ra2_allies_weathercontrolcenter: 1
-# 			ra2_allies_chronosphere: 1
-# 			ra2_allies_pillbox: 10
-# 			ra2_allies_patriotmissilesystem: 10
-# 			ra2_allies_prismtower: 15
-# 			ra2_allies_grandcannon: 5
-# 			ra2_allies_gapgenerator: 1
-#
-# --- UnitsToBuild (46 entries for ra2_allies) ---
-# 			ra2_allies_chronominer: 10
-# 			ra2_allies_attackdog: 1
-# 			ra2_allies_gi: 5
-# 			ra2_allies_sniper: 3
-# 			ra2_allies_guardiangi: 5
-# 			ra2_allies_chronolegionnaire: 3
-# 			ra2_allies_engineer: 1
-# 			ra2_allies_tanyaii: 1
-# 			ra2_allies_seal: 3
-# 			ra2_allies_ra2spy: 1
-# 			ra2_allies_ifv: 10
-# 			ra2_allies_ifv_mg: 1
-# 			ra2_allies_ifv_hmg: 1
-# 			ra2_allies_ifv_missile: 1
-# 			ra2_allies_ifv_chrono: 1
-# 			ra2_allies_ifv_repair: 1
-# 			ra2_allies_grizzlytank: 5
-# 			ra2_allies_tankdestroyer: 5
-# 			ra2_allies_miragetank: 5
-# 			ra2_allies_heavymiragetank: 5
-# 			ra2_allies_prismtank: 5
-# 			ra2_allies_battlefortress: 5
-# 			ra2_allies_battlefortress_empty: 3
-# 			ra2_allies_battlefortress_chrono: 1
-# 			ra2_allies_rocketeer: 5
-# 			ra2_allies_harrier: 3
-# 			ra2_allies_blackeagle: 3
-# 			ra2_allies_nighthawk: 1
-# 			ra2_allies_upgrade_assaultsquadtraining: 1
-# 			ra2_allies_upgrade_vanguardtraining: 1
-# 			ra2_allies_upgrade_infiltratorstraining: 1
-# 			ra2_allies_upgrade_compositearmorplating: 1
-# 			ra2_allies_upgrade_reflectivearmorplating: 1
-# 			ra2_allies_upgrade_ionpulseplating: 1
-# 			ra2_allies_upgrade_elitegi: 1
-# 			ra2_allies_upgrade_paratroopers: 1
-# 			ra2_allies_upgrade_eliterocketeer: 1
-# 			ra2_allies_upgrade_prismlinking: 1
-# 			ra2_allies_upgrade_forceshield: 1
-# 			ra2_allies_upgrade_heavymiragetank: 1
-# 			ra2_allies_upgrade_advancedaeronautics: 1
-# 			ra2_allies_upgrade_tanklasertargeting: 1
-# 			ra2_allies_upgrade_thunderboltmissiles: 1
-# 			ra2_allies_upgrade_intensifiedprismbeams: 1
-# 			ra2_allies_upgrade_prismaticbarrier: 1
-# 			ra2_allies_upgrade_chronoengine: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor â€” no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-#
-# --- Additional faction: RA2 (ra2_soviets) â€” BuildingLimits (10 entries) ---
-# 			ra2_soviets_orerefinery: 10
-# 			ra2_soviets_barracks: 10
-# 			ra2_soviets_warfactory: 10
-# 			ra2_soviets_airfield: 10
-# 			ra2_soviets_industrialplant: 1
-# 			ra2_soviets_radar: 1
-# 			ra2_soviets_battlelab: 2
-# 			ra2_soviets_servicedepot: 1
-# 			ra2_soviets_nuclearmissilesilo: 1
-# 			ra2_soviets_ironcurtain: 1
-#
-# --- Additional faction: RA2 (ra2_soviets) â€” BuildingFractions (15 entries) ---
-# 			ra2_soviets_constructionyard: 5
-# 			ra2_soviets_orerefinery: 15
-# 			ra2_soviets_barracks: 15
-# 			ra2_soviets_warfactory: 15
-# 			ra2_soviets_airfield: 15
-# 			ra2_soviets_industrialplant: 1
-# 			ra2_soviets_radar: 1
-# 			ra2_soviets_battlelab: 5
-# 			ra2_soviets_servicedepot: 1
-# 			ra2_soviets_nuclearmissilesilo: 1
-# 			ra2_soviets_ironcurtain: 1
-# 			ra2_soviets_battlebunker: 10
-# 			ra2_soviets_sentrygun: 10
-# 			ra2_soviets_teslacoil: 10
-# 			ra2_soviets_flakcannon: 10
-#
-# --- Additional faction: RA2 (ra2_soviets) â€” UnitsToBuild (36 entries) ---
-# 			ra2_soviets_warminer: 10
-# 			ra2_soviets_attackdog: 1
-# 			ra2_soviets_conscript: 3
-# 			ra2_soviets_desolator: 5
-# 			ra2_soviets_flaktrooper: 5
-# 			ra2_soviets_teslatrooper: 5
-# 			ra2_soviets_boris: 1
-# 			ra2_soviets_engineer: 1
-# 			ra2_soviets_rhinoheavytank: 5
-# 			ra2_soviets_apocalypsetank: 5
-# 			ra2_soviets_v3rocketlauncher: 3
-# 			ra2_soviets_teslatank: 5
-# 			ra2_soviets_flaktrack: 3
-# 			ra2_soviets_terrordrone: 5
-# 			ra2_soviets_crazyivan: 1
-# 			ra2_soviets_kirovairship: 1
-# 			ra2_soviets_siegechopper: 1
-# 			ra2_soviets_migbomber: 1
-# 			ra2_soviets_transportkirov: 1
-# 			ra2_soviets_doctrine_conscription: 1
-# 			ra2_soviets_doctrine_harshenvironmentinfantryconditioning: 1
-# 			ra2_soviets_doctrine_shocktroopertraining: 1
-# 			ra2_soviets_doctrine_heavyarmorplatings: 1
-# 			ra2_soviets_doctrine_reactivearmor: 1
-# 			ra2_soviets_doctrine_tesladischargearmor: 1
-# 			ra2_soviets_doctrine_firemunitions: 1
-# 			ra2_soviets_doctrine_nuclearmunitions: 1
-# 			ra2_soviets_doctrine_teslamunitions: 1
-# 			ra2_soviets_upgrade_terrordronesurprise: 1
-# 			ra2_soviets_upgrade_teslacoilchargers: 1
-# 			ra2_soviets_upgrade_teslaoverload: 1
-# 			ra2_soviets_upgrade_heavycannons: 1
-# 			ra2_soviets_upgrade_grindertanktreads: 1
-# 			ra2_soviets_upgrade_kirovarmorplatings: 1
-# 			ra2_soviets_upgrade_gastroburners: 1
-# 			ra2_soviets_upgrade_kirovatomicbombs: 1
-#
-# --- Additional faction: RA2 (yuri) â€” BuildingLimits (10 entries) ---
-# 			yuri_slaveminer_deployed: 10
-# 			yuri_barracks: 10
-# 			yuri_warfactory: 10
-# 			yuri_psychicsensor: 1
-# 			yuri_battlelab: 2
-# 			yuri_geneticmutator: 1
-# 			yuri_grinder: 1
-# 			yuri_cloningvats: 1
-# 			yuri_psychicdominator: 1
-# 			yuri_lunarcommandcenter: 1
-#
-# --- Additional faction: RA2 (yuri) â€” BuildingFractions (14 entries) ---
-# 			yuri_constructionyard: 5
-# 			yuri_slaveminer_deployed: 15
-# 			yuri_barracks: 15
-# 			yuri_warfactory: 15
-# 			yuri_psychicsensor: 1
-# 			yuri_battlelab: 5
-# 			yuri_geneticmutator: 1
-# 			yuri_grinder: 1
-# 			yuri_cloningvats: 1
-# 			yuri_psychicdominator: 1
-# 			yuri_lunarcommandcenter: 1
-# 			yuri_tankbunker: 10
-# 			yuri_gatlingcannon: 15
-# 			yuri_psychictower: 15
-#
-# --- Additional faction: RA2 (yuri) â€” UnitsToBuild (47 entries) ---
-# 			yuri_slaveminer: 10
-# 			yuri_initiate: 3
-# 			yuri_virus: 3
-# 			yuri_brute: 5
-# 			yuri_clone: 3
-# 			yuri_yurix: 1
-# 			yuri_engineer: 1
-# 			yuri_gatlingtank: 5
-# 			yuri_lashertank: 3
-# 			yuri_mastermind: 3
-# 			yuri_magnetron: 3
-# 			yuri_chaosdrone: 1
-# 			yuri_floatingdisk: 1
-# 			yuri_cosmonaut: 5
-# 			yuri_gatlingtrooper: 5
-# 			yuri_biotrooper: 5
-# 			yuri_doctrine_psioniclegion: 1
-# 			yuri_doctrine_psionicfanatics: 1
-# 			yuri_doctrine_psionicelite: 1
-# 			yuri_doctrine_lasherhecannon: 1
-# 			yuri_doctrine_lashertoxicgasshells: 1
-# 			yuri_doctrine_lasherlasercannon: 1
-# 			yuri_doctrine_scrapvehiclearmor: 1
-# 			yuri_doctrine_chaosgasemitters: 1
-# 			yuri_doctrine_psionicvehicleshields: 1
-# 			yuri_upgrade_initiatepowersurge: 1
-# 			yuri_upgrade_brutestrengthmutations: 1
-# 			yuri_upgrade_lasherarmorimprovements: 1
-# 			yuri_upgrade_gatlingfirepowerupgrade: 1
-# 			yuri_upgrade_meltingvirus: 1
-# 			yuri_upgrade_domination: 1
-# 			yuri_upgrade_gatlingspeedupgrade: 1
-# 			yuri_upgrade_corrosiveammo: 1
-# 			yuri_upgrade_supermagnets: 1
-# 			yuri_upgrade_bioreactorefficiency: 1
-# 			yuri_upgrade_bioengineering: 1
-# 			yuri_upgrade_psychicrange: 1
-# 			yuri_upgrade_psionicarmor: 1
-# 			yuri_upgrade_toxicengines: 1
-# 			yuri_upgrade_psionicplasmabeams: 1
-# 			yuri_upgrade_gravitondrive: 1
-# 			yuri_upgrade_disksiphonattack: 1
-# 			yuri_upgrade_diskhighfrequencylasers: 1
-# 			yuri_upgrade_infantrystealthsuits: 1
-# 			yuri_upgrade_geneticmodificationboost: 1
-# 			yuri_upgrade_psychicvision: 1
-# 			latinsyndicate_upgrade_yuristolentechchainguns: 1
+	BaseBuilderBotModuleCA@generic:
+		BuildingLimits:
+			ra2gayard: 1
+			ra2nayard: 1
+			yrygyard: 1
+		BuildingFractions:
+			ra2gayard: 1
+			ra2nayard: 1
+			yrygyard: 1
+	UnitBuilderBotModuleCA@generic:
+		UnitsToBuild:
+			ra2dlph: 5
+			ra2dest: 10
+			ra2carrier: 10
+			ra2sub: 10
+			ra2dred: 10
+			ra2sqd: 5
+			yrrobo: 5
+		UnitLimits:
+			ra2dlph: 5
+			ra2dest: 10
+			ra2carrier: 10
+			ra2sub: 10
+			ra2dred: 10
+			ra2sqd: 5

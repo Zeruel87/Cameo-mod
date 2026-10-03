@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Effects;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
@@ -27,7 +28,7 @@ namespace OpenRA.Mods.Cameo.Effects
 		readonly WPos pos;
 		readonly bool visibleThroughFog;
 		readonly string sequence;
-		readonly float3 tint;
+		readonly Vector3 tint;
 		bool initialized;
 
 		public TintedSpriteEffect(WPos pos, World world, string image, string sequence, string palette,
@@ -38,7 +39,7 @@ namespace OpenRA.Mods.Cameo.Effects
 			this.palette = palette;
 			this.sequence = sequence;
 			this.visibleThroughFog = visibleThroughFog;
-			tint = new float3(tintColor.R, tintColor.G, tintColor.B) / 255f;
+			tint = new Vector3(tintColor.R, tintColor.G, tintColor.B) / 255f;
 			anim = new Animation(world, image);
 		}
 

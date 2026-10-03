@@ -1,0 +1,3883 @@
+{
+  "schema": 1,
+  "scope": "Unapproved nominal class-anchor proposals from existing reference projections; no registry or gameplay writeback.",
+  "method": [
+    "Use the existing per-source reference projection and frozen Cameo self-vote; require full external coverage on HP, speed, range, nominal DPS and cost.",
+    "Use medians of projected HP/speed/range/DPS, with existing stat grids. Store DPS directly, not a synthetic weapon damage/reload target.",
+    "Fit class C0 from projected costs after current fitting tier/feature factors; snap C0 to 100 credits.",
+    "Current charge/physical-state factors are held fixed during this initial proposal and require iteration after any stat changes.",
+    "Thin classes and explicit/template disagreements are exposed, not silently repaired or signed off.",
+    "R4 DPS and current fitting DPS use different reducers; cross-metric ratios are diagnostic only, with a tight 1e-6 relative / 1e-9 absolute mismatch tolerance.",
+    "Excluded expanded/sparse units still require calibration; this initial reference-complete cohort is not the full deliverable."
+  ],
+  "dps_basis": {
+    "r4": "armament_profile sums all positive damage warheads over baseline armaments with burst/cycle.",
+    "current_fitting": "fit_class.unit_inputs uses the current main-channel reducer and actor firepower factors.",
+    "cross_metric_status": "UNAPPROVED \u2014 mismatches are not directly comparable.",
+    "mismatch_tolerance": {
+      "relative": 1e-06,
+      "absolute": 1e-09
+    }
+  },
+  "summary": {
+    "classes": 13,
+    "contributors": 31,
+    "classes_with_at_least_three_contributors": 6,
+    "classes_with_warnings": 10,
+    "dps_basis_mismatch_contributors": 5,
+    "excluded": 117
+  },
+  "reference_and_tool_inputs": {
+    "docs\\design\\ORIGINAL_UNITS_PEER_OPENRA.md": "d37db59f883bbfd62b3faa555788f4ac79970eae675f273eb0b89f8b9c22e36c",
+    "docs\\reference\\armor_normalized.json": "70f0aa2a71539c2b96889fe35a0ba23559db8dff4788791915281934a7d9e84b",
+    "docs\\reference\\ca_clamped_percentage_evidence.json": "1218d701a2e95debb995f24d8932689a336e20a2c3375cb053802fbf6fa58484",
+    "docs\\reference\\cameo_baselines\\pre_reference_20260910.json": "726ada6afec708f8c6e9798ecbfb2758c842195f66755c2d5e683432c4a86f95",
+    "docs\\reference\\cameo_baselines\\pre_reference_heroes_20260910.json": "101a934792713dd6ccf5fbeb99629db0379af7b1f9a51d52d02a010795e5365c",
+    "docs\\reference\\cameo_projectile_engine_review.json": "85a19a3287a879cc31d0eec57004bd6edcd9c0dac530d625de1778a8899b5315",
+    "docs\\reference\\drift_accepted.json": "4267157947c17f981e0e39ef0e3ab2ca18ff5083b48290ecb56b57da02a283ab",
+    "docs\\reference\\dta_additional_payload_evidence.json": "e05094a1168d866eed7c525ba247e9757df1b253f57f663d6b5b7592e3d41154",
+    "docs\\reference\\dta_armor_evidence.json": "3993f942b39e72f661c45edb7a5fe72f322f1b515985ad94e3feeaa38ce07bc5",
+    "docs\\reference\\dta_preprocessing_evidence.json": "11708eada7924b0c3ac00836171c445cebaa6ef020a696fc56cafc47d4970bea",
+    "docs\\reference\\dta_tesla_payload_evidence.json": "d2f6c31c69b1c844fc223d8e3c4f50a3968229148e4666e64a08b96a53efc661",
+    "docs\\reference\\faction_profiles.json": "3a144a3c877243bbf290f4b7f35e0e877cca387f2852bb7329421b87b234a4f9",
+    "docs\\reference\\family_profiles.json": "b521e05f406e73746745c18fb4f9b0f66f7e14dea34677ba791fdabf4b79794e",
+    "docs\\reference\\ini_corpus.json": "b8fec564b958a2d2ccc42053fad76c8af714f433f15cc055355c51776e485d68",
+    "docs\\reference\\ini_cycle_evidence.json": "513c85f865e54e314cdcb3c259005a2745c5748486a1521b4b73a3765645ab63",
+    "docs\\reference\\ini_range_evidence.json": "8a94f83689745a805d09d489acaa4ae887736e53d03618d24b844f63661bed95",
+    "docs\\reference\\ini_weapon_selection.json": "cc444d53ea6f4b6d86e2e32140ec44c70483cb411945f177fde8a5b1f71192c7",
+    "docs\\reference\\openra_percentage_armor_evidence.json": "891bc4be8d916f20a53fb07dc65ef751b661a25cb39933ccc54b307b68f91ae1",
+    "docs\\reference\\peer_armor_map.yaml": "f2175de185ebbc36a856aac1cd58cb129e849e1a525e62d21a5be614117c1380",
+    "docs\\reference\\peer_base_state.json": "8a52f664d4b84feca0b121e4da199b902b1c5279c8eefbf106836ce11b4d1b80",
+    "docs\\reference\\peer_corpus\\base_rank_bbd36d9e.json": "18b61b676343bf364fd3da64818dac03ce733d52ca2d52f3f687c626e6df8e20",
+    "docs\\reference\\peer_corpus\\base_scenarios_bbd36d9e.json": "d3716239a4f12b667476bcd1f86b3e8e8f902d81b53abca414b7397d7bf68ce7",
+    "docs\\reference\\peer_corpus\\ca_ab9e477c.jsonl": "e80f02b6ae603adfb5c3015045f94011a4af77ac4336f34bb35e153c30f1956f",
+    "docs\\reference\\peer_corpus\\cnc_bbd36d9e.jsonl": "1dc3c1e1ccde2b16e550d044eea0874019cc517d6cbc3d8a89113646725d117e",
+    "docs\\reference\\peer_corpus\\d2k_bbd36d9e.jsonl": "7a4c72f4d7f3aa9cd8f58ebed6149e8dff75eb9ed31bc1b8bb3157d6f4d1933b",
+    "docs\\reference\\peer_corpus\\index.json": "a0c6ef6a74c75a61960f2b2f98ca646c45852bada1dd5edc70fa5d06e933efc2",
+    "docs\\reference\\peer_corpus\\ra_bbd36d9e.jsonl": "d417f8af2ae7766901a9538aa5a9ebb3d3f33cd744c7cf25e3270d9d5367bf4e",
+    "docs\\reference\\peer_corpus\\ts_bbd36d9e.jsonl": "f3a46a072568227b7c1cf2524a86d082dc94d5f72452d2eb064f6031575130b7",
+    "docs\\reference\\peer_nominal_evidence.json": "e9c57cb3d7f039c35c37b2c94c24ac8f337461527e689607098ebb8bf7cb3910",
+    "docs\\reference\\peer_range_evidence.json": "3124ae2a157fa1b5ef3af5c5031f5013eeb3d4e07f48a5ccdd089f85183de298",
+    "docs\\reference\\pilot_weapon_absence_evidence.json": "657cb2de2cf29f706e32b9031040df61a8e1777ae6e933eaff648bddb7043022",
+    "docs\\reference\\projectile_travel_evidence.json": "132e6ca2951d3d9c8d7ec78dffbb26bf63168032a392a8409be9054a40a18705",
+    "docs\\reference\\release_baseline_playtest_20260709.json": "d7862219db98f24fd8551841e0670643b4d74cdf896cdcb29103aaa081e16b7d",
+    "docs\\reference\\versus_raw.json": "1e6faabc8ebc944b4416a865c25f9949845c19241cae64958b021aa2e7c0375b",
+    "tools\\balance\\_fix_min_range.py": "cfdcd7efa718126f31840b53b2209ce36bc9271f1c4a91a7a166ffd95267a321",
+    "tools\\balance\\_patch_ledgers_from_reports.py": "7a3fbcef006d133e09dfc34cffb85603d868ef1de3ce0b0c21b0bda492a172dd",
+    "tools\\balance\\_requantize_ledgers.py": "54a9328196e821000b2b1542b176c526e7f1abd43cc229985bc2d1085c0c592a",
+    "tools\\balance\\_show_audit_summaries.py": "dba486444cfebcce6931d04bafd2a41361ff2dbd575b90d26fbeb479157b1dff",
+    "tools\\balance\\_write_weapon_class.py": "14fad571064ea00e72eceacdedf953230f90f7ec9a16a9bfa3bb8e75795029c3",
+    "tools\\balance\\anchor_readiness.py": "c329f9e33332aec8a13f6417766fed5638639618959f4a89702517fed1fbfd16",
+    "tools\\balance\\apply_balance.py": "ea6be780d6f4217ad8689bd77e9546f176f8fe8ad66f7731e1d0b200ccd5741a",
+    "tools\\balance\\apply_transaction.py": "67ac7a1c31a62bb1d624011f05cb31d21aa52476469a9e6327cf68c6ad201ac4",
+    "tools\\balance\\armament_mode_survey.py": "cf239879ef7bab021298961f832017a06e48b525a3ef8971e3bab6f059be6958",
+    "tools\\balance\\armor_exposure.py": "df4e0256cb4075a0af21e9010a24ec5e12373e63a9cc24dbe0bb2d0186700982",
+    "tools\\balance\\armor_projection.py": "c8957373cef578e3360930189bee9af84f24fded05f2bbd9ae1afc9087957bc5",
+    "tools\\balance\\assemble_four_voice_pilot.py": "f1349a56faf719036583061f31ebbf36f88750f663dc247a573fc6eb58bebd9d",
+    "tools\\balance\\assign_references.py": "3a9bd8fa7b85da133d44f3671863b1cb9c091fe68523029b8292bbcfc9263670",
+    "tools\\balance\\audit_below_divider.py": "5336c84340659c0d1a8a87ff832df9e631cf4ce439c2945e047a227e1ea0ef66",
+    "tools\\balance\\build_japan_pilot.py": "9f17f72fcd2b331247772def522416572392c00dd80a8782b8f3ac66c81c0d19",
+    "tools\\balance\\build_reference_report.py": "3bcf40b7395b6adf07cd0661c221681c585bbe90ae419026a8f337c03771f025",
+    "tools\\balance\\build_workbook.py": "ac6a0d2e97628eaef7999b056a6ec3973b7862acd9b3bf6c766f8024ba1fa4b6",
+    "tools\\balance\\cameo_channel_curves.py": "b4d5e62f17986632381c3e7ed99ad96ac54d292cb317d7ff6f2567d0e34c5e91",
+    "tools\\balance\\cargo_pricing.py": "e7a4829e9dfc2c2b493b3117a59c1cbd2d477b1e4c3f60d8201000157317d52f",
+    "tools\\balance\\check_band.py": "21868e02d7c78a94b89644a8ff163aa0c6c1f72469e1bd6203427aac14334257",
+    "tools\\balance\\check_determinism.py": "00e31c303876dec1afe974941e06f2282f280a318009db86be55a63b3bc70873",
+    "tools\\balance\\class_membership.py": "ca70ca093b3250b13440af9400cfea0dcb2d6427b3d33213df38ce7739fb1f6a",
+    "tools\\balance\\collapse_target.py": "955354040ee14c10fb8479b115b66c2c16cdc2d81d2cb675d261a16d2a00222d",
+    "tools\\balance\\compare_cannonap_migration.py": "b7bc5b2be9c39df81195048c38275981abe5aae4a79e9bce69363894d031c4bc",
+    "tools\\balance\\compare_defense_armor_curves.py": "32c744f389fade73cb9b7d6d80b0e669cd55c71e13408c4c1f32a46d70cc87d3",
+    "tools\\balance\\compensate_retrofit.py": "3e8bd8369811146c637917149825ec9448047c55bfbfefb77e51241b2d2b2234",
+    "tools\\balance\\consolidate_adjacent_family_stacks.py": "e7e358315a148035101e8e2571892ec2da7d967ea51289d6fec73c0afcc05553",
+    "tools\\balance\\consolidate_authorized_remaining_profiles.py": "39f087668f9026fb68ec59f6963df335f463442faa52acf8415e743e4ca29495",
+    "tools\\balance\\consolidate_authorized_role_profiles.py": "f63345f9497f88fe554a607ccec2ed03658677ba3674eb41c597d0bfd86629d7",
+    "tools\\balance\\consolidate_compatibility_profiles.py": "1b6f0eb030c6d86277a902ca274bc81d170ed953a5b29a83cfe6260569e19178",
+    "tools\\balance\\consolidate_corroborated_role_profiles.py": "df3e9d36d3877b97e7919e8d3e856a5cf3feb64f63f2baa05592f19640bb2679",
+    "tools\\balance\\consolidate_delivery_identity_profiles.py": "e914f95b90d1b5a81da31e5272e5ecb9ded6f24c3f05ffb2dd22560789977fc9",
+    "tools\\balance\\consolidate_exact_profile_duplicates.py": "5634a428368ee3ba6fa645b2ee02bb357555f8b03e725493edbf69297e43cda6",
+    "tools\\balance\\consolidate_explicit_family_state_profiles.py": "a5a3ca1b4031a7abe287d1605e6c63f53b5a1e4081b7b6a97e39b3630e6ef312",
+    "tools\\balance\\consolidate_final_safe_cohorts.py": "18ffd4219b1949a15669050a0412d2b97c52f419350506fd2269fb0af3974711",
+    "tools\\balance\\consolidate_freedom_rocket_base.py": "22777a29831fcde7a68d4b424ae43ade57c0e17c16ca20efa9725d6427ce2bf3",
+    "tools\\balance\\consolidate_high_identity_profiles.py": "d82008ad1f664746d6dbbd1312035f71e5d4c42ab966a50eb1e5cb178999435d",
+    "tools\\balance\\consolidate_identical_main_profiles.py": "3485eaeca4e5d44efd96242d5565402dafa171d42c54bfabea9ac848df56fd65",
+    "tools\\balance\\consolidate_laser_heavy_routes.py": "67878f389ab3e5502d49960825e669f261a3f353df2a904359a2e1892e568cb5",
+    "tools\\balance\\consolidate_machinegun_profiles.py": "3a925ba9cde88092239bcd30f3c4bf82ba1e8fed593a8af49ca85c509894b1a2",
+    "tools\\balance\\consolidate_named_family_profiles.py": "3174db083e8f0ff3b3d06f80d47592074ca709e6a0a0d77d6cd1d1aec68f1a6c",
+    "tools\\balance\\consolidate_named_state_corrections.py": "cc9769033ecbad682d9b76bb8f6826407d577302a3b90658d4ea1da75550badf",
+    "tools\\balance\\consolidate_pinned_role_profiles.py": "a49a7d7fb09c5f3ef95c33386b64165c85f6d6cbc8d682838dede58d30303f62",
+    "tools\\balance\\consolidate_reviewed_weapon_roots.py": "e5f00f434f81800e15230ad71894c9add45428dc30c227a36c1f04d14efb4b82",
+    "tools\\balance\\consolidate_role_complete_profiles.py": "0587c2523a8ca5f11d0d52f64c7f460bba60558b75dceb4d0bbc9ae1d19d7dee",
+    "tools\\balance\\consolidate_routed_role_cohort.py": "b29c5dcbb47a22b241ceded24626ea85ddc74a0b325cc4f52e2075531fa7977a",
+    "tools\\balance\\consolidate_rule_driven_blast_ordnance.py": "590e5d062fcba67d1a88230fac2a34797250a0f4727e26ec05885d37e6174f32",
+    "tools\\balance\\consolidate_rule_driven_energy_ordnance.py": "68d29fd51ab3523b0b9bff22ed826461bf450b6189aae224bf2ecb6136f234dc",
+    "tools\\balance\\consolidate_rule_driven_heavy_explosives.py": "bcdc7e78a912103f4c51b494c9ca33087e46d27dd07f3107327650dff20ef9a8",
+    "tools\\balance\\consolidate_rule_driven_legacy_energy.py": "31a175b6a05366a8708f69c451670a4268bb41b6fd03723d83f512701d77c38b",
+    "tools\\balance\\consolidate_same_family_stacks.py": "5dc2087f99eeb0d2b8eb46432546c37457fd075315c2092805726421bdc4b031",
+    "tools\\balance\\convert_apply_to_scaled_v2.py": "ac216de3570b7f8a037bafba625e981ec36832f495b07a972458c2a1ffc58ce6",
+    "tools\\balance\\count_mixed.py": "21735a559e954a213febef42e38a05b05b5a1a7046f5776011e861b0a525d7e9",
+    "tools\\balance\\derive_virtual_anchor.py": "956007e2b72f015a699b6acbbd9a0c2a7b2e5888b7015ab427e04ed74b099ef3",
+    "tools\\balance\\design_invented_profiles.py": "cd1ad38271d8887e3cc92b5c33f0a59977937116d87da4a60c0766960f57b5ba",
+    "tools\\balance\\diagnostic_output.py": "4baba0e3f3b3815341d84d7944d2539f19b6617a9ac4e86b80e731c15df9c409",
+    "tools\\balance\\dta_channel_curves.py": "404d84020ffe1d3c60e0c6cf43b45ef732e372aede8d50433bc24b5580f53e81",
+    "tools\\balance\\effective_damage.py": "53789cc60f269127707cd70f4feb6b4b30ae68e880dd7891c518b050d0b26e3d",
+    "tools\\balance\\effective_heaviness.py": "21aec8e044a79c6994546350d3b6bc0c0c1c6a42cf5a770104ae1ac45707d7e0",
+    "tools\\balance\\explain_unit.py": "6bc4df838228bc6cb72fc8799913b83b0e87c909a69f3b9b2c055c849c31ec35",
+    "tools\\balance\\explicit_voice_group_assembler.py": "c473812f9e8c06e5fde4a978b72e71de7d24943d7aac124232a6c9daca09e41c",
+    "tools\\balance\\extract_stats.py": "73226909b65b5af563db2054245a45ae33683ce23ff4800e7704ac07c2512183",
+    "tools\\balance\\faction_extrapolate.py": "9f7525b7a72aeafc85dc694fc8b173c724f3f513aba4501c87cae06aaea4dc2e",
+    "tools\\balance\\faction_routes.py": "8d7ef545961c416bb201019e560b4a94077aa5652366b231ce6fea8df0d851d1",
+    "tools\\balance\\firepower.py": "85718bd8f72b0226cc3997e12c6450fa9ce269e63a7095e9bf5021506110e604",
+    "tools\\balance\\firepower_bake.py": "5b6f82796a5bf5d3f4f545217bed00e9f314af12d05926b6f7f9d21596f67a8b",
+    "tools\\balance\\firepower_consumer_report.py": "2f911e050d6c332547c266bdd264866760d784afa60666deb34db68bd0e82a23",
+    "tools\\balance\\firepower_input_report.py": "685f8c650b5bb726062360705a7fd5fe336d038fe9c53890dd8376385f78d9b7",
+    "tools\\balance\\fit_class.py": "616b844f99f2087ee96164cf91c9cc3ad895e1b94b45082ac20d35547cae299e",
+    "tools\\balance\\fix_orphan_old_keys.py": "65d6f20382286b9346ce8f9b2d6596a7a46bffe0dfcf0679790bf72207351a3d",
+    "tools\\balance\\fix_orphan_old_keys_multi.py": "5fbe7e4a470fb1f67c2d65a2fc3c729bc79850c6248ecbbc5964a204f500c693",
+    "tools\\balance\\fix_stale_warhead_keys.py": "59d1bddea1111d3e6f4c31adb5b49414ec3e1426da8c65027449ea88163ab236",
+    "tools\\balance\\formula.py": "df647b42c0d8bed9d349fa446b99729e3f55ffbc4ea5d8d2ad7dff4b6e3d5268",
+    "tools\\balance\\four_source_synthesis_gate.py": "eed314c3c74598446fa2a480621fe7e916b2fdac7252095f1225c3e8fcc9ee4f",
+    "tools\\balance\\gen_derived_stats.py": "29613246400bdfe585787a81c19a8f52f7b2ac3ae5aed75b448e4d4745b2c8b1",
+    "tools\\balance\\gen_effects.py": "b9b62b6094c0e7103a475f0ac7ebe5850dc291568720b1568d8835fcc527bdb4",
+    "tools\\balance\\gen_projectiles.py": "91eba4b500ebdb20ae584edd440ccc59834906e8b089bf3176b13de4cae13d62",
+    "tools\\balance\\gen_weapon_template.py": "007d4316d7174031eaba25d1f7b01c123fd010c72f4fe30b6af6e0aa1052aa2b",
+    "tools\\balance\\harvester_table.py": "701eb305165216a6f1b39ce63216a7ca39d193ab4d6458ebcd64acf031fe4b4a",
+    "tools\\balance\\hydra_candidate_screen.py": "9c951864367a558c67098549e2a453478b0f34620552da036c3cf35666509ba8",
+    "tools\\balance\\hydra_impact_lab.py": "9152b9e50b6c8ea844c65afb317132b9db646a8cd968a852f9bad62195731c8b",
+    "tools\\balance\\hydra_two_stage_pilot.py": "cf4c5097615f7df6911e0c8db5ea063a3f7fe152aee5626f74c176fc1da5c350",
+    "tools\\balance\\import_workbook.py": "1093412196fbe88457110d8ba456c9f6c3b2d8aa81751d50579026ecc1ff138e",
+    "tools\\balance\\ini_cycle_evidence.py": "51fcf0f50d189759471b277f951ebd72e9a1ecd599ec66e946f684e118b3132a",
+    "tools\\balance\\ini_range_evidence.py": "814c48af8a6a54fc0cc351143a3aaebb5cf61e96e5a9ef0c756a28158f502f3f",
+    "tools\\balance\\ini_weapon_selection.py": "246ff38a2dab96b9280fc8d938931199c8bc0f4237b8f9455202a4c6b45bc613",
+    "tools\\balance\\measure_retrofit_gap.py": "0e369f4cea26a747136163ebf611515351f18773240681139e983838b78167a9",
+    "tools\\balance\\owned_weapon_wrappers.py": "5b1156b6ced1678c3b8e390742a5d0033aea26968babe13b1238a2521b7830af",
+    "tools\\balance\\peer_base_state.py": "0c19301dec417d26a114342b2d242bfcc9bc800590437ad52ecd5dae3381ec86",
+    "tools\\balance\\peer_corpus.py": "e9b5ea8c41c875eab784d60ebd6d988027249c8a58a9e07b2f8f3c3ebc1895f7",
+    "tools\\balance\\peer_nominal_evidence.py": "84a23442dcc6011a1d64521aa8abaa2d86d2512cc926162ea05614b1933451ad",
+    "tools\\balance\\peer_range_evidence.py": "05fe2aa2287008a9bf9498c9dc1e60fa25762a134837176593e5c1ae6a7f63e9",
+    "tools\\balance\\pending_classes.py": "0b323c5dc0c81c0b4b07cc94fff63a62bdea96778796d496e29d8369aa10d9a0",
+    "tools\\balance\\percentage_damage.py": "d5fe1cdc55d9b3852be06f75436dfca7090946f67ae72a3ed85495b381e92cc2",
+    "tools\\balance\\physical_state_price.py": "2e062229de9e0cd8b41c93138c1c1eff7edf84782d687a92ad181c9873b2692d",
+    "tools\\balance\\plan_firepower_retirement.py": "259d693165d55d1155bee006c4471cadd355ebf7bb0a35472c832fcfc43a9d6f",
+    "tools\\balance\\plan_warhead_collapse.py": "10ce55dfce73607b2c903cc2ab206e84d35f454e01be287186e518b0335917ff",
+    "tools\\balance\\prepare_missile_role_decisions.py": "1af1e2b454fa2da962b749cf6afbbc573192c9540f52db1756b12328452ba8ed",
+    "tools\\balance\\prepare_promotion_discount.py": "7759be0e70e1dffd81c32b8ba3a7e1cabbb95ee7bdd2542e6530233615b3da03",
+    "tools\\balance\\prepare_promotion_upgrade_interactions.py": "b088184af3739acb1b4d9a0ce5bd57799325472c842840de62ca024c1f06e137",
+    "tools\\balance\\preview_bell.py": "9eb88dadecac9e022f8c38e67039e5b871aa31ed9ddd2649e2d48e6d05702aae",
+    "tools\\balance\\preview_sonic_additions.py": "541a069dda5ef2c6d069a0bea9751b5c64f8a95af490db3ef16baec9524f62ea",
+    "tools\\balance\\projectile_travel_evidence.py": "d944ade69f4bf2a32cad51fd0a396da0461039eec317354ae3672a20aee2f8b1",
+    "tools\\balance\\proposal_contract.py": "869e905ef5214acadc169fd5db7adf0749280bafb8497b0b40192d3dce77532a",
+    "tools\\balance\\propose_anchor_spec.py": "3253e367ecc43372458c71f567eb8d85a64546b2ad8fcb9b12dd6c6f13667223",
+    "tools\\balance\\propose_class_rebalance.py": "4aebe2a463ca367af3ea87d71b4ab794ccd45c665464580eae67d2b0054af5a4",
+    "tools\\balance\\propose_rebalance.py": "986b54d02fdb3089a6d9e47b9c6d1952cdae175358036230344701e187ed2b9a",
+    "tools\\balance\\propose_reference_anchors.py": "71f64b868afe76e688bf7331fb45d2dec6cae73881432e52a17ac2bba4469a97",
+    "tools\\balance\\propose_retained_firepower.py": "4e8a5c1fbda023b32b9de4ca2bd8cd100579f23f4ce87356157fea2d8a2bf8d8",
+    "tools\\balance\\reference_channel_curves.py": "f51ac84be31a15c0c134c902dd5cac5834591cfcfaf2ecb955f007e0563deb72",
+    "tools\\balance\\reference_distribution.py": "517e97cc9b63344056a673a153add7d5cf6aed2edf28fda204e3ee9100f8db3c",
+    "tools\\balance\\reference_lineages.py": "dbc14d5f84909becaadee3be6b30f5ed84d9364d844b9bd063325ae07a59bf62",
+    "tools\\balance\\reference_targets.py": "4d5d83bab0409325647e1df9b436425c7ec5a89d0723b39b19805f3603074cb5",
+    "tools\\balance\\reference_weapon_geometry.py": "0594e26d8099541f3d852d4bf2f651a99220a8a6f49ca750dd8f180ffec4a2f0",
+    "tools\\balance\\remove_dead_weapons.py": "f1271f370b8e0a18c6fd5633e13ff37c9e17a761661cdf0a755682412820c8e9",
+    "tools\\balance\\rename_3way_underscore.py": "07961c92f0af6116a0e0aec9572cae81320ea4d1d4f7952dee9f00d027bd9d77",
+    "tools\\balance\\render_defense_armor_curves.py": "7ee3112a60e90ed25c876eee5a82a84dbeaffb5bd3d12bcbd13f63d2008cd91a",
+    "tools\\balance\\report_versus_change.py": "1d7200a1e3ad6449bb834a18db4fa942cbb2ccc8b90086ea615c35902ec1e353",
+    "tools\\balance\\retained_firepower_survey.py": "3c21b3cf9cc73a4cbb502fd8fd76a2f8c16dcb9e1ac24466cf69935218603d70",
+    "tools\\balance\\retrofit_legacy_template.py": "bd30db6b020ee0bbc6b6485ceea20483241becd64fe70e923a5142d2f0c2f0ed",
+    "tools\\balance\\retrofit_weapon_family.py": "a718a69e0246c9b1df9a7a53a888ea821e62e66af6afd93e551d7848d74d387f",
+    "tools\\balance\\run_pipeline.py": "ff4206dc432e0710413344b8fcdfa919f41ad605e6257da3e882b2852d8be138",
+    "tools\\balance\\run_with_guard.py": "fe0a874d5028ed10f8bfd17f0cfed1413f90eab1349ff41115056f3208d282ab",
+    "tools\\balance\\seed_design.py": "aeb49cc8364c143c54336a8ac256a90dc2fa09b7f1fd5f7ccf6297be1498002d",
+    "tools\\balance\\shield_uniqueness.py": "03159a2db1626604c3fd3a3f4129ced3e146f0ad596e3a061e984afd8678f2c5",
+    "tools\\balance\\shrapnel_damage.py": "7eae2a963be103d2a077d15da05a17510bb128b0cf2324af6c8ee307d03d0507",
+    "tools\\balance\\shrapnel_scenario_report.py": "8221eb405f82bca0ec5c62b1e1d4b9bba55ff2c9d3cb775258f96c77ba003014",
+    "tools\\balance\\source_channel_reducer.py": "78e28aca2f1d7d3d86ad6d71fc5440b26decdb2a6166497e01cbf10828b8a8f9",
+    "tools\\balance\\splice_templates.py": "84c797b9cdf1c5c1ff412480827ea225aa5ecc91bd35de58da8384617d86287c",
+    "tools\\balance\\status_uptime.py": "101a3a83f4046d81f621682cb104f784206632d1abb938f332d02474069557c4",
+    "tools\\balance\\strip_orphan_report.py": "0c754e3efda409081f0da753bc137b418b2c7a3257943d46db110b16fa57d418",
+    "tools\\balance\\strip_weapon_versus.py": "9167a4340efcf271ea3702897216aa30ae74c30f34a29e970ed2ef46b9561cc5",
+    "tools\\balance\\summarize_reference_geometry.py": "d694970d546bdfb5521152b1f731cbbdae461a815f2d85693a45872d1ae1113d",
+    "tools\\balance\\sweep_areadamage.py": "8d9c343a0dab56069d7bf71851e36fe76be2f69494ae944a0ffcec55d26913e0",
+    "tools\\balance\\synthesize_reference.py": "e0e3f78d794743524a4b95164cbf32f883bd39b3c38442ebdd4aec787620b695",
+    "tools\\balance\\target_model.py": "f09b8544d9e585844cb6bfc119fbb672ffdf168fc65ca5ec5a8ff88f28af82d1",
+    "tools\\balance\\tier_chain.py": "777fc9dc6d2b356faa762474bbf943a846795ef083eab6f72a261e732ee2aa14",
+    "tools\\balance\\triage_band_flags.py": "228a816d308f8dafc629f2d0d76e71cb19fb51ce04b7f7065a778e4b41db07f1",
+    "tools\\balance\\triage_missile_role_cases.py": "0208806dd186d82349ebd0e848aaf378e9817d27f26e1a464ac8409f65407851",
+    "tools\\balance\\update_ranges.py": "10575445d767c7e88dacda903e627a2b871b0714b56e0c1496fe200fbe2e3545",
+    "tools\\balance\\validate_reference_holdout.py": "ddb769e717ff4b0a4b5433b92a6bcdb3e71c373ef022293a72b9b7e7a9d73e0c",
+    "tools\\balance\\verify_generator_sync.py": "4142bf6d6e232a8e63755974012c5761e5a0e3c35f1bbf3bd975254e0277c962",
+    "tools\\balance\\verify_retrofit.py": "d044289253ed89444ccc13cb04fcc552fab690f3beb0817868cf373ba7f7d6a3",
+    "tools\\balance\\weapon_efficiency.py": "455a0ebd9acb3b10fe7484744afce282c777da94ce78da281e99f21efc691bb4"
+  },
+  "ledger_inputs": {
+    "ledger_sha256": {
+      "band-scope-20260911.json": "c751e78ecb932eeda1faa1db6b072d1888ec2e71a7ec152f25d51714b836ae98",
+      "building-shape-review-20260911.json": "b964fa9408bcbf5458eaf944791a665b048fe811fc1feac8973df14f512fd275",
+      "cargo-load-proposal-20260911.json": "311337fe6797963572be79300b02828508843edeeab6fa43acbcfdbba839f7bf",
+      "class_anchors.json": "7f4e57c3918472cd840c7ba8934e814ea446f56411b1645f52355d024d02b5e3",
+      "d2k_atreides.json": "48d8ed8ef876fff3964676995411827d90f0550cbb8ae6472ff0f6e7c42493e5",
+      "d2k_corrino.json": "875b54fb5cab79a12260149f381018928505cb0668f03e6bf5f588434c41efee",
+      "d2k_harkonnen.json": "ee95fedba22568adc175cfe3ed416bb1fdc8924b38c658edbf50fafb0c36c00b",
+      "d2k_ixian.json": "bd2a3823a59944acb578b407f3ced61dff3710a562166a0deab389474c020fdb",
+      "d2k_ordos.json": "d007e3c45f55bf6ceb9f1e3ab3c932c4c836e359f883f74d8a7024eeda7f445a",
+      "defense-armor-curves-20260911.json": "7a196ee55d46c04d3ebbf684f123172bfffd638fe1507fedffbe16175bd05f05",
+      "four_voice_selection_pilot_20260911.json": "a8fec8992bb6320da544ccb329810ec8f2d48809be5468d4963493cef6e9e868",
+      "four_voice_selection_pilot_aircraft_20260911.json": "2778deb4ae05a5913bd333b88148e762785ce1c1c1bdde320cdc858f7bea5ce7",
+      "four_voice_selection_pilot_infantry_20260911.json": "4a056be11792d5aa57693f27858f09a507b422e3c5405242eb01f1d53764d41b",
+      "infantry_artillery_pressure_manifest_20260911.json": "7efd84ae32b1b31bfe6cf4f552ca381b4d0118a5aab7ed4da5375d3162a80b22",
+      "redalert2_allies.json": "94ae0bad6e8ba8e77427d0bc841ef1ea344ffff145b352296197c6940a333689",
+      "redalert2_soviets.json": "ef9abc5bf3d75ae8284eddb58ab945c6714be46bc5f84a3f54f0d995c4e84383",
+      "redalert2_yuri.json": "6127bdfca22e1916b07286dc940055d984af422713448c71823f2c7c68b82a55",
+      "redalert2mod_asianalliance.json": "4413df78fa9dee435ac3aacecc3a54415f51da303dab537c413ebed951822b3e",
+      "redalert2mod_consortium.json": "226a97e0d71a8aae1c178da86fac3d956aefeeb82c7709a970a80323830c911c",
+      "redalert2mod_futuretech.json": "7f8382f7b7c9db02f1519c59503bd6670fb63348ec3793052b2ffe0a3d2116ba",
+      "redalert2mod_naxis.json": "8d0ac547a448d66e7eb027b0e3fdcf8d5cf88aa3f2752ae65cefd4437472146a",
+      "redalert2mod_schwarzermond.json": "f7d14917c3cc0f2b820f15e477460382cc9553f0e0e1a38dde09a5960f6a4551",
+      "redalert2mod_syndicate.json": "f76c71eb4cd42d6941eccdbf1bae7722a0c6fe5367f169eabddade2df9209e35",
+      "redalert2mod_tkm.json": "64a374a1355328383895a3e8525bc7f7f059337e357bbfaa229ed21456ba1c9a",
+      "redalert_allies.json": "98d91410190132858c40cba9084e1a6108ddcaae292a36a9e1e3ff63a6a06317",
+      "redalert_japan.json": "022ae9cda47e3e6b6c5ced82395755c9418019ea95137de6fcd0cb2cb88b99bb",
+      "redalert_soviets.json": "086d16a63a97674ed1605b5b8ed8fcd50325bef1cc2283910cdfab55d5494019",
+      "shared_d2k.json": "dc9ce08010fc235b87cb6c4b452179204f56c68536f5da2fe92392d280322f0b",
+      "shared_redalert.json": "de8d4adb8e6eba139e77a7e35b7d89c92a9d7fa97a5a02032407feaec891a9c6",
+      "shared_redalert2.json": "5199e7165939be0a9d1469d0f221b8e442b30760016b1296933ed28477e47c94",
+      "shared_tiberiandawn.json": "92ec8da6ccdb2c68ca4a9a05ee2366648ba1583f144b64e6885e401cbf85731f",
+      "starcraft_protoss.json": "7c61258858c410b453ae9de39aa523fbef8414b07ef378e53e8e2eed210a6313",
+      "starcraft_terran.json": "bfe370ac4d5a926eca40d502086f6f34cb0c263341b6c185a9a2c04b994559c3",
+      "starcraft_zerg.json": "fdab7ab3c98d1b0a9d364ec95fb549329a75927b60d444b9c539c7817d801a6f",
+      "tiberiandawn_gdi.json": "82f6a6395717b79bd63b2cf10be8812e0206fd1fd4584be171e1dd54700eb6cc",
+      "tiberiandawn_nod.json": "3fb8e7bcaea5ef7205c1051c1956559898709ab47da65dc1ef1d8e60a83871bd",
+      "tiberiansun_cabal.json": "4e2268013b4504aa1532a226568313c7a49397fcfb472db50614558b8046d2d1",
+      "tiberiansun_forgotten.json": "8b29a23d27bebffc5ab112f8d04377e160b92038eaa69e5794af4b4e937b8c00",
+      "tiberiansun_gdi.json": "feecbd35f77abf14bf52a60a25d928a20b919ab5f141c04c799844d9f96a0370",
+      "tiberiansun_nod.json": "ec3c8e05ff3f2f67c21af093da2ff427a4c3efdab09b0692ffcaca54cc5bbf9c",
+      "warcraft2_humans.json": "31f52b11d4b809d1af5ca579b4ffe9d9309d1ab61c261d99c6a276bd68339925",
+      "warcraft2_orcs.json": "53a0bfbec9cdde30cc25bc1cf9b0271b57091cf6d2a8c3b62ac7fda32be2932d"
+    },
+    "sidecar_sha256": {
+      "d2k_atreides.json": "24b5658277efa74d07a1d0f78f7d0e41c13ff80cc02582c2340c1298b88ff16f",
+      "d2k_corrino.json": "3b8748f4d68944e13f4caffc43b8eeb40420723551caa963f0629e219d266834",
+      "d2k_harkonnen.json": "16ea334636333c7cf57bf6dbac82d05e062091cee719148275f2632f236ea54a",
+      "d2k_ixian.json": "a48da2632b13db02601c5722492822012b50057f5f2373d7b5aed4320949256d",
+      "d2k_ordos.json": "041e3474964a6f8e4c7b2f3ce98e751413aff987b4909839e5200a8886f82261",
+      "redalert2_allies.json": "a57dd6b617c54bd780aadd206881b94363da023c3ff2da1c1bedcfc7225170fb",
+      "redalert2_soviets.json": "93f1d8c870613e77c6f7b6ef565b85d44c761615b79c773fa1abf8ea4b4e2b40",
+      "redalert2_yuri.json": "1c6827f595ce0db44bad0d7052ea4fb6113cfb6119a9e39a0abd8e8ecefcb010",
+      "redalert2mod_asianalliance.json": "0c97a91e26d7e214562a1b99d07ff4c3a9b8d2fbaba4f742875f3f1bf863c8aa",
+      "redalert2mod_consortium.json": "5c8e23b38768d1eb6656fade024f817293a397b75de92e54d80e378e0526ed1b",
+      "redalert2mod_futuretech.json": "d841376c41471fb0ebce46c21cdbe35d28e64953588eaebf2b95f1675b114fc6",
+      "redalert2mod_naxis.json": "357f392e028a7fdf9ce26ad1621761d91ba9ceee989be06d9b1c981c1391012e",
+      "redalert2mod_schwarzermond.json": "df35fc5379fc34e2fd8a951f54c072e4c29398e605ba5b2ec42e8771d9c2a5c5",
+      "redalert2mod_syndicate.json": "5b118087bf3aa6790875a91078028f54d181853eb3eb44028cee914c0744b97e",
+      "redalert2mod_tkm.json": "0e4e89ffc3afc8b8c35b74ee3443c762cffaf43487ef12bdecebddb666bb0c1d",
+      "redalert_allies.json": "bfa419933a9efa9b91f6d17f72f74b12d2b310ab4dcba7ed4c10d03d0dc2b86e",
+      "redalert_japan.json": "bde5a17323161a452be729c5fa17f4e918fdf33a5421c036ad687e3738c84002",
+      "redalert_soviets.json": "3b115b17f167f8ab62e799a99923999ab9f4221431fe3b6276454ecd441dd318",
+      "shared_d2k.json": "2893e3612a263bd99c134827e0fc8d1dcff4c8ba3f6d4d26688e3f58b75d8900",
+      "shared_redalert.json": "3fb9ba97f50d4644c96086c4f779617a50aad392a29b40258be743d9f3ae0531",
+      "shared_redalert2.json": "8580565b6b477b8819d9e3b4e6398c6d3d1b00d09ba165b3885afb524d02e6d6",
+      "shared_tiberiandawn.json": "c14608cdb9dc319c3b8bcee9f8a679e65b350743568aff2cf9826cf0489b6a05",
+      "starcraft_protoss.json": "a7f3fe9b3b8f89fc57b9b3373ed8ba9957b9373ed67c95f275ea5192171bf52b",
+      "starcraft_terran.json": "7564404079f732d2e96e7718c39015c0906b103b514b4dcb19ed81bb25273c8c",
+      "starcraft_zerg.json": "8a5f924f0038b2d337d231b93e387b6fceefbdd168f638c18db252d2e8513970",
+      "tiberiandawn_gdi.json": "6b96bd75c2ae11ca7cb9c8227ecd7c00ef844a4acf6d3da51d2be738923c0d15",
+      "tiberiandawn_nod.json": "358509a41040caab85f47c1dfed1fd6359f6f2c59be87c4fe8e54b6dc4a22df3",
+      "tiberiansun_cabal.json": "aa386ac40450f21be6208c5df652f2f430aff51d5657abae37846aacb1792797",
+      "tiberiansun_forgotten.json": "d1e06372ccf43dd013605d3661a738949b183cd1f0d73d7b153a81339827cebf",
+      "tiberiansun_gdi.json": "2063cd61dc69867b67ff7073b2159507b036a167d0d15fd0cce347984e32af98",
+      "tiberiansun_nod.json": "215f9b2ff608e62ff94cfe13a53bba901d3895fdd5dbd63acd61bc84f3a8324e",
+      "warcraft2_humans.json": "5e6341ea2830c4e21f449c39379c82807cc507c4c45b4136f1abc4dd9c623ab7",
+      "warcraft2_orcs.json": "02f486efdbda6b446c8464a10dfdd782cf41bed83c02c36efc1332211e15fc0f"
+    },
+    "assignment_sha256": "6a16ad71a1f5e1e90705370f8c5bda8e4eb32b996fa4eec00a0f327eae9cac3a"
+  },
+  "candidates": [
+    {
+      "class": "artillery",
+      "status": "UNAPPROVED",
+      "contributor_count": 3,
+      "thin": false,
+      "spec": {
+        "hp0": 30000,
+        "speed0": 58,
+        "range0_wdist": 11840,
+        "dps0": 768.0585774784531,
+        "cost0": 1000
+      },
+      "unsnapped_cost0": 958.8998089104787,
+      "baseline_identity": 1000.0,
+      "verifier_250_percent": 2500.0,
+      "warning_summary": {
+        "thin_cohort": false,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE": 1
+        },
+        "warnings": [
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.26776534019307685
+      },
+      "contributors": [
+        {
+          "actor": "ra1_allies_alliedartillery",
+          "target": {
+            "hp": 29950.16004924801,
+            "speed": 57.66653288084397,
+            "w_range": 11842.299451698764,
+            "w_dps": 768.0585774784531,
+            "cost": 981.8404562558562
+          },
+          "current": {
+            "hp": 20000.0,
+            "speed": 60.0,
+            "w_range": 13350.0,
+            "w_dps": 375.1875,
+            "cost": 600.0
+          },
+          "projected_inputs": [
+            29950.16004924801,
+            57.66653288084397,
+            11842.299451698764,
+            768.0585774784531,
+            1.0,
+            0.5,
+            1.0
+          ],
+          "template_class": "artillery",
+          "explicit_class": "artillery",
+          "explicit_class_tag": "artillery",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 375.1875,
+            "current_r4_dps": 375.1875,
+            "current_fitting_dps": 375.0,
+            "projected_dps": 768.0585774784531,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": true
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 0.9995002498750625,
+              "projected_over_frozen_r4": 2.047132640289064,
+              "current_fitting_over_current_r4": 0.9995002498750625,
+              "projected_over_current_r4": 2.047132640289064,
+              "projected_over_current_fitting": 2.0481562066092085
+            },
+            "warnings": [
+              "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+            ]
+          },
+          "warnings": [
+            "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1244.7433000405313,
+          "relative_cost_residual": 0.26776534019307685,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 1240,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "ra1_soviets_v2rocketlauncher",
+          "target": {
+            "hp": 44857.257584223946,
+            "speed": 67.20952397415887,
+            "w_range": 12625.960151845591,
+            "w_dps": 861.550413425811,
+            "cost": 1504.2089334585646
+          },
+          "current": {
+            "hp": 30000.0,
+            "speed": 85.0,
+            "w_range": 14110.0,
+            "w_dps": 1000.0,
+            "cost": 1600.0
+          },
+          "projected_inputs": [
+            44857.257584223946,
+            67.20952397415887,
+            12625.960151845591,
+            861.550413425811,
+            1.0,
+            0.5,
+            0.75
+          ],
+          "template_class": "artillery",
+          "explicit_class": "artillery",
+          "explicit_class_tag": "artillery",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 1000.0,
+            "current_r4_dps": 1000.0,
+            "current_fitting_dps": 1000.0,
+            "projected_dps": 861.550413425811,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.8615504134258111,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.8615504134258111,
+              "projected_over_current_fitting": 0.8615504134258111
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1406.787639162182,
+          "relative_cost_residual": -0.06476579957040007,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 1410,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "decrease",
+              "cost": "decrease"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_artillery",
+          "target": {
+            "hp": 28670.854439026458,
+            "speed": 54.2197094935758,
+            "w_range": 11319.508616748415,
+            "w_dps": 681.4607515760705,
+            "cost": 818.9345901410006
+          },
+          "current": {
+            "hp": 17500.0,
+            "speed": 55.0,
+            "w_range": 12345.0,
+            "w_dps": 285.7142857142857,
+            "cost": 400.0
+          },
+          "projected_inputs": [
+            28670.854439026458,
+            54.2197094935758,
+            11319.508616748415,
+            681.4607515760705,
+            1.0,
+            0.5,
+            1.0
+          ],
+          "template_class": "artillery",
+          "explicit_class": "artillery",
+          "explicit_class_tag": "artillery",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 285.7142857142857,
+            "current_r4_dps": 285.7142857142857,
+            "current_fitting_dps": 285.7142857142857,
+            "projected_dps": 681.4607515760705,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 2.3851126305162467,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 2.3851126305162467,
+              "projected_over_current_fitting": 2.3851126305162467
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 854.0356172053998,
+          "relative_cost_residual": 0.04286182008547912,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 850,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "fire_support",
+      "status": "UNAPPROVED",
+      "contributor_count": 1,
+      "thin": true,
+      "spec": {
+        "hp0": 41000,
+        "speed0": 83,
+        "range0_wdist": 10480,
+        "dps0": 582.9303815968303,
+        "cost0": 1400
+      },
+      "unsnapped_cost0": 1429.638650587427,
+      "baseline_identity": 1400.0,
+      "verifier_250_percent": 3500.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.020731567781305138
+      },
+      "contributors": [
+        {
+          "actor": "td_nod_ssmlauncher",
+          "target": {
+            "hp": 40827.479665291685,
+            "speed": 83.30319328780669,
+            "w_range": 10476.544337357802,
+            "w_dps": 582.9303815968303,
+            "cost": 1270.2207122487464
+          },
+          "current": {
+            "hp": 20000.0,
+            "speed": 100.0,
+            "w_range": 8940.0,
+            "w_dps": 400.0,
+            "cost": 800.0
+          },
+          "projected_inputs": [
+            40827.479665291685,
+            83.30319328780669,
+            10476.544337357802,
+            582.9303815968303,
+            1.0,
+            1.0,
+            0.75
+          ],
+          "template_class": "fire_support",
+          "explicit_class": "fire_support",
+          "explicit_class_tag": "fire_support",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 400.0,
+            "current_r4_dps": 400.0,
+            "current_fitting_dps": 400.0,
+            "projected_dps": 582.9303815968303,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.4573259539920758,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.4573259539920758,
+              "projected_over_current_fitting": 1.4573259539920758
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1243.8870454555438,
+          "relative_cost_residual": -0.020731567781305138,
+          "proposal_review": {
+            "disposition": "HOLD_THIN_CLASS_COHORT",
+            "candidate_formula_price_10_grid": 1240,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "grenadier",
+      "status": "UNAPPROVED",
+      "contributor_count": 2,
+      "thin": true,
+      "spec": {
+        "hp0": 14000,
+        "speed0": 73,
+        "range0_wdist": 5000,
+        "dps0": 420.25079643672586,
+        "cost0": 200
+      },
+      "unsnapped_cost0": 209.5121951412981,
+      "baseline_identity": 200.0,
+      "verifier_250_percent": 500.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.052107957354970535
+      },
+      "contributors": [
+        {
+          "actor": "ra1_soviets_grenadier",
+          "target": {
+            "hp": 13786.470554762163,
+            "speed": 72.43578592048479,
+            "w_range": 5010.8675981486585,
+            "w_dps": 356.1347525445528,
+            "cost": 237.34431903173763
+          },
+          "current": {
+            "hp": 8000.0,
+            "speed": 75.0,
+            "w_range": 5791.0,
+            "w_dps": 400.0,
+            "cost": 200.0
+          },
+          "projected_inputs": [
+            13786.470554762163,
+            72.43578592048479,
+            5010.8675981486585,
+            356.1347525445528,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "grenadier",
+          "explicit_class": "grenadier",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 400.0,
+            "current_r4_dps": 400.0,
+            "current_fitting_dps": 400.0,
+            "projected_dps": 356.1347525445528,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.890336881361382,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.890336881361382,
+              "projected_over_current_fitting": 0.890336881361382
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 224.9767913771873,
+          "relative_cost_residual": -0.052107957354970535,
+          "proposal_review": {
+            "disposition": "HOLD_THIN_CLASS_COHORT",
+            "candidate_formula_price_10_grid": 220,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_gdi_grenadier",
+          "target": {
+            "hp": 15026.778958443922,
+            "speed": 73.34660301130297,
+            "w_range": 4982.812439405734,
+            "w_dps": 484.366840328899,
+            "cost": 236.39292119805867
+          },
+          "current": {
+            "hp": 8000.0,
+            "speed": 75.0,
+            "w_range": 6097.0,
+            "w_dps": 380.95238095238096,
+            "cost": 200.0
+          },
+          "projected_inputs": [
+            15026.778958443922,
+            73.34660301130297,
+            4982.812439405734,
+            484.366840328899,
+            1.0,
+            0.4,
+            1.0
+          ],
+          "template_class": "grenadier",
+          "explicit_class": "grenadier",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 380.95238095238096,
+            "current_r4_dps": 380.95238095238096,
+            "current_fitting_dps": 380.95238095238096,
+            "projected_dps": 484.366840328899,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.27146295586336,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.27146295586336,
+              "projected_over_current_fitting": 1.27146295586336
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 227.26821782748462,
+          "relative_cost_residual": -0.038599731854614405,
+          "proposal_review": {
+            "disposition": "HOLD_THIN_CLASS_COHORT",
+            "candidate_formula_price_10_grid": 230,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "heavy_infantry",
+      "status": "UNAPPROVED",
+      "contributor_count": 1,
+      "thin": true,
+      "spec": {
+        "hp0": 31000,
+        "speed0": 48,
+        "range0_wdist": 5970,
+        "dps0": 357.89951117705897,
+        "cost0": 800
+      },
+      "unsnapped_cost0": 827.5460031884544,
+      "baseline_identity": 800.0,
+      "verifier_250_percent": 2000.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE": 1,
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE",
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.033286370887325
+      },
+      "contributors": [
+        {
+          "actor": "ra1_soviets_shocktrooper",
+          "target": {
+            "hp": 30549.140575124256,
+            "speed": 47.83045459121722,
+            "w_range": 5972.536494198937,
+            "w_dps": 357.89951117705897,
+            "cost": 703.901866906775
+          },
+          "current": {
+            "hp": 40000.0,
+            "speed": 40.0,
+            "w_range": 4652.0,
+            "w_dps": 750.0,
+            "cost": 600.0
+          },
+          "projected_inputs": [
+            30549.140575124256,
+            47.83045459121722,
+            5972.536494198937,
+            357.89951117705897,
+            1.25,
+            0.8,
+            0.75
+          ],
+          "template_class": "heavy_infantry",
+          "explicit_class": "heavy_infantry",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 750.0,
+            "current_r4_dps": 750.0,
+            "current_fitting_dps": 500.0,
+            "projected_dps": 357.89951117705897,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": true
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 0.6666666666666666,
+              "projected_over_frozen_r4": 0.4771993482360786,
+              "current_fitting_over_current_r4": 0.6666666666666666,
+              "projected_over_current_r4": 0.4771993482360786,
+              "projected_over_current_fitting": 0.715799022354118
+            },
+            "warnings": [
+              "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+            ]
+          },
+          "warnings": [
+            "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 680.4715282966356,
+          "relative_cost_residual": -0.033286370887325,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 680,
+            "direction": {
+              "hp": "decrease",
+              "speed": "increase",
+              "w_range": "increase",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "high_tech_tank",
+      "status": "UNAPPROVED",
+      "contributor_count": 2,
+      "thin": true,
+      "spec": {
+        "hp0": 291000,
+        "speed0": 46,
+        "range0_wdist": 5450,
+        "dps0": 742.6277224637081,
+        "cost0": 3800
+      },
+      "unsnapped_cost0": 3841.708758843556,
+      "baseline_identity": 3800.0,
+      "verifier_250_percent": 9500.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE": 1,
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE",
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.1057386790897148
+      },
+      "contributors": [
+        {
+          "actor": "ra1_soviets_mammothtank",
+          "target": {
+            "hp": 301654.0680415065,
+            "speed": 43.96729293234556,
+            "w_range": 5565.829445166551,
+            "w_dps": 790.6395399195809,
+            "cost": 2732.874220002937
+          },
+          "current": {
+            "hp": 375000.0,
+            "speed": 50.0,
+            "w_range": 6412.0,
+            "w_dps": 932.2718446601941,
+            "cost": 2000.0
+          },
+          "projected_inputs": [
+            301654.0680415065,
+            43.96729293234556,
+            5565.829445166551,
+            790.6395399195809,
+            1.0,
+            1.0,
+            0.4925
+          ],
+          "template_class": "high_tech_tank",
+          "explicit_class": "high_tech_tank",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 932.2718446601941,
+            "current_r4_dps": 932.2718446601941,
+            "current_fitting_dps": 932.0388349514564,
+            "projected_dps": 790.6395399195809,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": true
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 0.999750062484379,
+              "projected_over_frozen_r4": 0.8480783201253523,
+              "current_fitting_over_current_r4": 0.999750062484379,
+              "projected_over_current_r4": 0.8480783201253523,
+              "projected_over_current_fitting": 0.8482903397053836
+            },
+            "warnings": [
+              "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+            ]
+          },
+          "warnings": [
+            "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 2445.3517974683095,
+          "relative_cost_residual": -0.10520880193831916,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 2450,
+            "direction": {
+              "hp": "decrease",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_gdi_mammothtank",
+          "target": {
+            "hp": 280061.3655972067,
+            "speed": 48.73343256326167,
+            "w_range": 5341.399078159843,
+            "w_dps": 694.6159050078354,
+            "cost": 2480.50274585367
+          },
+          "current": {
+            "hp": 225000.0,
+            "speed": 60.0,
+            "w_range": 6141.0,
+            "w_dps": 400.0,
+            "cost": 1600.0
+          },
+          "projected_inputs": [
+            280061.3655972067,
+            48.73343256326167,
+            5341.399078159843,
+            694.6159050078354,
+            1.0,
+            1.0,
+            0.75
+          ],
+          "template_class": "high_tech_tank",
+          "explicit_class": "high_tech_tank",
+          "explicit_class_tag": "high_tech_tank",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 400.0,
+            "current_r4_dps": 400.0,
+            "current_fitting_dps": 400.0,
+            "projected_dps": 694.6159050078354,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.7365397625195884,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.7365397625195884,
+              "projected_over_current_fitting": 1.7365397625195884
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 2742.787829678648,
+          "relative_cost_residual": 0.1057386790897148,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 2740,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "light_tank",
+      "status": "UNAPPROVED",
+      "contributor_count": 2,
+      "thin": true,
+      "spec": {
+        "hp0": 93000,
+        "speed0": 100,
+        "range0_wdist": 4820,
+        "dps0": 406.61139296760496,
+        "cost0": 1000
+      },
+      "unsnapped_cost0": 971.5681101172065,
+      "baseline_identity": 1000.0,
+      "verifier_250_percent": 2500.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE": 1,
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE": 1,
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE",
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE",
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.13210707436681712
+      },
+      "contributors": [
+        {
+          "actor": "ra1_allies_alliedlighttank",
+          "target": {
+            "hp": 75293.83213161024,
+            "speed": 111.32924732247714,
+            "w_range": 4922.170077964247,
+            "w_dps": 471.3240098744687,
+            "cost": 923.1368428745097
+          },
+          "current": {
+            "hp": 50000.0,
+            "speed": 120.0,
+            "w_range": 4720.0,
+            "w_dps": 162.2972972972973,
+            "cost": 500.0
+          },
+          "projected_inputs": [
+            75293.83213161024,
+            111.32924732247714,
+            4922.170077964247,
+            471.3240098744687,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "light_tank",
+          "explicit_class": "light_tank",
+          "explicit_class_tag": "light_tank",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 324.4594594594595,
+            "current_r4_dps": 162.2972972972973,
+            "current_fitting_dps": 162.16216216216216,
+            "projected_dps": 471.3240098744687,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": true,
+              "current_r4_vs_current_fitting": true
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 0.5002082465639316,
+              "current_fitting_over_frozen_r4": 0.49979175343606824,
+              "projected_over_frozen_r4": 1.4526437622120234,
+              "current_fitting_over_current_r4": 0.9991673605328892,
+              "projected_over_current_r4": 2.904077995895977,
+              "projected_over_current_fitting": 2.906498060892557
+            },
+            "warnings": [
+              "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE",
+              "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+            ]
+          },
+          "warnings": [
+            "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE",
+            "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1045.0897504268814,
+          "relative_cost_residual": 0.13210707436681712,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 1050,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_lighttank",
+          "target": {
+            "hp": 110354.36499629969,
+            "speed": 88.8415345698954,
+            "w_range": 4720.897328761506,
+            "w_dps": 341.8987760607413,
+            "cost": 982.4261922345016
+          },
+          "current": {
+            "hp": 80000.0,
+            "speed": 110.0,
+            "w_range": 4993.0,
+            "w_dps": 133.33333333333334,
+            "cost": 600.0
+          },
+          "projected_inputs": [
+            110354.36499629969,
+            88.8415345698954,
+            4720.897328761506,
+            341.8987760607413,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "light_tank",
+          "explicit_class": "light_tank",
+          "explicit_class_tag": "light_tank",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 133.33333333333334,
+            "current_r4_dps": 133.33333333333334,
+            "current_fitting_dps": 133.33333333333334,
+            "projected_dps": 341.8987760607413,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 2.5642408204555593,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 2.5642408204555593,
+              "projected_over_current_fitting": 2.5642408204555593
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 926.9679739895638,
+          "relative_cost_residual": -0.05645026433873834,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 930,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "line_breaker",
+      "status": "UNAPPROVED",
+      "contributor_count": 1,
+      "thin": true,
+      "spec": {
+        "hp0": 119000,
+        "speed0": 83,
+        "range0_wdist": 2560,
+        "dps0": 1187.0846645927545,
+        "cost0": 900
+      },
+      "unsnapped_cost0": 880.5077156506602,
+      "baseline_identity": 900.0,
+      "verifier_250_percent": 2250.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.022137550873061462
+      },
+      "contributors": [
+        {
+          "actor": "td_nod_flametank",
+          "target": {
+            "hp": 119258.75447159087,
+            "speed": 83.08546711966488,
+            "w_range": 2563.3241071452544,
+            "w_dps": 1187.0846645927545,
+            "cost": 1103.5282465163775
+          },
+          "current": {
+            "hp": 100000.0,
+            "speed": 80.0,
+            "w_range": 2390.0,
+            "w_dps": 466.6666666666667,
+            "cost": 800.0
+          },
+          "projected_inputs": [
+            119258.75447159087,
+            83.08546711966488,
+            2563.3241071452544,
+            1187.0846645927545,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "line_breaker",
+          "explicit_class": "line_breaker",
+          "explicit_class_tag": "line_breaker",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 466.6666666666667,
+            "current_r4_dps": 466.6666666666667,
+            "current_fitting_dps": 466.6666666666667,
+            "projected_dps": 1187.0846645927545,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 2.5437528526987596,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 2.5437528526987596,
+              "projected_over_current_fitting": 2.5437528526987596
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1127.9576592134943,
+          "relative_cost_residual": 0.022137550873061462,
+          "proposal_review": {
+            "disposition": "HOLD_THIN_CLASS_COHORT",
+            "candidate_formula_price_10_grid": 1130,
+            "direction": {
+              "hp": "increase",
+              "speed": "increase",
+              "w_range": "increase",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "mbt",
+      "status": "UNAPPROVED",
+      "contributor_count": 3,
+      "thin": false,
+      "spec": {
+        "hp0": 151000,
+        "speed0": 74,
+        "range0_wdist": 5180,
+        "dps0": 412.43242845760835,
+        "cost0": 1300
+      },
+      "unsnapped_cost0": 1303.9821956003095,
+      "baseline_identity": 1300.0,
+      "verifier_250_percent": 3250.0,
+      "warning_summary": {
+        "thin_cohort": false,
+        "thin_threshold": 3,
+        "warning_counts": {},
+        "warnings": [],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.19482391202610527
+      },
+      "contributors": [
+        {
+          "actor": "ra1_allies_alliedmediumtank",
+          "target": {
+            "hp": 127417.37123332603,
+            "speed": 81.10099291968974,
+            "w_range": 5143.089649530464,
+            "w_dps": 323.61511492604984,
+            "cost": 1134.1431209085406
+          },
+          "current": {
+            "hp": 90000.0,
+            "speed": 100.0,
+            "w_range": 5159.0,
+            "w_dps": 170.2127659574468,
+            "cost": 700.0
+          },
+          "projected_inputs": [
+            127417.37123332603,
+            81.10099291968974,
+            5143.089649530464,
+            323.61511492604984,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "mbt",
+          "explicit_class": "mbt",
+          "explicit_class_tag": "mbt",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 170.2127659574468,
+            "current_r4_dps": 170.2127659574468,
+            "current_fitting_dps": 170.2127659574468,
+            "projected_dps": 323.61511492604984,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.901238800190543,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.901238800190543,
+              "projected_over_current_fitting": 1.901238800190543
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1355.1013205214385,
+          "relative_cost_residual": 0.19482391202610527,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 1360,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "same",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "ra1_soviets_heavytank",
+          "target": {
+            "hp": 171659.6791790241,
+            "speed": 65.56537416179705,
+            "w_range": 5218.668295463199,
+            "w_dps": 491.48540564826254,
+            "cost": 1561.3393854601595
+          },
+          "current": {
+            "hp": 150000.0,
+            "speed": 70.0,
+            "w_range": 5469.0,
+            "w_dps": 246.91358024691357,
+            "cost": 1000.0
+          },
+          "projected_inputs": [
+            171659.6791790241,
+            65.56537416179705,
+            5218.668295463199,
+            491.48540564826254,
+            1.0,
+            1.0,
+            0.8919
+          ],
+          "template_class": "mbt",
+          "explicit_class": "mbt",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 246.91358024691357,
+            "current_r4_dps": 246.91358024691357,
+            "current_fitting_dps": 246.91358024691357,
+            "projected_dps": 491.48540564826254,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.9905158928754634,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.9905158928754634,
+              "projected_over_current_fitting": 1.9905158928754634
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1543.1762080239218,
+          "relative_cost_residual": -0.011633074529074694,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 1540,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_gdi_battletank",
+          "target": {
+            "hp": 151133.05206307658,
+            "speed": 74.0260784209717,
+            "w_range": 5181.4946443277195,
+            "w_dps": 412.43242845760835,
+            "cost": 1305.1403416165458
+          },
+          "current": {
+            "hp": 125000.0,
+            "speed": 80.0,
+            "w_range": 5438.0,
+            "w_dps": 222.22222222222223,
+            "cost": 900.0
+          },
+          "projected_inputs": [
+            151133.05206307658,
+            74.0260784209717,
+            5181.4946443277195,
+            412.43242845760835,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "mbt",
+          "explicit_class": "mbt",
+          "explicit_class_tag": "mbt",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 222.22222222222223,
+            "current_r4_dps": 222.22222222222223,
+            "current_fitting_dps": 222.22222222222223,
+            "projected_dps": 412.43242845760835,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.8559459280592376,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.8559459280592376,
+              "projected_over_current_fitting": 1.8559459280592376
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1301.1546091857595,
+          "relative_cost_residual": -0.0030538726784351544,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 1300,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "melee",
+      "status": "UNAPPROVED",
+      "contributor_count": 2,
+      "thin": true,
+      "spec": {
+        "hp0": 42000,
+        "speed0": 62,
+        "range0_wdist": 2690,
+        "dps0": 710.507608977801,
+        "cost0": 400
+      },
+      "unsnapped_cost0": 413.0224970904668,
+      "baseline_identity": 400.0,
+      "verifier_250_percent": 1000.0,
+      "warning_summary": {
+        "thin_cohort": true,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "THIN_COHORT": 1
+        },
+        "warnings": [
+          "THIN_COHORT"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.16645743338184793
+      },
+      "contributors": [
+        {
+          "actor": "td_nod_chemicalwarrior",
+          "target": {
+            "hp": 56188.90427890027,
+            "speed": 58.35370367598619,
+            "w_range": 2851.2859884896075,
+            "w_dps": 939.1070191015315,
+            "cost": 603.8991884145534
+          },
+          "current": {
+            "hp": 48000.0,
+            "speed": 48.0,
+            "w_range": 3414.0,
+            "w_dps": 1000.0,
+            "cost": 500.0
+          },
+          "projected_inputs": [
+            56188.90427890027,
+            58.35370367598619,
+            2851.2859884896075,
+            939.1070191015315,
+            1.0,
+            0.75,
+            0.75
+          ],
+          "template_class": "melee",
+          "explicit_class": "melee",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 1000.0,
+            "current_r4_dps": 1000.0,
+            "current_fitting_dps": 1000.0,
+            "projected_dps": 939.1070191015315,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.9391070191015315,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.9391070191015315,
+              "projected_over_current_fitting": 0.9391070191015315
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 503.3756794896858,
+          "relative_cost_residual": -0.16645743338184793,
+          "proposal_review": {
+            "disposition": "HOLD_THIN_CLASS_COHORT",
+            "candidate_formula_price_10_grid": 500,
+            "direction": {
+              "hp": "increase",
+              "speed": "increase",
+              "w_range": "decrease",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_flamethrower",
+          "target": {
+            "hp": 28558.778230514486,
+            "speed": 65.19707740048538,
+            "w_range": 2520.5853952811653,
+            "w_dps": 481.9081988540707,
+            "cost": 283.62883875478946
+          },
+          "current": {
+            "hp": 20000.0,
+            "speed": 60.0,
+            "w_range": 2085.0,
+            "w_dps": 333.3333333333333,
+            "cost": 200.0
+          },
+          "projected_inputs": [
+            28558.778230514486,
+            65.19707740048538,
+            2520.5853952811653,
+            481.9081988540707,
+            1.0,
+            0.75,
+            1.0
+          ],
+          "template_class": "melee",
+          "explicit_class": "melee",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 333.3333333333333,
+            "current_r4_dps": 333.3333333333333,
+            "current_fitting_dps": 333.3333333333333,
+            "projected_dps": 481.9081988540707,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.445724596562212,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.445724596562212,
+              "projected_over_current_fitting": 1.445724596562212
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 327.7378632550065,
+          "relative_cost_residual": 0.15551671224219699,
+          "proposal_review": {
+            "disposition": "HOLD_THIN_CLASS_COHORT",
+            "candidate_formula_price_10_grid": 330,
+            "direction": {
+              "hp": "increase",
+              "speed": "increase",
+              "w_range": "increase",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "missile_vehicle",
+      "status": "UNAPPROVED",
+      "contributor_count": 3,
+      "thin": false,
+      "spec": {
+        "hp0": 43000,
+        "speed0": 131,
+        "range0_wdist": 6110,
+        "dps0": 686.3522898260999,
+        "cost0": 1300
+      },
+      "unsnapped_cost0": 1346.6089099893748,
+      "baseline_identity": 1300.0,
+      "verifier_250_percent": 3250.0,
+      "warning_summary": {
+        "thin_cohort": false,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE": 1
+        },
+        "warnings": [
+          "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.6280785543032532
+      },
+      "contributors": [
+        {
+          "actor": "td_gdi_mlrs",
+          "target": {
+            "hp": 43881.56330236756,
+            "speed": 74.0260784209717,
+            "w_range": 10021.575289783195,
+            "w_dps": 686.3522898260999,
+            "cost": 1396.3098738080068
+          },
+          "current": {
+            "hp": 25000.0,
+            "speed": 80.0,
+            "w_range": 9920.0,
+            "w_dps": 352.94117647058823,
+            "cost": 1000.0
+          },
+          "projected_inputs": [
+            43881.56330236756,
+            74.0260784209717,
+            10021.575289783195,
+            686.3522898260999,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "missile_vehicle",
+          "explicit_class": "missile_vehicle",
+          "explicit_class_tag": "missile_vehicle",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 352.94117647058823,
+            "current_r4_dps": 352.94117647058823,
+            "current_fitting_dps": 352.94117647058823,
+            "projected_dps": 686.3522898260999,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.9446648211739497,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.9446648211739497,
+              "projected_over_current_fitting": 1.9446648211739497
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1347.98071101782,
+          "relative_cost_residual": -0.03461206118838345,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 1350,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_reconbike",
+          "target": {
+            "hp": 34989.580881998954,
+            "speed": 183.8894996260539,
+            "w_range": 5404.102432827541,
+            "w_dps": 516.7404573971493,
+            "cost": 736.3822195645574
+          },
+          "current": {
+            "hp": 17500.0,
+            "speed": 200.0,
+            "w_range": 6000.0,
+            "w_dps": 492.55384615384617,
+            "cost": 500.0
+          },
+          "projected_inputs": [
+            34989.580881998954,
+            183.8894996260539,
+            5404.102432827541,
+            516.7404573971493,
+            1.0,
+            0.5,
+            1.0
+          ],
+          "template_class": "missile_vehicle",
+          "explicit_class": "missile_vehicle",
+          "explicit_class_tag": "missile_vehicle",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 492.55384615384617,
+            "current_r4_dps": 492.55384615384617,
+            "current_fitting_dps": 492.3076923076923,
+            "projected_dps": 516.7404573971493,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": true
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 0.9995002498750625,
+              "projected_over_frozen_r4": 1.0491045018370408,
+              "current_fitting_over_current_r4": 0.9995002498750625,
+              "projected_over_current_r4": 1.0491045018370408,
+              "projected_over_current_fitting": 1.0496290540879594
+            },
+            "warnings": [
+              "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+            ]
+          },
+          "warnings": [
+            "R4_VS_FITTING_MISMATCH_NOT_DIRECTLY_COMPARABLE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 1138.9641849704972,
+          "relative_cost_residual": 0.5467024524899546,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 1140,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_stealthtank",
+          "target": {
+            "hp": 43311.046588796686,
+            "speed": 131.32666116612702,
+            "w_range": 6109.563876689811,
+            "w_dps": 711.410044081409,
+            "cost": 1393.6108027082366
+          },
+          "current": {
+            "hp": 25000.0,
+            "speed": 150.0,
+            "w_range": 7432.0,
+            "w_dps": 363.6363636363636,
+            "cost": 900.0
+          },
+          "projected_inputs": [
+            43311.046588796686,
+            131.32666116612702,
+            6109.563876689811,
+            711.410044081409,
+            1.0,
+            1.0,
+            0.3882
+          ],
+          "template_class": "missile_vehicle",
+          "explicit_class": "missile_vehicle",
+          "explicit_class_tag": "missile_vehicle",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 363.6363636363636,
+            "current_r4_dps": 363.6363636363636,
+            "current_fitting_dps": 363.6363636363636,
+            "projected_dps": 711.410044081409,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.9563776212238746,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.9563776212238746,
+              "projected_over_current_fitting": 1.9563776212238746
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 518.3137444818511,
+          "relative_cost_residual": -0.6280785543032532,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_DPS_METRIC_BASIS",
+            "candidate_formula_price_10_grid": 520,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "rocket_trooper",
+      "status": "UNAPPROVED",
+      "contributor_count": 4,
+      "thin": false,
+      "spec": {
+        "hp0": 14000,
+        "speed0": 48,
+        "range0_wdist": 7000,
+        "dps0": 271.8153161179173,
+        "cost0": 400
+      },
+      "unsnapped_cost0": 432.8117187670348,
+      "baseline_identity": 400.0,
+      "verifier_250_percent": 1000.0,
+      "warning_summary": {
+        "thin_cohort": false,
+        "thin_threshold": 3,
+        "warning_counts": {},
+        "warnings": [],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.16011366526325443
+      },
+      "contributors": [
+        {
+          "actor": "ra1_soviets_rocketsoldier",
+          "target": {
+            "hp": 13854.369482094102,
+            "speed": 50.2494839840462,
+            "w_range": 7252.9159613486845,
+            "w_dps": 258.61285829021455,
+            "cost": 436.474948195608
+          },
+          "current": {
+            "hp": 10000.0,
+            "speed": 55.0,
+            "w_range": 6643.0,
+            "w_dps": 400.0,
+            "cost": 300.0
+          },
+          "projected_inputs": [
+            13854.369482094102,
+            50.2494839840462,
+            7252.9159613486845,
+            258.61285829021455,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "rocket_trooper",
+          "explicit_class": "rocket_trooper",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 400.0,
+            "current_r4_dps": 400.0,
+            "current_fitting_dps": 400.0,
+            "projected_dps": 258.61285829021455,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.6465321457255364,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.6465321457255364,
+              "projected_over_current_fitting": 0.6465321457255364
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 405.08844155743674,
+          "relative_cost_residual": -0.07190906778939643,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 410,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "ra1_allies_alliedrocketsoldier",
+          "target": {
+            "hp": 13854.369482094102,
+            "speed": 50.2494839840462,
+            "w_range": 7252.9159613486845,
+            "w_dps": 258.61285829021455,
+            "cost": 436.474948195608
+          },
+          "current": {
+            "hp": 10000.0,
+            "speed": 55.0,
+            "w_range": 6643.0,
+            "w_dps": 400.0,
+            "cost": 300.0
+          },
+          "projected_inputs": [
+            13854.369482094102,
+            50.2494839840462,
+            7252.9159613486845,
+            258.61285829021455,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "rocket_trooper",
+          "explicit_class": "rocket_trooper",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 400.0,
+            "current_r4_dps": 400.0,
+            "current_fitting_dps": 400.0,
+            "projected_dps": 258.61285829021455,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.6465321457255364,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.6465321457255364,
+              "projected_over_current_fitting": 0.6465321457255364
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 506.3605519467959,
+          "relative_cost_residual": 0.16011366526325443,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 510,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_gdi_rocketsoldier",
+          "target": {
+            "hp": 14581.446610135958,
+            "speed": 45.33330322872981,
+            "w_range": 6742.685082673848,
+            "w_dps": 285.01777394562,
+            "cost": 433.1571806277039
+          },
+          "current": {
+            "hp": 9000.0,
+            "speed": 50.0,
+            "w_range": 6368.0,
+            "w_dps": 285.7142857142857,
+            "cost": 300.0
+          },
+          "projected_inputs": [
+            14581.446610135958,
+            45.33330322872981,
+            6742.685082673848,
+            285.01777394562,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "rocket_trooper",
+          "explicit_class": "rocket_trooper",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 285.7142857142857,
+            "current_r4_dps": 285.7142857142857,
+            "current_fitting_dps": 285.7142857142857,
+            "projected_dps": 285.01777394562,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.99756220880967,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.99756220880967,
+              "projected_over_current_fitting": 0.99756220880967
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 398.64344211034694,
+          "relative_cost_residual": -0.07967947909195883,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 400,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "same",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_rocketsoldier",
+          "target": {
+            "hp": 14581.446610135958,
+            "speed": 45.33330322872981,
+            "w_range": 6742.685082673848,
+            "w_dps": 285.01777394562,
+            "cost": 433.1571806277039
+          },
+          "current": {
+            "hp": 9000.0,
+            "speed": 50.0,
+            "w_range": 6368.0,
+            "w_dps": 285.7142857142857,
+            "cost": 300.0
+          },
+          "projected_inputs": [
+            14581.446610135958,
+            45.33330322872981,
+            6742.685082673848,
+            285.01777394562,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "rocket_trooper",
+          "explicit_class": "rocket_trooper",
+          "explicit_class_tag": null,
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 285.7142857142857,
+            "current_r4_dps": 285.7142857142857,
+            "current_fitting_dps": 285.7142857142857,
+            "projected_dps": 285.01777394562,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.99756220880967,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.99756220880967,
+              "projected_over_current_fitting": 0.99756220880967
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 398.64344211034694,
+          "relative_cost_residual": -0.07967947909195883,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 400,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "increase",
+              "w_dps": "same",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "scout",
+      "status": "UNAPPROVED",
+      "contributor_count": 4,
+      "thin": false,
+      "spec": {
+        "hp0": 22000,
+        "speed0": 57,
+        "range0_wdist": 4450,
+        "dps0": 220.79089171079528,
+        "cost0": 100
+      },
+      "unsnapped_cost0": 122.80656534962755,
+      "baseline_identity": 100.0,
+      "verifier_250_percent": 250.0,
+      "warning_summary": {
+        "thin_cohort": false,
+        "thin_threshold": 3,
+        "warning_counts": {
+          "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE": 4
+        },
+        "warnings": [
+          "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+        ],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.19792601136563281
+      },
+      "contributors": [
+        {
+          "actor": "ra1_soviets_rifleinfantry",
+          "target": {
+            "hp": 21063.600160054517,
+            "speed": 55.407253968371634,
+            "w_range": 4547.080499501069,
+            "w_dps": 188.6878293694614,
+            "cost": 138.2661691656533
+          },
+          "current": {
+            "hp": 34000.0,
+            "speed": 54.0,
+            "w_range": 4668.0,
+            "w_dps": 42.0,
+            "cost": 100.0
+          },
+          "projected_inputs": [
+            21063.600160054517,
+            55.407253968371634,
+            4547.080499501069,
+            188.6878293694614,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "scout",
+          "explicit_class": "scout",
+          "explicit_class_tag": "scout",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 100.0,
+            "current_r4_dps": 42.0,
+            "current_fitting_dps": 42.0,
+            "projected_dps": 188.6878293694614,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": true,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 0.42,
+              "current_fitting_over_frozen_r4": 0.42,
+              "projected_over_frozen_r4": 1.886878293694614,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 4.492567365939557,
+              "projected_over_current_fitting": 4.492567365939557
+            },
+            "warnings": [
+              "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+            ]
+          },
+          "warnings": [
+            "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 111.08971390825253,
+          "relative_cost_residual": -0.19655173366987067,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 110,
+            "direction": {
+              "hp": "decrease",
+              "speed": "increase",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "ra1_allies_rifleinfantry",
+          "target": {
+            "hp": 19884.002723738515,
+            "speed": 55.66200667981384,
+            "w_range": 4737.405973885378,
+            "w_dps": 190.2938280362725,
+            "cost": 138.2661691656533
+          },
+          "current": {
+            "hp": 27000.0,
+            "speed": 55.0,
+            "w_range": 5500.0,
+            "w_dps": 48.62068965517241,
+            "cost": 100.0
+          },
+          "projected_inputs": [
+            19884.002723738515,
+            55.66200667981384,
+            4737.405973885378,
+            190.2938280362725,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "scout",
+          "explicit_class": "scout",
+          "explicit_class_tag": "scout",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 103.44827586206897,
+            "current_r4_dps": 48.62068965517241,
+            "current_fitting_dps": 48.62068965517241,
+            "projected_dps": 190.2938280362725,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": true,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 0.47,
+              "current_fitting_over_frozen_r4": 0.47,
+              "projected_over_frozen_r4": 1.839507004350634,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 3.913844690107732,
+              "projected_over_current_fitting": 3.913844690107732
+            },
+            "warnings": [
+              "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+            ]
+          },
+          "warnings": [
+            "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 110.89969779588971,
+          "relative_cost_residual": -0.19792601136563281,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 110,
+            "direction": {
+              "hp": "decrease",
+              "speed": "increase",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_gdi_minigunner",
+          "target": {
+            "hp": 22377.132835884368,
+            "speed": 58.392818075452745,
+            "w_range": 4353.206715065258,
+            "w_dps": 251.28795538531807,
+            "cost": 132.34789475681396
+          },
+          "current": {
+            "hp": 31000.0,
+            "speed": 63.0,
+            "w_range": 5499.0,
+            "w_dps": 32.54237288135593,
+            "cost": 100.0
+          },
+          "projected_inputs": [
+            22377.132835884368,
+            58.392818075452745,
+            4353.206715065258,
+            251.28795538531807,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "scout",
+          "explicit_class": "scout",
+          "explicit_class_tag": "scout",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 135.59322033898306,
+            "current_r4_dps": 32.54237288135593,
+            "current_fitting_dps": 32.54237288135593,
+            "projected_dps": 251.28795538531807,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": true,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 0.23999999999999996,
+              "current_fitting_over_frozen_r4": 0.23999999999999996,
+              "projected_over_frozen_r4": 1.8532486709667206,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 7.721869462361337,
+              "projected_over_current_fitting": 7.721869462361337
+            },
+            "warnings": [
+              "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+            ]
+          },
+          "warnings": [
+            "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 109.24335196444481,
+          "relative_cost_residual": -0.17457431291085646,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 110,
+            "direction": {
+              "hp": "decrease",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_minigunner",
+          "target": {
+            "hp": 22194.447082837793,
+            "speed": 59.07589114999168,
+            "w_range": 4165.240068486046,
+            "w_dps": 254.58784730110193,
+            "cost": 132.34789475681396
+          },
+          "current": {
+            "hp": 30000.0,
+            "speed": 66.0,
+            "w_range": 4609.0,
+            "w_dps": 41.42857142857143,
+            "cost": 100.0
+          },
+          "projected_inputs": [
+            22194.447082837793,
+            59.07589114999168,
+            4165.240068486046,
+            254.58784730110193,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "template_class": "scout",
+          "explicit_class": "scout",
+          "explicit_class_tag": "scout",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 142.85714285714286,
+            "current_r4_dps": 41.42857142857143,
+            "current_fitting_dps": 41.42857142857143,
+            "projected_dps": 254.58784730110193,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": true,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 0.29,
+              "current_fitting_over_frozen_r4": 0.29,
+              "projected_over_frozen_r4": 1.7821149311077136,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 6.145223900371426,
+              "projected_over_current_fitting": 6.145223900371426
+            },
+            "warnings": [
+              "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+            ]
+          },
+          "warnings": [
+            "CURRENT_R4_DIFFERS_FROM_FROZEN_R4_MAY_REFLECT_AUTHORIZED_FP_BAKE"
+          ],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 134.35403503222906,
+          "relative_cost_residual": 0.015158082258137417,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 130,
+            "direction": {
+              "hp": "decrease",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    },
+    {
+      "class": "scout_vehicle",
+      "status": "UNAPPROVED",
+      "contributor_count": 3,
+      "thin": false,
+      "spec": {
+        "hp0": 40000,
+        "speed0": 157,
+        "range0_wdist": 4290,
+        "dps0": 615.4429863985974,
+        "cost0": 500
+      },
+      "unsnapped_cost0": 520.0302899702573,
+      "baseline_identity": 500.0,
+      "verifier_250_percent": 1250.0,
+      "warning_summary": {
+        "thin_cohort": false,
+        "thin_threshold": 3,
+        "warning_counts": {},
+        "warnings": [],
+        "explicit_template_disagreements": 0,
+        "max_abs_cost_residual": 0.3190074684724795
+      },
+      "contributors": [
+        {
+          "actor": "ra1_allies_ranger",
+          "target": {
+            "hp": 39553.911971035384,
+            "speed": 156.52128062537562,
+            "w_range": 4278.339009424486,
+            "w_dps": 526.8879176312846,
+            "cost": 562.4790444402472
+          },
+          "current": {
+            "hp": 22500.0,
+            "speed": 175.0,
+            "w_range": 4359.0,
+            "w_dps": 640.0,
+            "cost": 300.0
+          },
+          "projected_inputs": [
+            39553.911971035384,
+            156.52128062537562,
+            4278.339009424486,
+            526.8879176312846,
+            1.0,
+            1.0,
+            0.8919
+          ],
+          "template_class": "scout_vehicle",
+          "explicit_class": "scout_vehicle",
+          "explicit_class_tag": "scout_vehicle",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 640.0,
+            "current_r4_dps": 640.0,
+            "current_fitting_dps": 640.0,
+            "projected_dps": 526.8879176312846,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.8232623712988822,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.8232623712988822,
+              "projected_over_current_fitting": 0.8232623712988822
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 505.65069477485395,
+          "relative_cost_residual": -0.10103194106003743,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 510,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_gdi_humvee",
+          "target": {
+            "hp": 45467.42538511585,
+            "speed": 143.88673874622722,
+            "w_range": 4348.730921476708,
+            "w_dps": 707.5014468257026,
+            "cost": 584.4456348818836
+          },
+          "current": {
+            "hp": 27500.0,
+            "speed": 150.0,
+            "w_range": 4792.0,
+            "w_dps": 857.1428571428571,
+            "cost": 400.0
+          },
+          "projected_inputs": [
+            45467.42538511585,
+            143.88673874622722,
+            4348.730921476708,
+            707.5014468257026,
+            1.0,
+            0.333,
+            1.0
+          ],
+          "template_class": "scout_vehicle",
+          "explicit_class": "scout_vehicle",
+          "explicit_class_tag": "scout_vehicle",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 857.1428571428571,
+            "current_r4_dps": 857.1428571428571,
+            "current_fitting_dps": 857.1428571428571,
+            "projected_dps": 707.5014468257026,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 0.8254183546299864,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 0.8254183546299864,
+              "projected_over_current_fitting": 0.8254183546299864
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 561.9342239807901,
+          "relative_cost_residual": -0.03851754475956193,
+          "proposal_review": {
+            "disposition": "REVIEWABLE_NO_AUTOMATIC_WRITE",
+            "candidate_formula_price_10_grid": 560,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "decrease",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        },
+        {
+          "actor": "td_nod_buggy",
+          "target": {
+            "hp": 35651.353410725926,
+            "speed": 160.93594500940608,
+            "w_range": 4290.395192479699,
+            "w_dps": 615.4429863985974,
+            "cost": 450.0991285461982
+          },
+          "current": {
+            "hp": 20000.0,
+            "speed": 200.0,
+            "w_range": 4540.0,
+            "w_dps": 600.0,
+            "cost": 300.0
+          },
+          "projected_inputs": [
+            35651.353410725926,
+            160.93594500940608,
+            4290.395192479699,
+            615.4429863985974,
+            1.0,
+            0.333,
+            1.0
+          ],
+          "template_class": "scout_vehicle",
+          "explicit_class": "scout_vehicle",
+          "explicit_class_tag": "scout_vehicle",
+          "external_source_counts": {
+            "hp": 3,
+            "speed": 3,
+            "w_range": 3,
+            "w_dps": 3,
+            "cost": 3
+          },
+          "dps_diagnostics": {
+            "frozen_r4_dps": 600.0,
+            "current_r4_dps": 600.0,
+            "current_fitting_dps": 600.0,
+            "projected_dps": 615.4429863985974,
+            "basis_warning": "UNAPPROVED cross-metric DPS comparison: R4 armament_profile sums positive damage warheads over baseline armaments with burst/cycle; current fitting uses the main-channel reducer. Values and ratios are diagnostic only and are not directly comparable.",
+            "mismatch_tolerance": {
+              "relative": 1e-06,
+              "absolute": 1e-09,
+              "meaning": "Only floating-point noise is tolerated; no cross-basis conversion is implied."
+            },
+            "mismatches": {
+              "current_r4_vs_frozen_r4": false,
+              "current_r4_vs_current_fitting": false
+            },
+            "ratios": {
+              "current_r4_over_frozen_r4": 1.0,
+              "current_fitting_over_frozen_r4": 1.0,
+              "projected_over_frozen_r4": 1.025738310664329,
+              "current_fitting_over_current_r4": 1.0,
+              "projected_over_current_r4": 1.025738310664329,
+              "projected_over_current_fitting": 1.025738310664329
+            },
+            "warnings": []
+          },
+          "warnings": [],
+          "explicit_template_disagreement": false,
+          "candidate_price_at_projected_stats": 593.68411210539,
+          "relative_cost_residual": 0.3190074684724795,
+          "proposal_review": {
+            "disposition": "HOLD_CLASS_FIT_RESIDUAL",
+            "candidate_formula_price_10_grid": 590,
+            "direction": {
+              "hp": "increase",
+              "speed": "decrease",
+              "w_range": "decrease",
+              "w_dps": "increase",
+              "cost": "increase"
+            },
+            "meaning": "Reference-projected inputs and candidate class formula are review evidence only; no actor or anchor write is authorized."
+          }
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "actor": "ra1_allies_alliedchinooktransport",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_blackhawk",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_longbow",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_rapierjumpjet",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_alliedaagun",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_alliedgunturret",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_bastionartillerybunker",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_camopillbox",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_pillbox",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_alliedsniper",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_allies_machinegunner",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_allies_mechanic",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_medic",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_raspy",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_alliedheavyaatank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_allies_alliedmobileconstructionvehicle",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_alliedoretruck",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_alliedtankdestroyer",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 2,
+        "speed": 2,
+        "w_range": 2,
+        "w_dps": 2,
+        "cost": 2
+      }
+    },
+    {
+      "actor": "ra1_allies_alliedtigerheavytank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "ra1_allies_minelayer",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_phasetransport",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_reconranger",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_allies_sheridanassaulttank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_armoredyak",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_hindattackhelicopter",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_hiptransport",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_kamovattackhelicopter",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_migattackbomber",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_nuclearyak",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_su57attackbomber",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_teslayak",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_yakscoutplane",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_flametower",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_samsite",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_teslacoil",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_ak47conscript",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "ra1_soviets_commissar",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_cyberdog",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "ra1_soviets_dog",
+      "reason": "No compatible nominal fitting inputs"
+    },
+    {
+      "actor": "ra1_soviets_dragunovantimaterialsniper",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "ra1_soviets_firerocketsoldier",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "ra1_soviets_flamethrower",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 2,
+        "speed": 2,
+        "w_range": 2,
+        "w_dps": 2,
+        "cost": 2
+      }
+    },
+    {
+      "actor": "ra1_soviets_mortarsoldier",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_zapper",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_btr80",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_soviets_flaktruck",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_soviets_gatlingtank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_gorynychtank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_grad",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_hammertank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_heatraytank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 0,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_heavyindustrialminer",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_heavyteslatank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_kotinnucleartank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_mobileconstructionvehicle",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "ra1_soviets_nuclearv2launcher",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_nukedemotruck",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_oretruck",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_siegemammothtank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_soviets_teslatank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 2,
+        "speed": 2,
+        "w_range": 2,
+        "w_dps": 2,
+        "cost": 2
+      }
+    },
+    {
+      "actor": "ra1_soviets_v1rockettruck",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "ra1_allies_cruiser",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_destroyer",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_gunboat",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_missilesubmarine",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_soviets_submarine",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "ra1_allies_alliedapc",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_gdi_chinooktransport",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_firehawk",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_orca",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_advancedguardtower",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_guardtower",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_skyshield",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_empgrenadier",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 2,
+        "speed": 2,
+        "w_range": 2,
+        "w_dps": 1,
+        "cost": 2
+      }
+    },
+    {
+      "actor": "td_gdi_heavysniper",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_gdi_officer",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_gdi_shotgunner",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_gdi_sonicmissilesoldier",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_gdi_landingcraft",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_missileboat",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_railgunbattleship",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_supercarrier",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_gdi_apc",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_gdi_archerartillery",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 2,
+        "speed": 2,
+        "w_range": 2,
+        "w_dps": 2,
+        "cost": 2
+      }
+    },
+    {
+      "actor": "td_gdi_assaultapc",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_gdi_boxer",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_gdi_exosuit",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_gdi_humveemkii",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_gdi_mammothtankmkiii",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_gdi_mobileconstructionvehicle",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_gdi_predatortank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_gdi_tiberiumharvester",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_apacheattackhelicopter",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_chinooktransport",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_venom",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_gunturret",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_laserturret",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_obeliskoflight",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_samsite",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_blackhandflamer",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_nod_chemicalrocketsoldier",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_nod_lasertrooper",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_nod_stealthsoldier",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_nod_attacksubmarine",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_ballisticmissilesubmarine",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_lasercorvette",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_transportsubmarine",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_buggymkii",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_nod_chemicalattackbike",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_nod_chemicalssmlauncher",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_nod_chemicalstealthtank",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 0,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_nod_flametankmkii",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_nod_lighttankmkii",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 1,
+        "speed": 1,
+        "w_range": 1,
+        "w_dps": 1,
+        "cost": 1
+      }
+    },
+    {
+      "actor": "td_nod_mobileconstructionvehicle",
+      "reason": "Support/cargo/hero or chassis-only pricing scope"
+    },
+    {
+      "actor": "td_nod_specterartillery",
+      "reason": "Not full external-plus-frozen-self coverage on all five calibration axes",
+      "external_source_counts": {
+        "hp": 0,
+        "speed": 0,
+        "w_range": 0,
+        "w_dps": 0,
+        "cost": 0
+      }
+    },
+    {
+      "actor": "td_nod_stealthharvester",
+      "reason": "No eligible mapped class member"
+    },
+    {
+      "actor": "td_nod_tiberiumharvester",
+      "reason": "No eligible mapped class member"
+    }
+  ]
+}

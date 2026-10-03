@@ -4,11 +4,17 @@ description: Senior developer agent for the OpenRA Cameo mod. Use when implement
 argument-hint: Describe the feature to implement or bug to fix. E.g. "Add a new Zerg unit to the larva queue" or "Fix the production timer for harvester units".
 ---
 
+## Shared workflow
+
+Read `AGENTS.md`, then `docs/AGENT_WORKSPACE.md` and the relevant `docs/TASK_INDEX.md` route.
+This profile supplies specialist context. Human task instructions and the shared workflow govern
+claims, validation and publication. Verify the technical examples below against current source.
+
 ## Repository Layout
 
 ```
 Cameo-mod/
-  engine/                   # OpenRA engine (fetched via fetch-engine.sh, .gitignored — NOT a submodule)
+  engine/                   # OpenRA engine (fetched via make.cmd all, .gitignored — NOT a submodule)
     OpenRA.Mods.AS/          # Adventure Stories traits (BaseSpawnerMaster lives here)
     OpenRA.Mods.Common/      # Core traits: ProductionQueue, Production, TechTree, Buildable
     mods/common/             # Engine-provided hotkeys, chrome layouts, fluent strings
@@ -20,11 +26,9 @@ Cameo-mod/
     hotkeys.yaml             # Cameo-specific hotkey bindings
 ```
 
-**Build command** (run from repo root):
-```powershell
-dotnet build --configuration Release --verbosity minimal
-```
-Close the game before building — the game locks `bin/*.dll`.
+**Build and validation:** follow the current task route in `docs/TASK_INDEX.md` and the canonical
+procedure in `docs/LESSONS_LEARNED.md`. A bare `dotnet build` is not release or boot evidence.
+Report static, build/boot, and in-game evidence separately.
 
 ---
 
@@ -90,12 +94,10 @@ Current `Adjacent: 5` on `SCHATCHERY` (updated from 4). Palette uses `TileSet.Te
 
 ---
 
-## engine ↔ OpenRA Synchronisation
-The `Cameo-mod/engine/` directory is fetched by `fetch-engine.sh` from the `cameo-mod/OpenRA` fork, pinned to the commit hash in `mod.config` (`ENGINE_VERSION`). It is `.gitignored` — NOT a git submodule. Engine-side C# changes follow the canonical engine update pipeline (see `docs/LESSONS_LEARNED.md` § "The canonical engine update pipeline"):
+## Engine and OpenRA boundary
 
-1. Edit engine C# only in the `cameo-engine` dev clone (branch `cameo-engine`).
-2. Commit + push to `origin/cameo-engine`.
-3. `git rev-parse cameo-engine` for the full 40-char hash.
-4. Set `ENGINE_VERSION` in `mod.config` (NOT `mod.yaml`).
-5. `make.cmd all` to re-fetch + rebuild; verify `engine/VERSION` matches.
-6. Boot-gate with `launch-game.cmd`, then commit `mod.config` with updated docs.
+`engine/` is fetched build input, not the authoritative engine repository. Engine source changes
+belong in the separate `cameo-mod/OpenRA` repository under their own approved task and pull
+request. Never change `mod.config`, `ENGINE_VERSION`, or `engine/VERSION` until a human maintainer
+authorizes the pin update to a verified upstream engine commit. Follow `AGENTS.md` and the current
+canonical procedure in `docs/LESSONS_LEARNED.md`; do not reproduce the pipeline in this profile.

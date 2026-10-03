@@ -7,6 +7,11 @@ import json
 CHECKLIST = """\
 CAMEO — orient before acting this session (verify against the artifacts, don't trust summaries):
 
+STANDING WORKFLOW (binding, every session): docs/WORKFLOW.md — PLAN FIRST, then delegate: Opus specs/reviews/merges,
+Sonnet sub-agents (model: sonnet, background, prepared worktree with engine copied) write the code and never commit.
+Minimum tokens: read sections not files, script sweeps, short replies, wait in the background. Only Claude merges
+and runs A/B tests (increments, mirror matches only, <= 3 game drivers, --render fast). Devin agents only code.
+
 MUST-READ, in order: CLAUDE.md · docs/LESSONS_LEARNED.md · docs/AGENT_WORKSPACE.md ·
 docs/HANDOFF.md · **docs/DESIGN.md** · docs/design/ROADMAP.md · docs/audit/SUMMARY.md.
 docs/README.md defines that order and wins over any copy of it.

@@ -2,8 +2,12 @@
 """Audit the live folded percentage-damage runtime contract.
 
 This report makes the intentional direct-hit activation and the repaired legacy
-overflow cases visible. It also rejects rule shapes that would double-apply a
-percentage hit or divide by an invalid denominator.
+Int32 overflow cases visible. Overflow is judged ONLY against the wide legacy
+folded units, never against shared-mode runtime units (shared halving is a
+design scale change, not overflow). It also carries a separate SharedVersus
+inventory that keeps zero-unit authored profiles visible. It also rejects rule
+shapes that would double-apply a percentage hit or divide by an invalid
+denominator.
 """
 from __future__ import annotations
 
@@ -16,6 +20,7 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import effective_damage as ed  # noqa: E402
+import effective_heaviness as eh  # noqa: E402
 import percentage_damage as pd  # noqa: E402
 from formula import parse_int32  # noqa: E402
 from miniyaml import Ruleset  # noqa: E402
@@ -29,6 +34,27 @@ def legacy_int32(value: int) -> int:
 def legacy_folded_units(damage: int, scale: int) -> int:
     numerator = legacy_int32(legacy_int32(damage * scale) + pd.FOLDED_ROUNDING_BIAS)
     return pd._truncate_div(numerator, pd.FOLDED_SCALE_DENOMINATOR)
+
+
+def overflow_repairs(applications) -> list[tuple[dict, int, int]]:
+    """Only a legacy Int32 wrap counts as an overflow repair.
+
+    The old implementation wrapped ``damage * scale`` in Int32; the wide legacy
+    result (``pd.folded_units``) does not. Their difference — independent of
+    SharedVersus or Heaviness — is the sole overflow signal. An ordinary
+    shared-mode halving (e.g. 60 wide-legacy units vs 30 shared runtime units,
+    where Scale itself moved 10000 -> 2000) is a DESIGN scale change and must
+    not be mislabelled as one.
+    """
+    rows = []
+    for app in applications:
+        if app.get("kind") != pd.PCT_FOLDED:
+            continue
+        old_units = legacy_folded_units(app["damage"], app["scale"])
+        wide_units = pd.folded_units(app["damage"], app["scale"])[1]
+        if old_units != wide_units:
+            rows.append((app, old_units, wide_units))
+    return rows
 
 
 def has_physical_state(node) -> bool:
@@ -66,6 +92,41 @@ def dispatch_findings() -> list[str]:
     return findings
 
 
+def shared_inventory_rows(node) -> list[dict]:
+    """Enumerate authored SharedVersus AreaDamage warheads on a weapon.
+
+    Includes valid zero-unit profiles (Damage=0, Scale=0, or h=0) that
+    ``percentage_applications`` omits, so nothing authored is invisible.
+    Zero-unit rows count separately and are never reported as percentage hits.
+    """
+    rows = []
+    for child in node.children:
+        if not child.key.startswith("Warhead") or child.value != "AreaDamage":
+            continue
+        tag = child.key.split("@", 1)[1] if "@" in child.key else child.key
+        mode, heaviness = eh.heaviness_profile_config(
+            child,
+            pd.versus_table(child, "PercentageVersusLight"),
+            pd.versus_table(child, "PercentageVersus"),
+            pd.versus_table(child, "PercentageVersusHeavy"))
+        if mode != eh.MODE_SHARED:
+            continue
+        damage = parse_int32(child.get("Damage"), default=0)
+        scale = parse_int32(child.get("PercentageScale"), default=0)
+        eh.validate_shared_numeric(mode, heaviness, pd.versus_table(child), damage, scale)
+        continuous, runtime = pd.shared_folded_units(damage, scale, heaviness)
+        rows.append({
+            "tag": tag,
+            "heaviness": heaviness,
+            "damage": damage,
+            "scale": scale,
+            "runtime_units": runtime,
+            "continuous_units": continuous,
+            "zero_unit": runtime == 0,
+        })
+    return rows
+
+
 def main() -> int:
     rules = Ruleset(ROOT)
     concrete = {
@@ -76,6 +137,8 @@ def main() -> int:
 
     direct_rows = []
     overflow_rows = []
+    shared_rows = []
+    zero_unit_rows = []
     dispatch = dispatch_findings()
     invalid = list(dispatch)
     mixed = set()
@@ -113,10 +176,16 @@ def main() -> int:
                 if relationships.replace(" ", "") != "Ally,Neutral,Enemy":
                     relationship_exceptions.add(name)
 
-        for app in folded:
-            old_units = legacy_folded_units(app["damage"], app["scale"])
-            if old_units != app["runtime_units"]:
-                overflow_rows.append((name, app["tag"], old_units, app["runtime_units"]))
+        for app, old_units, wide_units in overflow_repairs(folded):
+            overflow_rows.append(
+                (name, app["tag"], old_units, wide_units, app["runtime_units"]))
+
+        for row in shared_inventory_rows(node):
+            shared_rows.append((name, *row.values()))
+            if row["zero_unit"]:
+                zero_unit_rows.append(
+                    (name, row["tag"], row["heaviness"],
+                     row["damage"], row["scale"]))
 
     print("# Folded percentage runtime audit")
     print()
@@ -127,18 +196,52 @@ def main() -> int:
     print(f"- Direct weapons whose folded hit feeds physical state: **{len(state)}**")
     print(f"- Direct weapons whose folded hit feeds integrity: **{len(integrity)}**")
     print(f"- Legacy Int32 overflow applications repaired: **{len(overflow_rows)}**")
+    print(f"- Authored shared-mode (SharedVersus) applications: **{len(shared_rows)}** "
+          f"(of which zero-unit: **{len(zero_unit_rows)}** — "
+          "visibly listed, not counted as percentage hits)")
     print(f"- Non-default direct relationship sets: **{len(relationship_exceptions)}**")
     print(f"- Dispatch structural findings: **{len(dispatch)}**")
     print()
 
     print("## Repaired overflow cases")
     print()
-    print("| weapon | warhead | legacy units | repaired units |")
-    print("|---|---|---:|---:|")
-    for name, tag, old, new in overflow_rows:
-        print(f"| `{name}` | `{tag}` | {old} | {new} |")
+    print("A repair is ONLY a legacy Int32 wrap independent of SharedVersus. "
+          "The `runtime units` column shows the value actually applied today; "
+          "for shared-mode rows it already carries the approved h/2 design "
+          "scale (Scale itself moved 10000 -> 2000), so that column alone is "
+          "NOT the before-migration value.")
+    print()
+    print("| weapon | warhead | legacy Int32 units | wide legacy units | runtime units |")
+    print("|---|---|---:|---:|---:|")
+    for name, tag, old, wide, current in overflow_rows:
+        print(f"| `{name}` | `{tag}` | {old} | {wide} | {current} |")
     if not overflow_rows:
-        print("| _none_ | | | |")
+        print("| _none_ | | | | |")
+    print()
+
+    print("## Shared-mode inventory")
+    print()
+    print("Every authored reachable SharedVersus AreaDamage application, "
+          "including zero-unit profiles. Zero-unit rows are authored "
+          "configurations with no effective percentage hit, NOT activated "
+          "percentage hits.")
+    print()
+    print("| weapon | warhead | h | Damage | Scale | shared runtime units |")
+    print("|---|---|---:|---:|---:|---:|")
+    for name, tag, heaviness, damage, scale, runtime, _cont, _zero in shared_rows:
+        print(f"| `{name}` | `{tag}` | {heaviness} | {damage} | {scale} | {runtime} |")
+    if not shared_rows:
+        print("| _none_ | | | | | |")
+    print()
+
+    print("## Zero-unit shared applications")
+    print()
+    if zero_unit_rows:
+        for name, tag, heaviness, damage, scale in zero_unit_rows:
+            print(f"- `{name}`:`{tag}` (h={heaviness}, Damage={damage}, "
+                  f"Scale={scale}) — shared units 0")
+    else:
+        print("_none_")
     print()
 
     print("## Direct-hit mixed effects")

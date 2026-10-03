@@ -468,7 +468,7 @@ actors):
 
 **This confirms §9 is widely violated at the infantry level** — a major, concrete source of "AA is
 everywhere / air is useless" imbalance. **BUT the per-actor list needs a refined, dedicated audit
-tool** (the keyword filter has false positives — legit snipers like `asianalliance_asiancommando`
+tool** (the keyword filter has false positives — legit snipers like `asianalliance_commando`
 got flagged; and some `…AA`/`…SmallAA` weapons are the *intended* AA variant). 
 
 **Next step (scripted, not manual):** add `tools/audit/audit_aa_gating.py` ⚠ (**proposed, never built** — no such script) to the suite that (a)

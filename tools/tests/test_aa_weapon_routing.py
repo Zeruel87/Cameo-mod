@@ -35,30 +35,30 @@ class AaWeaponRoutingTests(unittest.TestCase):
                              f"{weapon_name}/{key}")
 
     def test_flak_23_ground_and_air_routes_match_their_armaments(self):
-        mains = {"Flak_MediumFlatCompatibility": "4000"}
-        self.assert_main_warheads_target("FLAK-23-AG", "Ground, Water", mains)
-        self.assert_main_warheads_target("FLAK-23-AA", "Air", mains)
+        mains = {"Flak_Medium_Flat": "4000"}
+        self.assert_main_warheads_target("ra1_soviets_flaktruck_flak_cannon", "Ground, Water", mains)
+        self.assert_main_warheads_target("ra1_soviets_flaktruck_flak_cannon_AA", "Air", mains)
 
     def test_manifold_ground_and_air_routes_match_their_armaments(self):
-        mains = {"Bullet_MediumFlatCompatibility": "6000"}
+        mains = {"Bullet_Medium_Flat": "6000"}
         self.assert_main_warheads_target("ManifoldMG", "Ground, Water", mains)
         self.assert_main_warheads_target("ManifoldMG_AA", "Air", mains)
 
     def test_consolidated_aa_families_route_every_main_to_air(self):
         expected = {
-            "ArmoredCarMG_AA": {"Bullet_Medium": "16000"},
+            "ArmoredCarMG_AA": {"Bullet_Medium": "1600"},
             "NaxQuadCannon_AA": {
-                "Flak_MediumFlatCompatibility": "7000"},
+                "Flak_Medium_Flat": "7000"},
             "NaxQuadCannon_AA_elite": {
-                "Flak_MediumFlatCompatibility": "7000"},
+                "Flak_Medium_Flat": "7000"},
             "SkyMageCannon_AA": {
-                "Flak_MediumFlatCompatibility": "7000"},
+                "Flak_Medium_Flat": "7000"},
             "SkyMageCannon_AA_elite": {
-                "Flak_MediumFlatCompatibility": "7000"},
+                "Flak_Medium_Flat": "7000"},
             "RA2MultiHoverMissile_AA": {
-                "MissileAA_LightFlatCompatibility": "4000"},
+                "MissileAA_Light": "4000"},
             "RA2MultiHoverMissile_AA_elite": {
-                "MissileAA_LightFlatCompatibility": "4000"},
+                "MissileAA_Light": "4000"},
         }
         for weapon_name, mains in expected.items():
             weapon = self.rules.resolve_weapon(weapon_name)

@@ -31,7 +31,7 @@ ROOTS = {
     "RA2ThunderboltMissile": ("MissileHE_Light", {
         "RA2ThunderboltMissile_AA", "RA2ThunderboltMissile_elite",
         "RA2ThunderboltMissile_AA_elite"}, 4000, 9975),
-    "FireballLauncherBuggy2": ("Flame_Medium", set(), 6000, 9984),
+    "td_nod_buggymkii_fireballlauncherbuggy2": ("Flame_Medium", set(), 6000, 9984),
     "MatadorFlamer": ("Flame_Heavy", set(), 6000, 9984),
     "SyndicateFireballLauncher": ("Flame_Heavy", {
         "SyndicateFireballLauncherExplode", "SyndicateFireballLauncher_elite"},
@@ -52,7 +52,7 @@ AUTHORIZED_SUCCESSORS = {"NaxCorrosionRocketTrooper_elite"}
 OLD_MAINS = {
     "RA2MultiThunderboltMissile": {"MissileHE_Heavy", "MissileHE_Light"},
     "RA2ThunderboltMissile": {"MissileHE_Heavy", "MissileHE_Light"},
-    "FireballLauncherBuggy2": {"Flame_Light", "Flame_Medium", "Flame_Heavy"},
+    "td_nod_buggymkii_fireballlauncherbuggy2": {"Flame_Light", "Flame_Medium", "Flame_Heavy"},
     "MatadorFlamer": {"Flame_Light", "Flame_Medium", "Flame_Heavy"},
     "SyndicateFireballLauncher": {"Flame_Light", "Flame_Medium", "Flame_Heavy"},
     "SyndicateFireballLauncherExplode": {"Flame_Light", "Flame_Medium", "Flame_Heavy", "LightFlameWeapon", "MediumFlameWeapon", "HeavyFlameWeapon"},

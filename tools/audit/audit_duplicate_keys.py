@@ -46,8 +46,8 @@ SCAN_DIRS = ("mods/cameo",)
 SKIP_PARTS = ("maps", "bits")
 
 # Ratchets: lower them as duplicates are resolved; never raise without a note.
-D1_BASELINE = 35
-D2_BASELINE = 260
+D1_BASELINE = 0
+D2_BASELINE = 158
 
 
 def duplicate_children(node: Node) -> dict[str, list[Node]]:
@@ -113,10 +113,13 @@ def main() -> int:
     print(h2("D2 — full list"))
     print(table(["file", "lines", "node", "key"], d2_rows))
 
+    # Evaluate BOTH ratchets before returning: an early return on D1 hid D2 = 4965 (baseline 260) for days
+    # (2026-09-30).
+    failed = False
     if len(d1_rows) > D1_BASELINE:
         print(f"\n**FAIL** — D1 count {len(d1_rows)} exceeds the baseline "
               f"{D1_BASELINE}: a new ambiguous inheritance label was introduced.\n")
-        return 1
+        failed = True
 
     if len(d1_rows) < D1_BASELINE:
         print(f"\nD1 count {len(d1_rows)} is below the baseline {D1_BASELINE} — "
@@ -125,13 +128,13 @@ def main() -> int:
     if len(d2_rows) > D2_BASELINE:
         print(f"\n**FAIL** — D2 count {len(d2_rows)} exceeds the baseline "
               f"{D2_BASELINE}: a new duplicate key was introduced.\n")
-        return 1
+        failed = True
 
     if len(d2_rows) < D2_BASELINE:
         print(f"\nD2 count {len(d2_rows)} is below the baseline {D2_BASELINE} — "
               f"lower D2_BASELINE in this script to lock the fix in.\n")
 
-    return 0
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

@@ -1,38 +1,157 @@
-# ai.yaml â€” Syndicate faction AI configuration
+# AI configuration owned by this ContentPack (RedAlert2Mod/Syndicate).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files â€”
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits â€”
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (9 entries for latinsyndicate) ---
-# 			latinsyndicate_recyclingrefinery: 10
-# 			latinsyndicate_combatbarracks: 10
-# 			latinsyndicate_syndicatefactory: 10
-# 			latinsyndicate_airstation: 10
-# 			latinsyndicate_latinempradar: 1
-# 			latinsyndicate_recyclingcenter: 1
-# 			latinsyndicate_spycenter: 2
-# 			latinsyndicate_syndicateservicedepot: 1
-# 			latinsyndicate_topolsilo: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor â€” no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	SquadManagerBotModuleCA@rush:
+		AirSquadTargetTypes:
+			latinsyndicate_hindtransport: Aircraft, Ground, Naval
+			latinsyndicate_yakovlev: Aircraft, Infantry, Building
+			latinsyndicate_mig21: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@turtle:
+		AirSquadTargetTypes:
+			latinsyndicate_hindtransport: Aircraft, Ground, Naval
+			latinsyndicate_yakovlev: Aircraft, Infantry, Building
+			latinsyndicate_mig21: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@tech:
+		AirSquadTargetTypes:
+			latinsyndicate_hindtransport: Aircraft, Ground, Naval
+			latinsyndicate_yakovlev: Aircraft, Infantry, Building
+			latinsyndicate_mig21: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@expansion:
+		AirSquadTargetTypes:
+			latinsyndicate_hindtransport: Aircraft, Ground, Naval
+			latinsyndicate_yakovlev: Aircraft, Infantry, Building
+			latinsyndicate_mig21: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@steamroller:
+		AirSquadTargetTypes:
+			latinsyndicate_hindtransport: Aircraft, Ground, Naval
+			latinsyndicate_yakovlev: Aircraft, Infantry, Building
+			latinsyndicate_mig21: Aircraft, Building, Epic, Naval
+	SendUnitToAttackBotModule:
+		ActorTypesAndAttackOptions:
+			latinsyndicate_terrorist:
+				AttackDesireOfEach: 100
+				TryGetHealed: false
+				AttackOrderName: AssaultMove
+			latinsyndicate_demolitiontruck:
+				AttackDesireOfEach: 100
+				TryGetHealed: false
+				AttackOrderName: AssaultMove
+			latinsyndicate_nuketruck:
+				AttackDesireOfEach: 100
+				TryGetHealed: false
+				AttackOrderName: AssaultMove
+	LoadCargoBotModule@Infantry:
+		TransportTypesAndLoadRequirement:
+			latinsyndicate_combatbarracks: All
+			latinsyndicate_defensebureau: All
+			latinsyndicate_bunkertower: All
+			latin_scrapcar_driveby: All
+			latin_scrapcar2_driveby: All
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			latinsyndicate_recyclingrefinery: 1500
+			latinsyndicate_combatbarracks: 1500
+			latinsyndicate_syndicatefactory: 1500
+			latinsyndicate_airstation: 1500
+		BuildingDelays:
+			latinsyndicate_syndicateservicedepot: 4500
+			latinsyndicate_latinempradar: 3000
+			latinsyndicate_spycenter: 6000
+			latinsyndicate_topolsilo: 9000
+		BuildingLimits:
+			latinsyndicate_recyclingrefinery: 10
+			latinsyndicate_combatbarracks: 10
+			latinsyndicate_syndicatefactory: 10
+			latinsyndicate_airstation: 10
+			latinsyndicate_latinempradar: 1
+			latinsyndicate_recyclingcenter: 1
+			latinsyndicate_spycenter: 2
+			latinsyndicate_syndicateservicedepot: 1
+			latinsyndicate_topolsilo: 1
+		BuildingFractions:
+			latinsyndicate_syndicateconstructionyard: 5
+			latinsyndicate_recyclingrefinery: 15
+			latinsyndicate_combatbarracks: 15
+			latinsyndicate_syndicatefactory: 15
+			latinsyndicate_airstation: 15
+			latinsyndicate_latinempradar: 1
+			latinsyndicate_recyclingcenter: 1
+			latinsyndicate_spycenter: 5
+			latinsyndicate_syndicateservicedepot: 1
+			latinsyndicate_topolsilo: 1
+			latinsyndicate_latinsentrygun: 10
+			latinsyndicate_bunkertower: 10
+			latinsyndicate_smlturret: 10
+			latinsyndicate_latinaadefender: 10
+			latinsyndicate_defensebureau: 10
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			latinsyndicate_syndicatemobileconstructionvehicle: 5000
+		UnitIntervals:
+			latinsyndicate_syndicatemobileconstructionvehicle: 2500
+		UnitsToBuild:
+			latinsyndicate_hindtransport: 1
+			latinsyndicate_collectiontruck: 10
+			latinsyndicate_latinmilitia: 1
+			latinsyndicate_tankkiller: 5
+			latinsyndicate_latinflametrooper: 3
+			latinsyndicate_grenademonkey: 5
+			latinsyndicate_engineer: 1
+			latinsyndicate_rushertank: 1
+			latinsyndicate_diablo: 1
+			latinsyndicate_raiderbuggy: 1
+			latinsyndicate_mortarbike: 1
+			latinsyndicate_latinapc: 1
+			latinsyndicate_tortugatank: 1
+			latinsyndicate_missiletruck: 1
+			latinsyndicate_yakovlev: 1
+			latinsyndicate_mig21: 1
+			latinsyndicate_doctrine_eliteguerillas: 1
+			latinsyndicate_doctrine_cartelrockets: 1
+			latinsyndicate_doctrine_lightposts: 1
+			latinsyndicate_upgrade_yuristolentechchainguns: 1
+			latinsyndicate_upgrade_sovietstolentechindustrialmethods: 1
+			latinsyndicate_upgrade_alliedstolentechextramissilesandmiraging: 1
+			latinsyndicate_upgrade_asianalliancestolentechhotfire: 1
+			latinsyndicate_upgrade_cashrecovery: 1
+			latinsyndicate_promotion_mortarbikes: 1
+			latinsyndicate_promotion_narcos: 1
+			latinsyndicate_promotion_burritos: 1
+			latinsyndicate_promotion_carteltrucks: 1
+			latinsyndicate_promotion_raiderbuggy: 1
+			latinsyndicate_promotion_smokertanks: 1
+			latinsyndicate_promotion_latinapc: 1
+			latinsyndicate_promotion_lars: 1
+			latinsyndicate_promotion_terrorists: 1
+			latinsyndicate_promotion_demolitiontrucks: 1
+			latinsyndicate_promotion_nuketrucks: 1
+			latinsyndicate_promotion_topolm: 1
+			latinsyndicate_narco: 1
+			latinsyndicate_narcohummer: 1
+			latinsyndicate_carteltruck: 1
+			latinsyndicate_freedomfighter: 5
+			latinsyndicate_smokertank: 1
+			latinsyndicate_burrito: 1
+			latinsyndicate_lars: 1
+			latinsyndicate_terrorist: 1
+			latinsyndicate_demolitiontruck: 1
+			latinsyndicate_nuketruck: 1
+			latinsyndicate_topolm: 1
+		UnitLimits:
+			latinsyndicate_collectiontruck: 20
+			latinsyndicate_demolitiontruck: 1
+			latinsyndicate_nuketruck: 1
+	SquadManagerBotModuleCA@classic:
+		AirSquadTargetTypes:
+			latinsyndicate_hindtransport: Aircraft, Ground, Naval
+			latinsyndicate_yakovlev: Aircraft, Infantry, Building
+			latinsyndicate_mig21: Aircraft, Building, Epic, Naval

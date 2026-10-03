@@ -1,8 +1,11 @@
 # The AreaDamage warhead — design, rebalance and the unified node
 
-Two documents until 2026-08-23. The universal `SpreadDamage` -> `AreaDamage` conversion is
-COMPLETE; what remains here is the design rationale and the unified-node shape, which the
-3-way split and every new warhead template still build on.
+Two documents until 2026-08-23. **Conversion status (measured 2026-09-24): PARTIAL.** The
+`^Warhead_*` template lattice and the Nuclear/Atomic pilots are `AreaDamage`, but ~2,425 live
+`SpreadDamage` nodes remain across weapon files versus ~1,026 `AreaDamage` and ~1,758
+`AreaDamagePercentage` nodes — the per-weapon sweep is ongoing. `SpreadDamagePercentage` is
+fully retired (0 nodes). What remains here is the design rationale and the unified-node shape,
+which the 3-way split and every new warhead template still build on.
 
 Related: [`WEAPON_3WAY_SPLIT.md`](WEAPON_3WAY_SPLIT.md), `DESIGN.md` §11b (one damage warhead
 per weapon).
@@ -277,8 +280,8 @@ VALID → must NOT be touched. The sweep only acts on a `Warhead@X` node when th
 4. **Boot-gate.** 5. Pipeline: `spread_damage_sum` / `audit_warhead_split` recognize `AreaDamage`.
 6. Commit generator + weapons + the weapon sweep TOGETHER.
 
-Until then: the Nuclear pilot (committed `851537a03`) is the ONLY live `AreaDamage`; the 55 templates
-stay `SpreadDamage`; the generator is reverted to `SpreadDamage` so it stays consistent with the file.
+Historical note: when this section was written the Nuclear pilot (committed `851537a03`) was the
+only live `AreaDamage`. That is no longer true — see the header status above for current counts.
 
 ### 9. AreaDamagePercentage + AtomicCore = the first real in-game proof (2026-08-04)
 

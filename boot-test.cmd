@@ -24,8 +24,14 @@ if not exist "%ENGINE_DIR%\bin\OpenRA.exe" (
 
 set MOD_SEARCH_PATHS=%TEMPLATE_DIR%\mods,%ENGINE_DIR%\mods
 
+rem OpenAL Soft AVs in alcOpenDevice on some hosts since the .NET 10 / bleed
+rem update; the null driver keeps the boot test alive without an audio device.
+rem Unset ALSOFT_DRIVERS to exercise the real audio path.
+if not defined ALSOFT_DRIVERS set "ALSOFT_DRIVERS=null"
+
 echo Boot test: launching OpenRA for 30s...
-powershell -NoProfile -Command "$proc = Start-Process -FilePath '%ENGINE_DIR%\bin\OpenRA.exe' -ArgumentList 'Game.Mod=%MOD_ID%','Engine.EngineDir=..','Engine.LaunchPath=%TEMPLATE_DIR%\boot-test.cmd','Engine.ModSearchPaths=%MOD_SEARCH_PATHS%' -WorkingDirectory '%ENGINE_DIR%' -PassThru; Start-Sleep -Seconds 30; if (-not $proc.HasExited) { if (-not $proc.CloseMainWindow()) { $proc.Kill() } else { if (-not $proc.WaitForExit(5000)) { $proc.Kill() } } }"
+powershell -NoProfile -Command "$proc = Start-Process -FilePath '%ENGINE_DIR%\bin\OpenRA.exe' -ArgumentList 'Game.Mod=%MOD_ID%','Sound.Device=none','Engine.EngineDir=..','Engine.LaunchPath=%TEMPLATE_DIR%\boot-test.cmd','Engine.ModSearchPaths=%MOD_SEARCH_PATHS%' -WorkingDirectory '%ENGINE_DIR%' -PassThru; if ($proc.WaitForExit(30000)) { exit $proc.ExitCode }; if (-not $proc.CloseMainWindow()) { $proc.Kill() } elseif (-not $proc.WaitForExit(5000)) { $proc.Kill() }; exit 0"
+set "BOOT_EXIT=%ERRORLEVEL%"
 
 echo Boot test complete.
-exit /b 0
+exit /b %BOOT_EXIT%

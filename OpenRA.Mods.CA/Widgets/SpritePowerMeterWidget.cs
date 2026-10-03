@@ -129,7 +129,7 @@ namespace OpenRA.Mods.CA.Widgets
 					image = targetIcon;
 
 				var bounds = new int2(RenderBounds.X, -(i * BarStride) + RenderBounds.Height + RenderBounds.Y);
-				WidgetUtils.DrawSprite(image, bounds);
+				WidgetUtils.DrawSprite(image, bounds.ToVector2());
 
 				Bounds.Width = image.Bounds.Width;
 			}

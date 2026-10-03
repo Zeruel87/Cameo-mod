@@ -30,15 +30,12 @@ namespace OpenRA.Mods.CA.Activities
 		public int ForceHealthPercentage = 0;
 		public bool SkipMakeAnims = false;
 		public string Faction = null;
-		public Action OnComplete;
+		public Action<Actor> OnComplete;
 
 		public InstantTransform(Actor self, string toActor)
 		{
 			ToActor = toActor;
-		}
-
-		protected override void OnFirstRun(Actor self)
-		{
+			IsInterruptible = false;
 		}
 
 		public override bool Tick(Actor self)
@@ -57,9 +54,6 @@ namespace OpenRA.Mods.CA.Activities
 			var makeAnimation = self.TraitOrDefault<WithMakeAnimation>();
 			if (!SkipMakeAnims && makeAnimation != null)
 			{
-				// Once the make animation starts the activity must not be stopped anymore.
-				IsInterruptible = false;
-
 				// Wait forever
 				QueueChild(new WaitFor(() => false));
 				makeAnimation.Reverse(self, () => DoTransform(self));
@@ -93,11 +87,19 @@ namespace OpenRA.Mods.CA.Activities
 
 				Game.Sound.PlayNotification(self.World.Map.Rules, self.Owner, "Speech", Notification, self.Owner.Faction.InternalName);
 
+				var cell = self.Location + Offset;
+				WPos centerPos;
+
+				if (self.Info.TraitInfoOrDefault<AircraftInfo>() != null && self.World.Map.Rules.Actors[ToActor].TraitInfoOrDefault<AircraftInfo>() != null)
+					centerPos = self.CenterPosition;
+				else
+					centerPos = self.World.Map.CenterOfCell(cell) + new WVec(0, 0, self.CenterPosition.Z);
+
 				var init = new TypeDictionary
 				{
-					new LocationInit(self.Location + Offset),
+					new LocationInit(cell),
 					new OwnerInit(self.Owner),
-					new CenterPositionInit(self.CenterPosition),
+					new CenterPositionInit(centerPos),
 				};
 
 				var facing = self.TraitOrDefault<IFacing>();
@@ -142,14 +144,17 @@ namespace OpenRA.Mods.CA.Activities
 
 				self.ReplacedByActor = a;
 
-				if (selected)
-					w.Selection.Add(a);
+				if (a.TraitOrDefault<Selectable>() != null)
+				{
+					if (selected)
+						w.Selection.Add(a);
 
-				if (controlgroup.HasValue)
-					w.ControlGroups.AddToControlGroup(a, controlgroup.Value);
+					if (controlgroup.HasValue)
+						w.ControlGroups.AddToControlGroup(a, controlgroup.Value);
+				}
 
 				if (OnComplete != null)
-					OnComplete();
+					OnComplete(a);
 			});
 		}
 	}

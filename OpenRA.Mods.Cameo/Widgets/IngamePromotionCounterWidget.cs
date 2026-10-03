@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Mods.Cameo.Traits;
@@ -71,13 +72,13 @@ namespace OpenRA.Mods.Cameo.Widgets
 			foreach (var t in Texts)
 			{
 				var textSize = font.Measure(t);
-				var location = new float2(Bounds.X, Bounds.Y + y);
+				var location = new Vector2(Bounds.X, Bounds.Y + y);
 
 				if (Align == TextAlign.Center)
-					location += new int2((Bounds.Width - textSize.X) / 2, 0);
+					location += new Vector2((Bounds.Width - textSize.X) / 2, 0);
 
 				if (Align == TextAlign.Right)
-					location += new int2(Bounds.Width - textSize.X, 0);
+					location += new Vector2(Bounds.Width - textSize.X, 0);
 
 				font.DrawTextWithShadow(t, location, textColor, bgDark, bgLight, 1);
 				y += (font.Measure(t).Y + 3);

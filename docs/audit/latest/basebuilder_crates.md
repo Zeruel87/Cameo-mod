@@ -1,17 +1,20 @@
 # audit_basebuilder_crates — faction MCV crate coverage
 
-Real factions: **29** — covered by crate: **28** — missing: **1**
+Real factions: **32** — covered by crate: **31** — missing: **1**
 
 
 ## Covered factions
 
 | faction | crate suffix | granted unit | NoBaseSelectionShares |
 |---|---|---|---|
-| asianalliance | asianalliance | asianalliance_asianmobileconstructionvehicle | 10000 |
+| asianalliance | asianalliance | asianalliance_mobileconstructionvehicle | 10000 |
+| atreides | atreides | atreides_mobileconstructionvehicle | 10000 |
 | cabal | cabal | cabal_mobileconstructionvehicle | 10000 |
+| corrino | corrino | corrino_mobileconstructionvehicle | 10000 |
 | eden | eden | EDEN_CONVEC_STRUCTURE_FACTORY | 10000 |
 | forgotten | forgotten | forgotten_mobileconstructionvehicle | 10000 |
 | futuretech | futuretech | futuretech_mobileconstructionvehicle | 10000 |
+| harkonnen | harkonnen | harkonnen_mobileconstructionvehicle | 10000 |
 | ixian | ixian | ixian_mobileconstructionvehicle | 10000 |
 | japan | japan | japan_japanesemobileconstructionvehicle | 10000 |
 | latinsyndicate | latinsyndicate | latinsyndicate_syndicatemobileconstructionvehicle | 10000 |
@@ -19,9 +22,9 @@ Real factions: **29** — covered by crate: **28** — missing: **1**
 | ordos | ordos | ordos_mobileconstructionvehicle | 10000 |
 | plymouth | plymouth | PLYMOUTH_CONVEC_STRUCTURE_FACTORY | 10000 |
 | protoss | protoss | protoss_mobilenexus | 10000 |
-| ra1_allies | ra1_allies | ra1_allies_alliedmobileconstructionvehicle | 10000 |
+| ra1_allies | ra1_allies | ra1_allies_mobileconstructionvehicle | 10000 |
 | ra1_soviets | ra1_soviets | ra1_soviets_mobileconstructionvehicle | 10000 |
-| ra2_allies | ra2_allies | ra2_allies_alliedmobileconstructionvehicle | 10000 |
+| ra2_allies | ra2_allies | ra2_allies_mobileconstructionvehicle | 10000 |
 | ra2_soviets | ra2_soviets | ra2_soviets_mobileconstructionvehicle | 10000 |
 | schwarzermond | schwarzermond | schwarzermond_naxismobileconstructionvehicle | 10000 |
 | steelconsortium | steelconsortium | steelconsortium_consortiummobileconstructionvehicle | 10000 |
@@ -41,6 +44,6 @@ Real factions: **29** — covered by crate: **28** — missing: **1**
 
 | faction |
 |---|
-| harkonnen |
+| scrin |
 
 

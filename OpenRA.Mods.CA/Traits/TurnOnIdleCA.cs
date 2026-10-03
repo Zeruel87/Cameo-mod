@@ -16,17 +16,14 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.CA.Traits
 {
 	[Desc("Turns actor randomly when idle.",
-		"CA version applies to aircraft and allows turning when mobile trait is paused.")]
-	class TurnOnIdleCAInfo : ConditionalTraitInfo, Requires<AircraftInfo>
+		"CA version applies to any actor with a facing trait.")]
+	class TurnOnIdleCAInfo : ConditionalTraitInfo, Requires<IFacingInfo>
 	{
 		[Desc("Minimum amount of ticks the actor will wait before the turn.")]
 		public readonly int MinDelay = 400;
 
 		[Desc("Maximum amount of ticks the actor will wait before the turn.")]
 		public readonly int MaxDelay = 800;
-
-		[Desc("Continue turning while aircraft trait is paused.")]
-		public readonly bool TurnWhileAircraftPaused = false;
 
 		public override object Create(ActorInitializer init) { return new TurnOnIdleCA(init, this); }
 	}
@@ -35,14 +32,14 @@ namespace OpenRA.Mods.CA.Traits
 	{
 		int currentDelay;
 		WAngle targetFacing;
-		readonly Aircraft aircraft;
+		readonly IFacing facing;
 
 		public TurnOnIdleCA(ActorInitializer init, TurnOnIdleCAInfo info)
 			: base(info)
 		{
 			currentDelay = init.World.SharedRandom.Next(Info.MinDelay, Info.MaxDelay);
-			aircraft = init.Self.Trait<Aircraft>();
-			targetFacing = aircraft.Facing;
+			facing = init.Self.Trait<IFacing>();
+			targetFacing = facing.Facing;
 		}
 
 		void ITick.Tick(Actor self)
@@ -50,22 +47,19 @@ namespace OpenRA.Mods.CA.Traits
 			if (IsTraitDisabled)
 				return;
 
-			if (aircraft.IsTraitDisabled || (aircraft.IsTraitPaused && !Info.TurnWhileAircraftPaused))
-				return;
-
-			if (!(self.CurrentActivity is FlyIdle))
+			if (!self.IsIdle)
 				return;
 
 			if (--currentDelay > 0)
 				return;
 
-			if (targetFacing == aircraft.Facing)
+			if (targetFacing == facing.Facing)
 			{
 				targetFacing = new WAngle(self.World.SharedRandom.Next(1024));
 				currentDelay = self.World.SharedRandom.Next(Info.MinDelay, Info.MaxDelay);
 			}
 
-			aircraft.Facing = Util.TickFacing(aircraft.Facing, targetFacing, aircraft.TurnSpeed);
+			facing.Facing = Util.TickFacing(facing.Facing, targetFacing, facing.TurnSpeed);
 		}
 	}
 }

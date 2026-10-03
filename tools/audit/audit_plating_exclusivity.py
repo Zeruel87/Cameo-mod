@@ -119,6 +119,23 @@ def exclusion_groups():
     return out
 
 
+_IDENT = re.compile(r"(!?)\s*([A-Za-z_][\w\-.]*)")
+
+
+def gated_apart(c1: str, c2: str) -> bool:
+    """True when the two plating conditions can never hold together: one is a PURE conjunction
+    (no `||`) that negates a positive term of the other — e.g. `hazmatsuits && !cyberneticarmor_up`
+    against `cyberneticarmor_up && !shielded`. A condition gate is as sound as a shared
+    ProductionIconMutualExclusion group; anything with `||` is not provably exclusive."""
+    def terms(c):
+        pos = {m.group(2) for m in _IDENT.finditer(c) if not m.group(1)}
+        neg = {m.group(2) for m in _IDENT.finditer(c) if m.group(1)}
+        return pos, neg
+    p1, n1 = terms(c1)
+    p2, n2 = terms(c2)
+    return ("||" not in c1 and bool(n1 & p2)) or ("||" not in c2 and bool(n2 & p1))
+
+
 def actor_platings():
     """concrete actor -> {plating: condition}, resolved transitively through Inherits."""
     from cameo_model import Model  # noqa: PLC0415
@@ -176,7 +193,14 @@ def main() -> int:
     leaks = []
     for name, got in multi.items():
         gs = {groups.get(cond) for cond in got.values()}
-        if None in gs or len(gs) > 1:
+        # A PAIR leaks unless its upgrades share one exclusion group, or its conditions are
+        # gated apart (`!other` in a pure conjunction) — either makes both-active impossible.
+        conds = list(got.values())
+        pair_leak = any(
+            not (groups.get(a) is not None and groups.get(a) == groups.get(b))
+            and not gated_apart(a, b)
+            for i, a in enumerate(conds) for b in conds[i + 1:])
+        if pair_leak:
             leaks.append((name, got, gs))
     print(f"{len(multi)} actor(s) can reach more than one plating — normal, as long as one "
           f"exclusion group covers them all.")
@@ -194,7 +218,8 @@ def main() -> int:
             print()
             print(f"_... and {len(leaks) - 30} more._")
     else:
-        print("_clean_ — every multi-plating actor's upgrades share one exclusion group.")
+        print("_clean_ — every multi-plating actor's platings are gated apart (one exclusion "
+              "group, or a `!condition` gate).")
     print()
 
     print("## X2 — a plating is a type, not an amount")

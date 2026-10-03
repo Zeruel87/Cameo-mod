@@ -1,0 +1,68 @@
+UNAPPLIED OWNER HANDOFF — GLM 5.3 Flash implementation, Codex review (2026-09-09)
+
+Production reference producers remain unchanged. Owner: Claude-Local.
+Changes only the AI-name regex and adds eight regression tests.
+Validate with git apply --check; only the owner should apply after review.
+Before/after regression demonstration is recorded in docs/audit/ASTRA_REVIEW.md.
+
+diff --git a/tools/balance/reference_distribution.py b/tools/balance/reference_distribution.py
+--- a/tools/balance/reference_distribution.py
++++ b/tools/balance/reference_distribution.py
+@@ -436,7 +436,7 @@
+ # A separator before the suffix (`_AI`, `.AI`) is what marks the variant, and the mods that use a
+ # bare suffix say so in the NAME instead ("(AI)", "AI ONLY", "for AI").
+ _AI_ID = re.compile(r"[._]AI\d*$", re.I)
+-_AI_NAME = re.compile(r"\(\s*AI\s*\)|AI[- ]ONLY|for AI", re.I)
++_AI_NAME = re.compile(r"\(\s*AI\s*\)|\bAI[- ]ONLY\b|\bfor AI\b", re.I)
+
+
+ def is_ai_only(row, source_ids=None):
+diff --git a/tools/tests/test_reference_ai_names.py b/tools/tests/test_reference_ai_names.py
+new file mode 100644
+--- /dev/null
++++ b/tools/tests/test_reference_ai_names.py
+@@ -0,0 +1,44 @@
++"""Tests for reference_distribution.is_ai_only (AI-only name/id detector)."""
++import pathlib
++import sys
++import unittest
++
++ROOT = pathlib.Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT / "tools/balance"))
++
++import reference_distribution as rd
++
++
++def _check(iid, name, source="synthetic"):
++    """Build a row dict and run it through rd.is_ai_only."""
++    return rd.is_ai_only({"id": iid, "name": name, "source": source})
++
++
++class TestIsAiOnly(unittest.TestCase):
++    def test_name_ai_only_upper_space(self):
++        self.assertTrue(_check("SYN1", "AI ONLY"))
++
++    def test_name_ai_only_upper_hyphen(self):
++        self.assertTrue(_check("SYN2", "AI-ONLY"))
++
++    def test_name_for_ai(self):
++        self.assertTrue(_check("SYN3", "for AI"))
++
++    def test_name_parenthesized_ai(self):
++        self.assertTrue(_check("SYN4", "(AI)"))
++
++    def test_id_underscore_ai_suffix(self):
++        self.assertTrue(_check("GUN1_AI", "Synthetic Gunner"))
++
++    def test_id_orcai_is_not_ai_only(self):
++        self.assertFalse(_check("ORCAI", "Orca Interceptor"))
++
++    def test_id_zrai_is_not_ai_only(self):
++        self.assertFalse(_check("ZRAI", "Zone Raider"))
++
++    def test_pattern_has_no_literal_backspace(self):
++        self.assertNotIn(chr(8), rd._AI_NAME.pattern)
++
++
++if __name__ == "__main__":
++    unittest.main()

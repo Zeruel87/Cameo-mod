@@ -40,6 +40,7 @@ import pathlib
 import re
 import statistics
 import sys
+import warnings
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools" / "reference"))
@@ -357,7 +358,24 @@ def read_ini(path: pathlib.Path) -> dict[str, dict[str, str]]:
     return out
 
 
-def read_ini_resolved(sid: str, path: pathlib.Path) -> dict[str, dict[str, str]]:
+def source_path(sid: str, sources: dict) -> pathlib.Path:
+    """Use the corpus provenance path; legacy configuration only if unspecified."""
+    recorded = sources.get(sid, {}).get("path")
+    if recorded:
+        return pathlib.Path(recorded)
+    return next(p for s, _l, _k, p, _e in ev.SOURCES if s == sid)
+
+
+def source_base_path(sid: str, sources: dict) -> pathlib.Path | None:
+    recorded = sources.get(sid, {}).get("base_path")
+    if recorded:
+        return pathlib.Path(recorded)
+    base_id = INI_BASE.get(sid)
+    return source_path(base_id, sources) if base_id else None
+
+
+def read_ini_resolved(sid: str, path: pathlib.Path,
+                      sources: dict | None = None) -> dict[str, dict[str, str]]:
     """`read_ini`, but a DELTA source is laid over its base (see `INI_BASE`).
 
     Section-by-section overlay: the patch's keys win, the base supplies the rest,
@@ -367,9 +385,9 @@ def read_ini_resolved(sid: str, path: pathlib.Path) -> dict[str, dict[str, str]]
     base_id = INI_BASE.get(sid)
     if base_id is None:
         return read_ini(path)
-    base_path = next((p for s, _l, _k, p, _e in ev.SOURCES if s == base_id), None)
+    base_path = source_base_path(sid, sources or {})
     if base_path is None or not base_path.exists():
-        return read_ini(path)
+        raise FileNotFoundError(f"{sid}: required overlay base unavailable: {base_path}")
     merged = {s: dict(kv) for s, kv in read_ini(base_path).items()}
     for section, kv in read_ini(path).items():
         merged.setdefault(section, {}).update(kv)
@@ -400,16 +418,23 @@ def collect(concept: str) -> list[dict]:
     spec = ARCHETYPES[concept]
     corpus = json.loads((ROOT / "docs/reference/versus_raw.json")
                         .read_text(encoding="utf-8"))
+    from warhead_source_selection import selected_sources
+    corpus["sources"] = selected_sources(corpus["sources"])
     rows = []
     for sid, lineage, kind, path, engine in ev.SOURCES:
         entry = corpus["sources"].get(sid)
         if not entry:
             continue
+        path = source_path(sid, corpus["sources"])
         by_name = {str(r["warhead"]): r for r in entry["rows"] if "versus" in r}
 
         wanted: list[tuple[str, str]] = []          # (warhead, how)
-        if kind == "ini" and path.exists():
-            ini = read_ini_resolved(sid, path)
+        if kind == "ini":
+            try:
+                ini = read_ini_resolved(sid, path, corpus["sources"])
+            except FileNotFoundError as exc:
+                warnings.warn(f"{sid}: actor tracing unavailable: {exc}")
+                ini = {}
             for actor in spec.get("ini_actors", []):
                 for weapon, warhead in trace_ini(ini, actor):
                     wanted.append((warhead, f"traced [{actor}]->{weapon}"))

@@ -377,6 +377,35 @@ _Scoring scale: © = 1/5 (weak) to ©©©©© = 5/5 (excellent). Scores are rela
 
 ---
 
+## Tiberium Wars
+
+### Scrin (Structures Foundation)
+
+| Attribute | Value |
+|---|---|
+| **Internal Name** | `scrin` (actors: `scrin_*`) |
+| **Display Name** | Scrin |
+| **Source Game** | Command & Conquer 3: Tiberium Wars (2007) |
+| **Roster** | 0 units, 9 structures, 0 upgrades |
+| **AI Wired** | No |
+| **Fluent Coverage** | Structure names and scope description |
+| **Selectable** | No |
+| **Rules File** | `ContentPacks/TiberiumWars/Scrin/yaml/buildings.yaml` |
+| **Fluent File** | `ContentPacks/TiberiumWars/Scrin/translations/en.ftl` |
+
+This first slice installs the Drone Platform, Reactor, Extractor, Portal, Warp
+Gate, Nerve Center, Stasis Chamber, Technology Assembler, and Signal
+Transmitter as map/editor-ready structures. Their OpenRA sprites use
+independently extracted Kane's Wrath models and textures, RA-style raster
+reduction, model-derived ground shadows, and dynamic player color.
+
+The faction is deliberately hidden and unplayable. A future Drone Ship must
+deploy into the Drone Platform before Scrin can receive starting-unit entries or
+a real construction chain. Combat units, production behavior, AI, upgrades,
+construction/destruction art, and final balance remain pending.
+
+---
+
 ## Red Alert 1
 
 ### Allies RA1
@@ -1612,6 +1641,7 @@ These are not playable factions but random-select groups that choose from their 
 | Nod TS | 23 | 19 | 8 | 20/22 | 2% | ©©©© | Stealth/Hit&Run |
 | Forgotten | 41 | 18 | 20 | 38/40 | 98% | ©©© | Adaptive/Promotion |
 | CABAL | 39 | 16 | 27 | 36/38 | 0% | ©©©©© | Tech Rush/Promotion |
+| Scrin (foundation) | 0 | 9 | 0 | No | Names | N/A | Not yet playable |
 | Allies RA1 | 32 | 22 | 20 | 29/31 | 1% | ©©© | Tech/Mobility/Naval |
 | Soviets RA1 | 53 | 21 | 44 | 50/52 | 1% | ©© | Brute Force |
 | Japan RA1 | 40 | 16 | 20 | 37/39 | 1% | ©©© | Rush/Mobility |

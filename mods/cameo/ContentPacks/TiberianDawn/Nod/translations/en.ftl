@@ -203,10 +203,16 @@ upgrade_elitecapacitors =
       Obelisks of Light increase fire power and fire rate by 60% and range and vision by 30%.
 
 upgrade_cyberneticmodifications =
-   .description = Gives all infantry heavy armor platings that reduce incoming damage.
-      While the armor is active, the infantry armor type is heavy which makes them take less damage from
-      most anti infantry weapons but increased damage from anti tank weapons instead.
+   .description = Permanently reinforces all infantry with cybernetic implants.
+      Infantry also count as Medium armor: they take less damage from anti infantry weapons
+      but more from anti tank weapons.
       Increases Movement Speed by 20%.
+
+upgrade_cyberneticarmor =
+   .description = Requires Cybernetic Modifications.
+      Gives all infantry a regenerating Composite armor plating worth 50% of their health.
+      While the plating holds it absorbs damage before health, and bullets and armor piercing
+      rounds do much less damage. Explosives and blast weapons break it quickly.
 
 upgrade_blackmarketupgrades =
    .description = Gives certain units new or additional weapons:

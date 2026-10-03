@@ -40,10 +40,19 @@ This skill runs the full Cameo boot-gate procedure. **Never commit engine conten
    ```
    If any new exception-*.log files appeared, the boot FAILED. Read them to diagnose.
 
-5. **Kill the game process** after verification:
+5. **Kill the game process** after verification — **PID-scoped only.**
+   Multiple agents share this machine; `Stop-Process -Name OpenRA` or
+   `taskkill /IM OpenRA.exe` sweeps EVERY lane's live matches.
+   Track your launch PID and kill only processes whose path is inside
+   THIS worktree:
    ```powershell
-   Stop-Process -Name "OpenRA.WindowsLauncher" -ErrorAction SilentlyContinue
-   Stop-Process -Name "OpenRA" -ErrorAction SilentlyContinue
+   # Preferred: keep the PID from your launch and kill it directly:
+   Stop-Process -Id $gamePid -Force -ErrorAction SilentlyContinue
+
+   # Fallback: scope by executable path — never by image name:
+   Get-Process -Name "OpenRA*","dotnet" -ErrorAction SilentlyContinue |
+     Where-Object { $_.Path -like "$PWD*" -or $_.Path -like "$PWD\engine*" } |
+     Stop-Process -Force
    ```
 
 ## Pre-conditions

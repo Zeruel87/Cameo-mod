@@ -106,7 +106,7 @@ namespace OpenRA.Mods.CA.Traits.Render
 			var size = font.Measure(name);
 			return new IRenderable[]
 			{
-				new UITextRenderable(font, self.CenterPosition, screenPos - size / 2, 0, color, contrastColorDark, contrastColorLight, name)
+				new UITextRenderable(font, self.CenterPosition, (screenPos - size / 2).ToVector2(), 0, color, contrastColorDark, contrastColorLight, name)
 			};
 		}
 

@@ -1,5 +1,20 @@
 # BALANCE PROGRAM — the execution plan (rev. 2026-08-28)
 
+
+## 2026-09-10 — source PR340 warhead-family reach measurement
+
+`warhead_family_reach` measures **1,526 distinct fired weapon identities** whose
+transitive inheritance reaches a `^Warhead_*` family in the current PR340 source.
+(2026-09-23 resync, post-#438: `physical_state_fired_weapons` = **537**, `unconverted_template_inheritors` = **1163**.) **2026-09-23b (post-#456/#457 wave): `physical_state_fired_weapons` = 533, `unconverted_template_inheritors` = 827** — DAWN's W23 retrofit (#456) stripped most legacy template inherits; NOVA batch-2 (#457) landed the RA2Mod folds. **2026-09-24 (post-#476/#478): `physical_state_fired_weapons` = 542** — W7's Resonance meter feeds (`ApplyPhysicalState`/`PhysicalStates`) added meter-carrying warheads back onto fired weapons; the claim's `docs:` citation and `doc_claims.yaml` were resynced to the measured value in the same commit. **2026-09-24b (post-#490 merge wave): `physical_state_fired_weapons` = 544, `unconverted_template_inheritors` = 385.** **2026-09-26 (master `afb66c9b5` resync): `physical_state_fired_weapons` = 548, `unconverted_template_inheritors` = 390.** **2026-09-27 (`devin/nova/w7-packs` post-merge): `unconverted_template_inheritors` = 394** — W7 chain-collapse splices copy parent `Inherits:` edges into children, so four indirect reaches became direct inheritors (structural, not new legacy usage). **2026-09-27 (DAWN stack merge): `warhead_family_reach` = 1526, `unconverted_template_inheritors` = 391.** **2026-09-27b (#534+#516 combined tree): `warhead_family_reach` = 1509, `unconverted_template_inheritors` = 395.** **2026-09-27 (#534+#516 merged tree): `warhead_family_reach` = 1509, `unconverted_template_inheritors` = 395** (union of both branches' conversions; splice mechanics, not new legacy usage). **2026-09-28 (post-#252 Scrin pack, `5d7bbd6bd`): `physical_state_fired_weapons` = 549, `unconverted_template_inheritors` = 402.**
+The registry's previous value was 1,415; it is updated upward to this measured
+count with the same predicate and zero tolerance. Ownership wrappers can expose
+more distinct fired identities for existing family payloads: this increase does
+not establish newly converted weapons or additional gameplay balance work.
+Earlier dated snapshots below remain historical, and the only-UP rule remains.
+
+> **Numeric evidence refresh — 2026-09-10, combined `839cdced4` plus reopened tooling.** `multi_main_fired_weapons` = **120**; `physical_state_fired_weapons` = **542**; `unconverted_template_inheritors` = **1590**. Measured on this combined tree; predicates and tolerances are unchanged. The flat-health denominator correction changes diagnostics, not live weapons or prices. Earlier branch-specific snapshots remain historical. **2026-09-22 (DAWN lane-3): `multi_main_fired_weapons` = 27** — lane-3 folded the last 27 non-RA weapons; the remainder is the RA-family lane plus `DRPlasmaTankWeapon` and the `tesla_bomb` verbatim exception. **2026-09-23 (post-#439): = 25** — NOVA batch-1's two folds (JapanMaidenBowEnergized, teslayak tesla_bomb) landed; NOVA batch-2 PR #452 covers the RA2Mod set; residual `DRPlasmaTankWeapon` (Claude). **2026-09-23b (post-#456/#457): = 1** — batch-2 landed via #457; the sole remaining multi-main fired weapon is `DRPlasmaTankWeapon` (target-disjoint pair — ruling pending, see fleet NOTE_2026-09-23_nova_drplasma_analysis).
+
+
 **This file is the SINGLE SOURCE OF TRUTH for what is done, what is next, and who owns
 what.** It survives compaction, agent handover and session death. Every other document
 (ROADMAP, EFFECTIVE_DAMAGE, PHYSICAL_STATE_SYSTEM, the AI handoffs) links *here* for
@@ -37,14 +52,15 @@ roster, so pricing first means pricing inputs we are about to replace:
 
 | what is still in flux | measured evidence |
 |---|---|
-| W24 — directly fired weapons with **more than one** damage main | **243** under the unified predicate; current 2026-08-31 survey (299 including indirectly reached weapons; worst direct stack is 6 mains) |
+| W24 — directly fired weapons with **more than one** damage main | **122** under the raw unified predicate; source339 2026-09-10 (the historical 2026-09-07 direct/indirect snapshot was 184/234; no reviewed exceptions subtracted) |
 | armament slots whose `K` moves when those collapse | **1 547** (2026-08-17 snapshot) |
-| fired weapons that reach a `^Warhead_*` family at all | **665 of 1622 = 41.0%** (2026-08-17 snapshot) — the rest still route through legacy templates (`audit_unconverted_templates`: 45 templates, 1196 inheritors) |
+| legacy template direct inheritors (W23) | **1592** on source339 2026-09-10 (`audit_unconverted_templates`); historical family reach was **665 of 1622 = 41.0%** on 2026-08-17, not a current measurement |
 
-Collapsing N mains into 1 preserves the damage SUM (`formula.spread_damage_sum`) but **not
-`K`** — `K` is share-weighted over each warhead's armor profile, so picking ONE family changes
-the profile and therefore the price. Retrofitting a legacy template onto a family changes it
-again.
+Changing the warhead structure can change both delivered damage and **`K`** — `K`
+is share-weighted over each warhead's armor profile, so picking ONE family changes
+the profile and therefore the price. Use the current conversion policy in DESIGN
+§11b.1; do not infer behaviour preservation merely from a raw damage sum.
+Retrofitting a legacy template onto a family changes pricing inputs again.
 
 ⚠ **The anchor table already said so.** `class_anchors.json` → `mbt.provisional`: *"DPS restat
 DEFERRED to the cannon/weapon rebuild."* The decision to wait was written into the data before
@@ -52,7 +68,7 @@ the question was asked.
 
 **The order:**
 
-1. **W24** — one damage warhead per weapon (DESIGN §11b). 243 directly fired weapons remain non-compliant; 299 remain when indirect weapon-graph reachability is included.
+1. **W24** — one damage warhead per weapon (DESIGN §11b). 122 directly fired weapons remain non-compliant in source339 (2026-09-10); the historical 2026-09-07 direct/indirect counts were 184/234.
 2. **W23** — the 25-template legacy retrofit. ⭐ **W24 DISSOLVES W23's BLOCKER.** That blocker
    is "33 weapons inherit several legacy templates mapping into the SAME family, so the rename
    merges two warheads and the smaller damage vanishes". After W24 each weapon carries ONE
@@ -79,10 +95,10 @@ nothing and informs the anchor choice. What must wait is WRITING targets and app
 | **W4** | Retire weapon-class K; charge-up becomes an ACTOR property | ✅ DONE | Claude | W1 |
 | **W5** | Missing metrics: overkill/TTK, range advantage, ValidTargets, MinRange, AttackDelay | ✅ DONE | Claude | W1 |
 | **W6** | C# `ModifiesCombatProportionalToPhysicalState` (+ pitch/glow hooks) | ✅ DONE `fc45a9632` | Claude | — |
-| **W7** | Sonic → `Resonance` meter (no new C# needed) | ⬜ READY | either | — |
+| **W7** | Sonic → `Resonance` meter (no new C# needed) | 🔵 **SHARED MERGED (EMBER, #476 → `e97924d4c`)** — pack-side in flight: DAWN done on `devin/dawn/l4-fx` (`388a7dd0d`, needs PR), NOVA's 8 pending | EMBER | — |
 | **W8** | Gatling ladder → `SpinUp` meter | ✅ DONE `c0d6abf70` — all 43 actors, `GattlingSpeed` = 0 | Claude | W6 ✅ |
-| **W9** | `^Poisonable` → `Poison` meter (gas-cloud dose-response) | ⬜ READY | either | — |
-| **W10** | `^Blindable` → `Blind` meter | ⬜ READY (unblocked by W6) | either | W6 ✅ |
+| **W9** | `^Poisonable` → `Poison` meter (gas-cloud dose-response) | ✅ **SHARED MERGED (EMBER, #479 → `5b89b1341`)** — Ordos crossbow grant to DAWN via REQUEST; darkreign grant parked | EMBER | — |
+| **W10** | `^Blindable` → `Blind` meter | 🔵 **IN PROGRESS (EMBER, 2026-09-24)** — proportional range 100→20 wired, `|| blinded` on all 46 `disabled` pause sites, `RangeMultiplier@blinded` retired; SC×3 grants converted; RA Soviets + RA2Mod Syndicate to NOVA via REQUEST | EMBER | W6 ✅ |
 | **W11** | Wire K into `fit_class.py` behind a flag; fit one class both ways and compare | ✅ BUILT, sign-off owed (+2 pipeline bugs fixed: 43% of the roster priced at zero DPS) | Claude | W3 ✅, W4 ✅, W5 ✅ |
 | **W12** | Superweapon balancing as a SEPARATE track (not unit-priced) | ⬜ READY | maintainer-led | — |
 | **W13** | Warhead system rebuild from the 3150-profile reference corpus | 🔵 steps 1-4a DONE — **the measured profiles are LIVE** on all 10 sourced families (+ 8 blends); 4b = the 10 INVENTED families | Claude | W1, W5 |
@@ -96,10 +112,10 @@ nothing and informs the anchor choice. What must wait is WRITING targets and app
 | **W21** | Layered health Shield → Integrity → Armor → Health, layer-aware armor (solves W20 structurally) | ✅ BUILT + LIVE `ab467fe52` | Claude | — |
 | **W22** | Roster census: liveness classifier + per-credit weighting (552/1977 armored actors are not buildable) | ⬜ PROPOSED | — | — |
 | **W23** | Retrofit the 45 legacy templates into the `^Warhead_*` family system | 🔵 MACHINERY DONE + verified; content ⬜ READY — **the 33-collision blocker is DISSOLVED** (§0a + DESIGN §11b: one damage warhead per weapon, so there is nothing left to merge). Sequenced AFTER W24. | Claude | W13 |
-| **W24** | Collapse every weapon to ONE damage warhead (3-way split, damage half) — 57.2% of fired weapons carry 2+, worst case 15 | ✅ ninth cluster (GoliathRockets_AA/WraithRockets_AA/SunDogRockets/MissileTurret/ScoutRockets_AA/HeavyOrdosCombatTankRockets) reparented to ^Warhead_MissileAA_Heavy (Goliath/Wraith/Scout/MissileTurret) and ^Warhead_MissileAP_Heavy (SunDog) + ^Projectile_Missile_Heavy_D2K + ^Effect_MissileHE_Heavy_D2K (one main + percentage twin); removed ^D2KRocket full-stack inherit and created ContentPacks/D2k/Shared/yaml/weapons.yaml with D2K-specific missile/rocket projectile and effect templates; removed ^Chaingun/^FlakWeapon/^LightMissile/^MediumMissile inherits and their warheads; preserved per-shot totals (30000/10000/10000/20000/10000/10000) and percentage twins (15/5/5/10/5/5); preserved local projectile overrides (Speed, Inaccuracy, launch angles, contrail colors) and restored flak-bullet contrail visual fields (ContrailZOffset/ContrailStartColor/ContrailEndColor/ContrailStartWidth/ContrailEndWidth) as local overrides because ^D2KRocket's ^Projectile_Missile_Heavy drops them; added local Warhead@EffectWater (small_splash) because the ^Effect_MissileAP_Heavy family does not define one; children resolve cleanly; review_resolve_diff clean; find_empty_warhead 0, find_orphan_old_keys 0, audit_warhead_split baseline 958→952, audit_physical_state_warheads PASS, audit_balance_drift clean, boot-gated; then ^D2K_Cannon repointed to ^Projectile_Shell_Medium_D2K + ^Effect_CannonHE_Medium_D2K in ContentPacks/D2k/Shared/yaml/weapons.yaml (preserving d2k_120mm, d2k_small_napalm, 8000 main + percentage twin, Sand/Rock smudge, 1000 concrete), boot-gated; then ^D2KRocket and ^D2KMissile moved into ContentPacks/D2k/Shared/yaml/weapons.yaml as AP 3-way split intermediates (^Warhead_MissileAP_Heavy + ^Projectile_Missile_Heavy_D2K[_Rocket] + ^Effect_MissileAP_Heavy_D2K[_Rocket]) so all D2K rocket/missile users resolve without empty warheads, boot-gated; then Debris repointed to ^Projectile_Grenade_Light_D2K_Debris + ^Effect_Demolition_Light_D2K (preserving shrapnel bounce, d2k_tiny_explosion, Scorch smudge, 300 concrete), boot-gated; then D2K_155mm family repointed to ^Projectile_Grenade_Light_D2K_155mm + ^Effect_Demolition_Heavy_D2K_155mm (preserving d2k_155mm, d2k_med_explosion, multi-warhead structure, MORTAR1.WAV), boot-gated; then Dune_SiegeMortar repointed to ^Projectile_Shell_Light_D2K_Mortar + ^Effect_CannonAP_Light_D2K_Mortar (preserving d2k_155mm / effect palette, d2k_large_explosion, four-warhead structure), boot-gated; then D2K_Rocket and Fremen_RPG repointed to D2K Shared blast effect layers (^Effect_MissileAP_Heavy_D2K_Rocket_Blast / ^Effect_MissileAP_Heavy_D2K_Missile_Blast) preserving d2k_rocket_explosion and per-weapon concrete, boot-gated; then oRocket repointed to ^Effect_MissileAP_Heavy_D2K_Rocket_Blast preserving SpreadDamage warhead and 625 concrete, boot-gated; then D2K_155mm2 repointed to ^Projectile_Grenade_Light_D2K_155mm + ^Effect_Demolition_Heavy_D2K_155mm2 preserving multi-warhead grenade/flame/shrapnel/bomb stack, d2k_155mm image, d2k_large_explosion, boot-gated; seventh cluster (TSChemJuggerboat90mm/TSChemVanMissile/TSChemMLRSMissile/TSChemBazooka/TSTibBazooka/TSChemApacheMissile/TSChemCobraMissile) reparented to chemical cannon/missile families with PhysicalStates moved into ^Warhead_Chem*/^Warhead_ChemCannon*/^Warhead_ChemMissile* templates; added global ^Projectile_ArtilleryShell_Medium and ^Projectile_ArtilleryRocket_Medium, consolidated the redundant ContentPacks/RedAlert2/Shared copy into the global template, and switched Future_MultiMissile_Frag to the artillery-rocket family; audit_physical_state_warheads updated to resolve PhysicalStates maps as well as direct PhysicalStateName/PhysicalStateScale; eighth cluster (227mm/GDIRigMissilePod/MammothTusk) reparented to ^Warhead_MissileHE_Medium/^Warhead_MissileHE_Heavy with ^Projectile_Missile_Medium/^Projectile_Missile_Heavy and ^Effect_MissileHE_Medium/^Effect_MissileHE_Heavy; preserved resolved per-shot totals 8000/32000/24000, local projectile overrides (Speed, Inaccuracy, launch angles), impact/water effects, ImpactActors, and the legacy flak-bullet contrail colors (ContrailStartColor/ContrailEndColor restored on the three non-AMT projectiles); children 227mmAMT, GDIRigMissilePodAMT, MammothTuskTargetingComputer resolve cleanly; review_resolve_diff clean; find_empty_warhead 0, audit_warhead_split broadcast baseline lowered 965→958, audit_balance_drift clean, boot-gated; then ^ORocket/^OMissile and children (oBazooka/oRocket/oTowerMissile/omtank_pri/oDeviatorMissile) converted to 3-way split with D2K Shared ^Warhead_MissileAP_Heavy_D2K_ORocket, ^Projectile_Missile_Heavy_D2K_ORocket/^Projectile_Missile_Heavy_D2K_OMissile, ^Effect_MissileAP_Heavy_D2K_ORocket/^Effect_MissileAP_Heavy_D2K_OMissile in ContentPacks/D2k/Shared/yaml/weapons.yaml; preserved legacy SpreadDamage, Versus, falloff, projectile fields, d2k_tiny/small/deviator explosions, concrete 240/720/625/900/1000, smudge invalid targets; review_resolve_diff OK; find_empty_warhead 0, find_orphan_old_keys 0, audit_warhead_split 952, boot-gated; then OrniBomb and OrniBombC converted to 3-way split using D2K Shared ^Projectile_GravityBomb_D2K, ^Warhead_Demolition_Heavy_D2K_Orni, and ^Effect_Demolition_Heavy_D2K_Orni; preserved 7500 SpreadDamage, d2k_bombs GravityBomb, Sand/Rock smudge, d2k_large_explosion, and 7500 concrete; OrniBombC inherits OrniBomb with Range 2500 (its original Range 3333 was mis-indented and ignored by the resolver); review_resolve_diff OK; find_empty_warhead 0, find_orphan_old_keys 0, audit_warhead_split 952, boot-gated; then HammerheadArtillery (Consortium) collapsed Demolition_Light+HeavyBomb into ^Warhead_Demolition_Heavy and CannonHE_Medium into ^Warhead_CannonHE_Medium (per-shot total 33333/33 preserved, Bullet/120MM blue-contrail projectile and steel_blueexp/makoexplose effects retained), audit_warhead_split baseline lowered 950->946, boot-gated; then NuclearMaverick (RedAlert/Soviets) converted from ^NuclearWarhead to ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super with ^Warhead_MissileHE_Heavy retained; per-shot totals 40000 flat + 20% preserved; nuke half now AreaDamage 10-tick shockwave (Damage 2000/MaxRadius 9000) and percentage (Damage 1/Spread 500/MaxRadius 4500); old SpreadDamage/HealthPercentageDamage/FireDeath shape preserved via local overrides; Concrete/ShieldHit resolved to MissileHE effect values; audit_warhead_split baseline 946->945, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then ThermobaricNuclearMaverick (RedAlert/Soviets) repointed from the broken duplicate Inherits@2: ^NuclearWarhead + ^Warhead_Flame_Heavy stack to a clean 3-way split with ^Warhead_MissileHE_Heavy, ^Warhead_Nuclear_Super, ^Warhead_Flame_Heavy, ^Effect_Flame_Heavy, ^Effect_Nuclear_Super (flame effects first, nuclear effects second); fixed duplicate Inherits@2 so both flame and nuclear warheads actually apply; per-shot totals 42000 flat + 21% preserved via Nuclear_Super main Damage 1400 * 10 Ticks (MaxRadius 9000) and percentage Damage 1 * 7 Ticks (Spread 500, MaxRadius 4500); old SpreadDamage FireDeath/Incendiary shape and AffectsParent: false preserved; audit_warhead_split baseline 945->944, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then MonsterTank120mm (RedAlert/Soviets) repointed ^NuclearWarhead to ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super, kept ^Warhead_CannonHE_Heavy and ^Effect_CannonHE_Heavy, with flame-thermobaric child MonsterTank120mmThermobaric inheriting the same nuclear/cannon split plus its own ^Warhead_Flame_Heavy/^Projectile_Flame_Heavy/^Effect_Flame_Heavy; main totals preserved (CannonHE_Heavy 40000 flat/20%, Nuclear_Super 4000*10=40000 flat and 2*10=20% percentage, AffectsParent: true, ValidRelationships: Enemy, FireDeath/Incendiary); old Report: nukemisl.aud retained; fixed order so ^Effect_CannonHE_Heavy is first and ^Effect_Nuclear_Super second, preserving Cannon craters and nuke Smudge1/2/3/Concrete/ShieldHit; audit_warhead_split baseline 944->942, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then TorpTubeThermobaric (RedAlert/Shared) repointed ^NuclearWarhead to ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super, kept ^HeavyMissile as the unresolved old half, preserved torpedo projectile/v2/bubbles/150 speed and report torpedo1.aud, nuclear totals preserved (1600*10=16000 flat, 1*8=8% percentage, MaxRadius 9000/4500, Spread 1000/500, FireDeath/Incendiary, AffectsParent true, ValidRelationships Enemy, TargetActorCenter false), removed unwanted Glow, effect order keeps HeavyMissile ShieldHit 10/Concrete 200 with local nuke_small/kaboom22/ImpactActors true; audit_warhead_split baseline 942->941, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then JapanesePlasmaBomb (RedAlert/Japan) reparented ^HeavyBomb to ^Warhead_Demolition_Heavy + ^Effect_Demolition_Heavy while preserving chemical and flame 3-way split, kept per-shot totals (10000 flat + 5% percentage), matched old HeavyBomb falloff shape by setting MaxRadius 3200/1600 on the 6-step Demolition_Heavy family, restored poof primary explosion via local Warhead@Effect1 override, preserved blueartexp/blue_building_napalm effects and hakureiring bullet projectile with blue_smokey trail, review_resolve_diff OK, audit_warhead_split count 941, audit_balance_drift clean, phase_b_survey single-with-new count down to 1, boot-gated; then TorpTubeThermobaric (RedAlert/Shared) finished reparenting the remaining ^HeavyMissile to ^Warhead_MissileAP_Heavy + ^Projectile_Missile_Heavy + ^Effect_MissileAP_Heavy, keeping ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super; missile half kept per-shot totals (16000 flat + 8% percentage) using family MaxRadius 4000/2000, valid targets Water/Underwater/Bridge/Structure, ValidRelationships Enemy, bespoke torpedo projectile preserved with -Projectile:, local Warhead@ShieldHit Duration 10 and -Warhead@Glow: kept, nuke_small/kaboom22.aud effect preserved, review_resolve_diff OK, audit_warhead_split count 941, audit_balance_drift clean, phase_b_survey single-with-new count 0 (all finish candidates done), boot-gated; then SCUDNUKE/SCUDNUKEThermobaric (RedAlert/Soviets) collapsed 15 stacked old full-stack inherits (HeavyMissile/MediumMissile/LightMissile/HeavyBomb/ShrapnelWeapon/Grenade/HeavyChemicalWeapon/MediumChemicalWeapon/LightChemicalWeapon/HeavyFlameWeapon/MediumFlameWeapon/LightFlameWeapon/TankDestroyerCannon/FlakWeapon/NuclearWarhead) into ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super; per-shot totals 20000 flat + 10% preserved via Nuclear_Super main Damage 20000 (10-tick AreaDamage, MaxRadius 9000, Spread 1000) and percentage Damage 10 (10-tick AreaDamagePercentage, Spread 500, MaxRadius 4500); ValidRelationships Enemy, AffectsParent true, FireDeath/Incendiary, TargetActorCenter true inherited from family; V2 Bullet projectile retained (Image V2, Speed 240, Inaccuracy 240, LaunchAngle 80, smokey trail, contrail colors); local kaboom22.aud impact sound kept; SCUDNUKEThermobaric child still overrides with its own contrail width/length; review_resolve_diff flags expected (15 duplicate 20000 warheads collapsed to 1 + effect stack simplified to nuke_explosion), find_empty_warhead 0, find_orphan_old_keys 0 real, audit_warhead_split broadcast baseline 941->939, audit_balance_drift clean, phase_b_survey mixed 282 in 210 groups, boot-gated; then A2 W24 5-pack (NuclearMaverick -> ^Warhead_MissileHE_Heavy, ThermobaricNuclearMaverick -> ^Warhead_MissileThermobaric_Heavy, MonsterTank120mm -> ^Warhead_CannonNuke_Heavy, TorpTubeThermobaric -> ^Warhead_MissileNuke_Heavy, MonsterTank120mmThermobaric -> ^Warhead_CannonFire_Heavy) preserving per-shot totals; SCUDNUKE/SCUDNUKEThermobaric left on ^Warhead_Nuclear_Super pending maintainer call; audit_upgrade_regression + review_batch_diff blast-shape reporting added; boot-gated | Claude | — |
+| **W24** | Collapse every weapon to ONE damage warhead (3-way split, damage half) — 57.2% of fired weapons carry 2+, worst case 15 | ✅ ninth cluster (GoliathRockets_AA/WraithRockets_AA/SunDogRockets/MissileTurret/ScoutRockets_AA/HeavyOrdosCombatTankRockets) reparented to ^Warhead_MissileAA_Heavy (Goliath/Wraith/Scout/MissileTurret) and ^Warhead_MissileAP_Heavy (SunDog) + ^Projectile_Missile_Heavy_D2K + ^Effect_MissileHE_Heavy_D2K (one main + percentage twin); removed ^D2KRocket full-stack inherit and created ContentPacks/D2k/Shared/yaml/weapons.yaml with D2K-specific missile/rocket projectile and effect templates; removed ^Chaingun/^FlakWeapon/^LightMissile/^MediumMissile inherits and their warheads; preserved per-shot totals (30000/10000/10000/20000/10000/10000) and percentage twins (15/5/5/10/5/5); preserved local projectile overrides (Speed, Inaccuracy, launch angles, contrail colors) and restored flak-bullet contrail visual fields (ContrailZOffset/ContrailStartColor/ContrailEndColor/ContrailStartWidth/ContrailEndWidth) as local overrides because ^D2KRocket's ^Projectile_Missile_Heavy drops them; added local Warhead@EffectWater (small_splash) because the ^Effect_MissileAP_Heavy family does not define one; children resolve cleanly; review_resolve_diff clean; find_empty_warhead 0, find_orphan_old_keys 0, audit_warhead_split baseline 958→952, audit_physical_state_warheads PASS, audit_balance_drift clean, boot-gated; then ^D2K_Cannon repointed to ^Projectile_Shell_Medium_D2K + ^Effect_CannonHE_Medium_D2K in ContentPacks/D2k/Shared/yaml/weapons.yaml (preserving d2k_120mm, d2k_small_napalm, 8000 main + percentage twin, Sand/Rock smudge, 1000 concrete), boot-gated; then ^D2KRocket and ^D2KMissile moved into ContentPacks/D2k/Shared/yaml/weapons.yaml as AP 3-way split intermediates (^Warhead_MissileAP_Heavy + ^Projectile_Missile_Heavy_D2K[_Rocket] + ^Effect_MissileAP_Heavy_D2K[_Rocket]) so all D2K rocket/missile users resolve without empty warheads, boot-gated; then Debris repointed to ^Projectile_Grenade_Light_D2K_Debris + ^Effect_Demolition_Light_D2K (preserving shrapnel bounce, d2k_tiny_explosion, Scorch smudge, 300 concrete), boot-gated; then D2K_155mm family repointed to ^Projectile_Grenade_Light_D2K_155mm + ^Effect_Demolition_Heavy_D2K_155mm (preserving d2k_155mm, d2k_med_explosion, multi-warhead structure, MORTAR1.WAV), boot-gated; then Dune_SiegeMortar repointed to ^Projectile_Shell_Light_D2K_Mortar + ^Effect_CannonAP_Light_D2K_Mortar (preserving d2k_155mm / effect palette, d2k_large_explosion, four-warhead structure), boot-gated; then D2K_Rocket and Fremen_RPG repointed to D2K Shared blast effect layers (^Effect_MissileAP_Heavy_D2K_Rocket_Blast / ^Effect_MissileAP_Heavy_D2K_Missile_Blast) preserving d2k_rocket_explosion and per-weapon concrete, boot-gated; then oRocket repointed to ^Effect_MissileAP_Heavy_D2K_Rocket_Blast preserving SpreadDamage warhead and 625 concrete, boot-gated; then D2K_155mm2 repointed to ^Projectile_Grenade_Light_D2K_155mm + ^Effect_Demolition_Heavy_D2K_155mm2 preserving multi-warhead grenade/flame/shrapnel/bomb stack, d2k_155mm image, d2k_large_explosion, boot-gated; seventh cluster (TSChemJuggerboat90mm/TSChemVanMissile/TSChemMLRSMissile/TSChemBazooka/TSTibBazooka/TSChemApacheMissile/TSChemCobraMissile) reparented to chemical cannon/missile families with PhysicalStates moved into ^Warhead_Chem*/^Warhead_ChemCannon*/^Warhead_ChemMissile* templates; added global ^Projectile_ArtilleryShell_Medium and ^Projectile_ArtilleryRocket_Medium, consolidated the redundant ContentPacks/RedAlert2/Shared copy into the global template, and switched Future_MultiMissile_Frag to the artillery-rocket family; audit_physical_state_warheads updated to resolve PhysicalStates maps as well as direct PhysicalStateName/PhysicalStateScale; eighth cluster (227mm/GDIRigMissilePod/MammothTusk) reparented to ^Warhead_MissileHE_Medium/^Warhead_MissileHE_Heavy with ^Projectile_Missile_Medium/^Projectile_Missile_Heavy and ^Effect_MissileHE_Medium/^Effect_MissileHE_Heavy; preserved resolved per-shot totals 8000/32000/24000, local projectile overrides (Speed, Inaccuracy, launch angles), impact/water effects, ImpactActors, and the legacy flak-bullet contrail colors (ContrailStartColor/ContrailEndColor restored on the three non-AMT projectiles); children 227mmAMT, GDIRigMissilePodAMT, MammothTuskTargetingComputer resolve cleanly; review_resolve_diff clean; find_empty_warhead 0, audit_warhead_split broadcast baseline lowered 965→958, audit_balance_drift clean, boot-gated; then ^ORocket/^OMissile and children (oBazooka/oRocket/oTowerMissile/omtank_pri/oDeviatorMissile) converted to 3-way split with D2K Shared ^Warhead_MissileAP_Heavy_D2K_ORocket, ^Projectile_Missile_Heavy_D2K_ORocket/^Projectile_Missile_Heavy_D2K_OMissile, ^Effect_MissileAP_Heavy_D2K_ORocket/^Effect_MissileAP_Heavy_D2K_OMissile in ContentPacks/D2k/Shared/yaml/weapons.yaml; preserved legacy SpreadDamage, Versus, falloff, projectile fields, d2k_tiny/small/deviator explosions, concrete 240/720/625/900/1000, smudge invalid targets; review_resolve_diff OK; find_empty_warhead 0, find_orphan_old_keys 0, audit_warhead_split 952, boot-gated; then OrniBomb and OrniBombC converted to 3-way split using D2K Shared ^Projectile_GravityBomb_D2K, ^Warhead_Demolition_Heavy_D2K_Orni, and ^Effect_Demolition_Heavy_D2K_Orni; preserved 7500 SpreadDamage, d2k_bombs GravityBomb, Sand/Rock smudge, d2k_large_explosion, and 7500 concrete; OrniBombC inherits OrniBomb with Range 2500 (its original Range 3333 was mis-indented and ignored by the resolver); review_resolve_diff OK; find_empty_warhead 0, find_orphan_old_keys 0, audit_warhead_split 952, boot-gated; then HammerheadArtillery (Consortium) collapsed Demolition_Light+HeavyBomb into ^Warhead_Demolition_Heavy and CannonHE_Medium into ^Warhead_CannonHE_Medium (per-shot total 33333/33 preserved, Bullet/120MM blue-contrail projectile and steel_blueexp/makoexplose effects retained), audit_warhead_split baseline lowered 950->946, boot-gated; then NuclearMaverick (RedAlert/Soviets) converted from ^NuclearWarhead to ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super with ^Warhead_MissileHE_Heavy retained; per-shot totals 40000 flat + 20% preserved; nuke half now AreaDamage 10-tick shockwave (Damage 2000/MaxRadius 9000) and percentage (Damage 1/Spread 500/MaxRadius 4500); old SpreadDamage/HealthPercentageDamage/FireDeath shape preserved via local overrides; Concrete/ShieldHit resolved to MissileHE effect values; audit_warhead_split baseline 946->945, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then ThermobaricNuclearMaverick (RedAlert/Soviets) repointed from the broken duplicate Inherits@2: ^NuclearWarhead + ^Warhead_Flame_Heavy stack to a clean 3-way split with ^Warhead_MissileHE_Heavy, ^Warhead_Nuclear_Super, ^Warhead_Flame_Heavy, ^Effect_Flame_Heavy, ^Effect_Nuclear_Super (flame effects first, nuclear effects second); fixed duplicate Inherits@2 so both flame and nuclear warheads actually apply; per-shot totals 42000 flat + 21% preserved via Nuclear_Super main Damage 1400 * 10 Ticks (MaxRadius 9000) and percentage Damage 1 * 7 Ticks (Spread 500, MaxRadius 4500); old SpreadDamage FireDeath/Incendiary shape and AffectsParent: false preserved; audit_warhead_split baseline 945->944, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then MonsterTank120mm (RedAlert/Soviets) repointed ^NuclearWarhead to ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super, kept ^Warhead_CannonHE_Heavy and ^Effect_CannonHE_Heavy, with flame-thermobaric child MonsterTank120mmThermobaric inheriting the same nuclear/cannon split plus its own ^Warhead_Flame_Heavy/^Projectile_Flame_Heavy/^Effect_Flame_Heavy; main totals preserved (CannonHE_Heavy 40000 flat/20%, Nuclear_Super 4000*10=40000 flat and 2*10=20% percentage, AffectsParent: true, ValidRelationships: Enemy, FireDeath/Incendiary); old Report: nukemisl.aud retained; fixed order so ^Effect_CannonHE_Heavy is first and ^Effect_Nuclear_Super second, preserving Cannon craters and nuke Smudge1/2/3/Concrete/ShieldHit; audit_warhead_split baseline 944->942, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then TorpTubeThermobaric (RedAlert/Shared) repointed ^NuclearWarhead to ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super, kept ^HeavyMissile as the unresolved old half, preserved torpedo projectile/v2/bubbles/150 speed and report torpedo1.aud, nuclear totals preserved (1600*10=16000 flat, 1*8=8% percentage, MaxRadius 9000/4500, Spread 1000/500, FireDeath/Incendiary, AffectsParent true, ValidRelationships Enemy, TargetActorCenter false), removed unwanted Glow, effect order keeps HeavyMissile ShieldHit 10/Concrete 200 with local nuke_small/kaboom22/ImpactActors true; audit_warhead_split baseline 942->941, find_empty_warhead 0, find_orphan_old_keys 0, audit_balance_drift clean, boot-gated; then JapanesePlasmaBomb (RedAlert/Japan) reparented ^HeavyBomb to ^Warhead_Demolition_Heavy + ^Effect_Demolition_Heavy while preserving chemical and flame 3-way split, kept per-shot totals (10000 flat + 5% percentage), matched old HeavyBomb falloff shape by setting MaxRadius 3200/1600 on the 6-step Demolition_Heavy family, restored poof primary explosion via local Warhead@Effect1 override, preserved blueartexp/blue_building_napalm effects and hakureiring bullet projectile with blue_smokey trail, review_resolve_diff OK, audit_warhead_split count 941, audit_balance_drift clean, phase_b_survey single-with-new count down to 1, boot-gated; then TorpTubeThermobaric (RedAlert/Shared) finished reparenting the remaining ^HeavyMissile to ^Warhead_MissileAP_Heavy + ^Projectile_Missile_Heavy + ^Effect_MissileAP_Heavy, keeping ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super; missile half kept per-shot totals (16000 flat + 8% percentage) using family MaxRadius 4000/2000, valid targets Water/Underwater/Bridge/Structure, ValidRelationships Enemy, bespoke torpedo projectile preserved with -Projectile:, local Warhead@ShieldHit Duration 10 and -Warhead@Glow: kept, nuke_small/kaboom22.aud effect preserved, review_resolve_diff OK, audit_warhead_split count 941, audit_balance_drift clean, phase_b_survey single-with-new count 0 (all finish candidates done), boot-gated; then SCUDNUKE/SCUDNUKEThermobaric (RedAlert/Soviets) collapsed 15 stacked old full-stack inherits (HeavyMissile/MediumMissile/LightMissile/HeavyBomb/ShrapnelWeapon/Grenade/HeavyChemicalWeapon/MediumChemicalWeapon/LightChemicalWeapon/HeavyFlameWeapon/MediumFlameWeapon/LightFlameWeapon/TankDestroyerCannon/FlakWeapon/NuclearWarhead) into ^Warhead_Nuclear_Super + ^Effect_Nuclear_Super; per-shot totals 20000 flat + 10% preserved via Nuclear_Super main Damage 20000 (10-tick AreaDamage, MaxRadius 9000, Spread 1000) and percentage Damage 10 (10-tick AreaDamagePercentage, Spread 500, MaxRadius 4500); ValidRelationships Enemy, AffectsParent true, FireDeath/Incendiary, TargetActorCenter true inherited from family; V2 Bullet projectile retained (Image V2, Speed 240, Inaccuracy 240, LaunchAngle 80, smokey trail, contrail colors); local kaboom22.aud impact sound kept; SCUDNUKEThermobaric child still overrides with its own contrail width/length; review_resolve_diff flags expected (15 duplicate 20000 warheads collapsed to 1 + effect stack simplified to nuke_explosion), find_empty_warhead 0, find_orphan_old_keys 0 real, audit_warhead_split broadcast baseline 941->939, audit_balance_drift clean, phase_b_survey mixed 282 in 210 groups, boot-gated; then A2 W24 5-pack (NuclearMaverick -> ^Warhead_MissileHE_Heavy, ThermobaricNuclearMaverick -> ^Warhead_MissileThermobaric_Heavy, MonsterTank120mm -> ^Warhead_CannonNuke_Heavy, TorpTubeThermobaric -> ^Warhead_MissileNuke_Heavy, MonsterTank120mmThermobaric -> ^Warhead_CannonFire_Heavy) preserving per-shot totals; SCUDNUKE/SCUDNUKEThermobaric left on ^Warhead_Nuclear_Super pending maintainer call; audit_upgrade_regression + review_batch_diff blast-shape reporting added; boot-gated; then A6 batch (105mmThermobaric -> ^Warhead_CannonFire_Medium 12000 + napalm, HammerTankCannon and KotinCannon -> ^Warhead_CannonHE_Heavy 12000 each, Kotin retains radiation) preserves per-shot totals and effects; `multi_main_fired_weapons` 908→905, `audit_warhead_split` baseline 924→921; `review_resolve_diff` clean, `find_empty_warhead` 0, `find_orphan_old_keys` 0, `audit_doc_claims` 19 green, `extract_stats` redalert_soviets re-extracted, boot-gated | Claude | — |
 | **W25** | Versus mean-normalisation to 100 + class tilt + Shield rebuild + the ARMOR-PLATING LAYER | ✅ S1–S4 SHIPPED 2026-08-16/17 (`78568a36d`..`99deed28d`). **E1 + E4 FIXED** (`30ead6d4b`, `761e79ed9`). ⛔ **S5 is NOT "run `--confirm`" — see the correction below: `--confirm` is a NO-OP until targets are written into the ledger, and that needs W11's sign-off.** | Claude | — |
 
-| **W26** | **Retire `DamageMultiplier` (R1) — case by case, 369 live declarations** | 🔵 STARTED 2026-08-17: the shield 150% is DELETED. Inventory + rules below. | Claude | — |
+| **W26** | **Retire `DamageMultiplier` (R1) — case by case, 326 live declarations** | 🔵 STARTED 2026-08-17: the shield 150% is DELETED. Inventory + rules below. | Claude | — |
 | **W27** | Move inline Warhead@Effect* nodes into ^Effect_* templates (superweapons exempt) | 🔵 GUARD LANDED: `tools/audit/audit_inline_effects.py` now reports 665 concrete weapons with 815 inline effect nodes; superweapon auto-exemption removes 37 weapons/44 nodes. Next: adopt existing `^Effect_*` families and create missing families where none exists. Boot-gate per batch. | Devin | W24 ✅ |
 
 **Order of work — §0a is binding and supersedes any per-item ordering below:**
@@ -162,7 +178,7 @@ exists. Update both together.
   caught the error — it hit `Modifier: 50` on the template and stopped. **The scan was asking the
   wrong question**: it checked whether any DESCENDANT overrode the key, when the danger was an
   ANCESTOR declaring it. ⭐ **A no-op test must be RESOLVED, never read off the source node.**
-  Claim `unmigrated_scout_damage_multiplier` now measures the 16 every audit run.
+  Claim `unmigrated_scout_damage_multiplier` now measures **0** — the scout migration completed in the 2026-09 wave.
 
   Consequence for W26: these 19 can only be deleted **together with** the template's `50`, and
   only after the remaining 16 scouts get the 2×-health bake through the pipeline — i.e. it is a
@@ -309,7 +325,14 @@ inherits.
 ⚠ **Which makes DESIGN §11b's "collapsing preserves the SUM" ambiguous here.** Preserving 30 000
 locks the accident in as intent; collapsing to 2 000 is a 15× nerf.
 
-**RECOMMENDATION — preserve the SUM anyway, and let the pricing pass fix the magnitude.** Not
+**Historical recommendation — SUPERSEDED by DESIGN §11b.1 (2026-09-06).**
+The following former argument to preserve the SUM and let pricing fix magnitude
+is retained as history, not an operational instruction. In particular, preserving
+a raw sum does not establish behaviour neutrality across different profiles,
+targets, delays or area shapes. Current conversions follow §11b.1 and require a
+reviewed payload comparison where the simple duplicated-main case does not apply.
+
+**Former recommendation: preserve the SUM anyway.** Not
 because 30 000 is right, but because:
 * it keeps W24 a **behaviour-neutral refactor**, which is the only version that can be VERIFIED —
   `dump_resolved`/`review_resolve_diff` must diff empty, and a boot gate then means something;
@@ -577,7 +600,7 @@ mechanical and belong in the audit suite BEFORE the next batch — see the plan 
 
 ⛔ **§0a still governs: weapon STRUCTURE before pricing.** Phase A is not optional preamble; every
 delivery and price number measured before it lands is measuring the wrong object
-(`meters_filling_before_death` claimed 534/549 and is really 118/549 for exactly this reason).
+(`meters_filling_before_death` historically claimed 534/549 and was corrected to 146/562 on 2026-08-19; the current source339 qualifying count is 301 for exactly this reason).
 
 ### Phase A — finish W24 (blocks everything downstream)
 
@@ -873,7 +896,8 @@ the roster **once** instead of twice and reuses the caller's `Ruleset` via
 armor census is byte-identical afterwards (Wood 563 … Fighter 20, reference HP 74 000).
 
 **VERIFY:** `grep -l effective_damage docs/balance/*.json | wc -l` → 0
-and `ls docs/balance/derived/*.json | wc -l` → 33
+and `ls docs/balance/derived/*.json | wc -l` → 33 *(2026-09-24: now 40 — the count
+grows with the faction-pack census; 33 was the W3-era expectation)*
 
 ---
 
@@ -996,10 +1020,26 @@ nothing).
 
 ---
 
-### W7 — Sonic → `Resonance` meter ⬜ READY · owner either
+### W7 — Sonic → `Resonance` meter 🔵 IN PROGRESS (EMBER, 2026-09-23)
 
 Needs **no new C#** — `DamageMultiplierProportionalToPhysicalState` and
 `SlowsProportionalToPhysicalState` already exist.
+
+**Landed shape** (on `devin/ember/l6-w7-resonance`): `^Resonant` in
+`mods/cameo/rules/defaults.yaml` replaces `^SonicDebuff` — `PhysicalState@Resonance`
+(±20000, `RelativeToHealth`, fast relaxation 5/50 @1t after 25t delay),
+`DamageMultiplierProportionalToPhysicalState` 100→150, `SlowsProportionalToPhysicalState`
+100→75 with turn/turret/reload pinned neutral at 100 (their defaults are NOT neutral —
+check before relying on them), `GrantConditionOnPhysicalState` thresholds
+`ResonanceDeadzone`/`Resonating`/`ResonanceMax`, `WithPhysicalStateColoredOverlay`
++ `PhysicalStateBar`. Generator emits `PhysicalStates: Resonance: 100` on all five
+Sonic families (`FAMILY_PHYSICAL_STATE` + per-parent-average on the four blends);
+`FAMILY_CONDITION` is empty. Shared hand-grants (wz2100 commando lasers, generals
+Avenger PDL, RA2 `IonPulseDischarge` rings, TS `TSGrenadeSonic`) converted to
+`ApplyPhysicalState` flat 5000 or folded. **Pack side pending:** 16 `SonicDebuff`
+grants in `ContentPacks/{TiberianSun,TiberianDawn,RedAlert,RedAlert2,RedAlert2Mod}`
+via REQUEST to DAWN/NOVA — no crash either landing order (both sides degrade to
+no-ops); zero `Inherits: ^SonicDebuff` anywhere.
 
 ```yaml
 ^Warhead_Sonic_<Level>:
@@ -1058,7 +1098,7 @@ are meter-based, all 47 actors verified in `review_resolve_diff`, end-points mat
 
 ---
 
-### W9 — `^Poisonable` → `Poison` meter ⬜ READY · owner either
+### W9 — `^Poisonable` → `Poison` meter ✅ SHARED MERGED (EMBER, #479 → `5b89b1341`) · pack grants pending
 
 A Corrosion clone with a different victim class: **corrosion eats vehicles, poison hurts
 infantry, flame does both** — a clean three-way split of the DoT space.
@@ -1075,16 +1115,27 @@ binary `poisoned` condition is retired, infantry-only gating verified.
 
 ---
 
-### W10 — `^Blindable` → `Blind` meter ⬜ READY (unblocked — W6 ✅) · owner either
+### W10 — `^Blindable` → `Blind` meter 🔵 IN PROGRESS (EMBER, 2026-09-24) · owner EMBER
 
-Today: binary, range/vision/detection → 20%. A cliff. Maintainer's spec:
-- scale range **100% → 20%** proportionally with the meter (20% at full blind);
-- **at FULL blind only**: disable the weapon entirely, show the `blinded_icon`
-  decoration, and apply the `blinded` **Targetable** type so blinding units retarget
-  instead of wasting shots on an already-blind target.
+Was: binary, range/vision/detection → 20%. A cliff. Maintainer's spec (now wired):
+- range scales **100% → 20%** proportionally with the meter —
+  `ModifiesCombatProportionalToPhysicalState@Blind` (`RangeTo: 20`; every other channel
+  of that trait defaults to 100 = neutral, verified against the C# before writing);
+- **at FULL blind only**: `GrantConditionOnPhysicalState@blinded` (20000/20000) grants
+  `blinded` → the weapon pauses (all 46 `PauseOnCondition: …disabled` sites carry
+  `|| blinded`), `blinded_icon` shows, and `Targetable@blindable` drops so blinders
+  retarget;
+- `RangeMultiplier@blinded` **retired** — it would double-dip the proportional channel
+  (20% × 20% = 4% at full meter);
+- meter clamps at `MaxValue` (`PhysicalState.ApplyChange`), so a hit can never overshoot
+  past full blind — migrated grants use `Amount: 20000` = binary-faithful instant full
+  blind; the old per-weapon `Duration` ordering is lost by design (uniform 25-tick hold
+  + 200/tick decay), flagged for ruling if differentiation is wanted back.
 
-Needs W6 for the proportional range scaling; the full-blind cliff stays a
-`GrantConditionOnPhysicalState` at max.
+Pack side: SC Protoss `Corsair_EMP`, SC Terran `MedicFlare`, SC Zerg `DreadshroudSpore`
+converted in-lane; RA Soviets `ShtoraLaser` + RA2Mod Syndicate `RA2GrenadePack` go to
+NOVA via REQUEST. The binary block (`ExternalCondition`, `TimedConditionBar`, cliff
+traits on `blinded`) stays until the pack grants land.
 
 **VERIFY:** `grep -c "RequiresCondition: blinded" mods/cameo/rules/defaults.yaml` → only
 the max-meter uses remain.
@@ -1111,7 +1162,7 @@ consequential than the flag:
    carrying any `requires` at all. But `!rank-elite` is the BASE weapon, not an
    upgrade gate — as is `!forgotten_upgrade_chemicalweapons`, and so on. **371 of 863
    actors with priced armaments came out at zero DPS** and dropped out of class fits
-   entirely, `tiger.nax` — the recorded `mbt` anchor — among them, which is why fitting
+   entirely, `naxis_tiger` — the recorded `mbt` anchor — among them, which is why fitting
    `mbt` failed outright. Replaced with `formula.condition_holds_by_default()`: evaluate
    the condition with every named condition FALSE, i.e. *the weapon the unit fires as
    built*. Coverage **57% → 96%**; the 37 still at zero genuinely have no as-built weapon
@@ -1135,7 +1186,7 @@ against K. What would settle it is running `--compare-k` on a class whose costs 
 maintainer already considers CORRECT, and checking whether K pulls those towards or
 away from them.
 
-**VERIFY:** `python tools/balance/fit_class.py --class mbt --anchor tiger.nax --compare-k`
+**VERIFY:** `python tools/balance/fit_class.py --class mbt --anchor naxis_tiger --compare-k`
 → report in `docs/balance/derived/`, `class_anchors.json` untouched. Sign-off still owed
 in `anchor_decisions_log.md` before `--use-k` becomes the default.
 
@@ -1504,10 +1555,10 @@ that that were not converted yet?"*) — `tools/audit/audit_unconverted_template
 inheriting no `^Warhead_*` parent has not been converted, and is simultaneously a live
 violation of "Versus lives ONLY in `^Warhead_*` templates".
 
-**45 unconverted templates, 1196 direct inheritors.** Biggest: `^ShrapnelWeapon` (90) →
-Concussion · `^Grenade` (87) → Demolition/Concussion · `^FlakWeapon` (82) → Flak ·
-`^MediumChemicalWeapon` (73) · `^MediumMissile` (68) · `^TankDestroyerCannon` (68) → CannonAP ·
-`^MediumFlameWeapon` (66) · `^Chaingun` (60) → Bullet. Every target family already EXISTS, so these are retrofits, not
+**45 unconverted templates, 1124 direct inheritors.** Biggest: `^ShrapnelWeapon` (88) →
+Concussion · `^Grenade` (84) → Demolition/Concussion · `^FlakWeapon` (78) → Flak ·
+`^MediumChemicalWeapon` (70) · `^MediumMissile` (67) · `^TankDestroyerCannon` (66) → CannonAP ·
+`^MediumFlameWeapon` (64) · `^Chaingun` (59) → Bullet. Every target family already EXISTS, so these are retrofits, not
 design. `^SniperWeapon` / `^HealingWeapon` / `^RepairWeapon` stay out by design.
 
 ---
@@ -1638,7 +1689,7 @@ the ratio makes it deal **five times**. Never land one alone — see W18.
   Validated at load through a new `AreaDamageWarhead.ValidateFields()` hook —
   implementing `IRulesetLoaded<WeaponInfo>` in the subclass instead would REPLACE the
   base's explicit implementation, leaving `effectiveRange` unbuilt and every ring empty.
-- Tools: `formula.DAMAGE_STEP = 100`, `DAMAGE_PER_PERCENT = 10000`,
+- Tools: `formula.DAMAGE_STEP = 10` (regridded from 100 on 2026-09-11), `DAMAGE_PER_PERCENT = 10000`,
   `BASIS_POINT_DENOMINATOR = 10000`, `PERCENTAGE_VERSUS_STEP = 5`;
   `percentage_twin(per, denominator)` takes the unit from the node, `twin_denominator()`
   reads it from the ledger record, and `extract_stats` records
@@ -1779,7 +1830,7 @@ run changes nothing), and `extract_stats` now prints a loud warning after any fi
 ### W17 — Retire FirepowerMultiplier 🔵 TOOLING DONE (2026-08-15) · content half ⛔ set B
 
 ⚠ **Partly superseded by W15's regrid.** The maintainer chose a **grid "for sanity"** (100,
-`formula.DAMAGE_STEP`), not free-valued Damage, so "remove the grid" is now "the grid is 100
+`formula.DAMAGE_STEP`), not free-valued Damage, so "remove the grid" is now "the grid is 10
 and the %-twin tracks it exactly". What remains of W17 is the SECOND half: retiring
 `FirepowerMultiplier` as a fine-tuning knob, which the finer grid makes possible.
 
@@ -1826,7 +1877,7 @@ mains.** `Armament` builds `DamageModifiers` ONCE and passes it to every warhead
 `HealthPercentageDamageWarhead.cs:24` all apply it, and `ApplyPhysicalStateWarhead.cs:49`
 applies it to the METER amount as well. The worklist's `is_main()` excludes
 `percentage` / `extradamage` / `friendlyfire`, so folding only mains leaves **1610 twin and
-chip warheads across 380 weapons** silently scaled by `1/FP` — an actor at FP 0.5 would have
+chip warheads across 375 weapons** silently scaled by `1/FP` — an actor at FP 0.5 would have
 its %-twin and chip DOUBLE. The fold must cover every damaging warhead on the weapon plus any
 `ApplyPhysicalState` amount.
 
@@ -1855,6 +1906,15 @@ anywhere without tier restriction (W13 rule 5).
 ---
 
 ### W18 — Roll the basis-point unit out into yaml ⬜ READY (unblocked)
+
+Historical planning snapshot below, including the dated 2026-08-16 empty search.
+Current authored-field inventory (2026-10-01, post-dupkey-collapse `3e14d9b4a`): **423** raw (was 436 on 2026-09-27 — the dupkey collapse removed 13 dead duplicate occurrences; was 423 on 2026-09-26)
+`PercentageDenominator` occurrences in active weapon files, compared with 183
+on 2026-09-05. Freedom elite's explicit companion adds the single occurrence
+while preserving its prior percentage units. The registry's historical
+`percentage_denominator_unset` id measures occurrences, not unset fields or
+resolved applications; this increment is not a global unit rebase.
+
 
 W15 shipped the MECHANISM; this ships the CONTENT. It *was* blocked purely by file
 ownership — every file involved is set B (`mods/cameo/weapons/**`,
@@ -2866,8 +2926,11 @@ generator ships that matrix on purpose and `verify_generator_sync.py` requires i
 directly fired weapons, **243** carry 2 or more damage
 warheads, worst case **6**. Including indirect weapon-graph reachability gives **299**. This is the debt the W23 retrofit exposed, and it must be paid before the retrofit
 content ships, because same-family collisions are a symptom of it rather than a bug in the
-conversion. Collapsing preserves the SUM; where no family fits, a NEW family is created
-rather than forcing a bad one (maintainer, 2026-08-16). Two already identified:
+conversion. This paragraph's counts and examples are historical. The former blanket
+SUM instruction is superseded by DESIGN §11b.1; use its current value policy and
+review non-identical or staged payloads rather than assuming equivalence. Where no
+family fits, propose a NEW family rather than forcing a bad one (maintainer,
+2026-08-16). Two historically identified examples:
 `Waveforce` (Plasma × Quantum) for the Japanese energy rifles, and `Plasma` for
 `GladiusCannon`, which inherits `PhotonCannon`.
 

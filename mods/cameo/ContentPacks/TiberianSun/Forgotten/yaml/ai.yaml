@@ -1,102 +1,105 @@
-# ai.yaml — TS Forgotten faction AI configuration
+# AI configuration owned by this ContentPack (TiberianSun/Forgotten).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (7 entries for forgotten) ---
-# 			forgotten_refinery: 10
-# 			forgotten_barracks: 5
-# 			forgotten_warfactory: 7
-# 			forgotten_helipad: 3
-# 			forgotten_radar: 1
-# 			forgotten_church: 2
-# 			forgotten_silo: 1
-#
-# --- BuildingFractions (7 entries for forgotten) ---
-# 			forgotten_refinery: 20
-# 			forgotten_barracks: 5
-# 			forgotten_warfactory: 10
-# 			forgotten_helipad: 3
-# 			forgotten_radar: 1
-# 			forgotten_chemicalplant: 10
-# 			forgotten_church: 1
-#
-# --- UnitsToBuild (55 entries for forgotten) ---
-# 			forgotten_scarabapc: 1
-# 			forgotten_rocketinfantry: 7
-# 			forgotten_mutant: 7
-# 			forgotten_mutantsoldier: 7
-# 			forgotten_mutantsergeant: 3
-# 			forgotten_zombiemutant: 3
-# 			forgotten_runnershotgal: 3
-# 			forgotten_tiberianfiend: 5
-# 			forgotten_viniferafiend: 5
-# 			forgotten_chemsprayinfantry: 5
-# 			forgotten_mutantsniper: 1
-# 			forgotten_mutanthijacker: 1
-# 			forgotten_ghoststalker: 1
-# 			forgotten_raidercar: 3
-# 			forgotten_missilevan: 3
-# 			forgotten_bowler: 3
-# 			forgotten_ruiner: 5
-# 			forgotten_closhtank: 3
-# 			forgotten_tankkiller: 7
-# 			forgotten_thumperbus: 5
-# 			forgotten_nomadbarracks: 3
-# 			forgotten_mlrs: 7
-# 			forgotten_m113adats: 7
-# 			forgotten_apctruck: 3
-# 			forgotten_rattytank: 3
-# 			forgotten_flametank: 3
-# 			forgotten_warriortank: 5
-# 			forgotten_scoopertank: 7
-# 			forgotten_experimentalmammothtank: 10
-# 			forgotten_chemicalmammothtank: 10
-# 			forgotten_apache: 3
-# 			forgotten_wasp: 3
-# 			forgotten_cobracopter: 3
-# 			forgotten_cropplane: 3
-# 			forgotten_locustbomber: 3
-# 			forgotten_upgrade_genomemapping: 1
-# 			forgotten_upgrade_chemicalfuel: 1
-# 			forgotten_upgrade_friendlywildlife: 1
-# 			forgotten_upgrade_junkarmor: 1
-# 			forgotten_upgrade_tiberiumboosters: 1
-# 			forgotten_upgrade_unity: 1
-# 			forgotten_upgrade_chemicalweapons: 1
-# 			forgotten_upgrade_tiberiumadaptability: 1
-# 			forgotten_promotion_bowler: 1
-# 			forgotten_promotion_runnershotgal: 1
-# 			forgotten_promotion_viniferafiend: 1
-# 			forgotten_promotion_ghoststalker: 1
-# 			forgotten_promotion_warriortank: 1
-# 			forgotten_promotion_scoopertank: 1
-# 			forgotten_promotion_mlrs: 1
-# 			forgotten_promotion_experimentalmammothtank: 1
-# 			forgotten_promotion_cobracopter: 1
-# 			forgotten_promotion_flametank: 1
-# 			forgotten_promotion_locustbomber: 1
-# 			forgotten_promotion_chemicalmammothtank: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			forgotten_refinery: 1500
+			forgotten_barracks: 1500
+			forgotten_warfactory: 1500
+			forgotten_helipad: 1500
+		BuildingDelays:
+			forgotten_servicedepot: 4500
+			forgotten_radar: 3000
+			forgotten_church: 6000
+		BuildingLimits:
+			forgotten_refinery: 10
+			forgotten_barracks: 5
+			forgotten_warfactory: 7
+			forgotten_helipad: 3
+			forgotten_radar: 1
+			forgotten_church: 2
+			forgotten_silo: 1
+		BuildingFractions:
+			forgotten_tiberiumspike: 10
+			forgotten_refinery: 20
+			forgotten_barracks: 5
+			forgotten_warfactory: 10
+			forgotten_helipad: 3
+			forgotten_radar: 1
+			forgotten_chemicalplant: 10
+			forgotten_church: 1
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			forgotten_mobileconstructionvehicle: 5000
+		UnitIntervals:
+			forgotten_mobileconstructionvehicle: 2500
+		UnitsToBuild:
+			forgotten_scarabapc: 1
+			forgotten_engineer: 1
+			forgotten_rocketinfantry: 7
+			forgotten_mutant: 7
+			forgotten_mutantsoldier: 7
+			forgotten_mutantsergeant: 3
+			forgotten_zombiemutant: 3
+			forgotten_runnershotgal: 3
+			forgotten_mutantmortarman: 3
+			forgotten_tiberianfiend: 5
+			forgotten_viniferafiend: 5
+			forgotten_chemsprayinfantry: 5
+			forgotten_mutantsniper: 1
+			forgotten_mutanthijacker: 1
+			forgotten_ghoststalker: 1
+			forgotten_carryall: 1
+			forgotten_raidercar: 3
+			forgotten_missilevan: 3
+			forgotten_bowler: 3
+			forgotten_ruiner: 5
+			forgotten_closhtank: 3
+			forgotten_tankkiller: 7
+			forgotten_thumperbus: 5
+			forgotten_nomadbarracks: 3
+			forgotten_mlrs: 7
+			forgotten_m113adats: 7
+			forgotten_apctruck: 3
+			forgotten_rattytank: 3
+			forgotten_flametank: 3
+			forgotten_warriortank: 5
+			forgotten_scoopertank: 7
+			forgotten_experimentalmammothtank: 10
+			forgotten_chemicalmammothtank: 10
+			forgotten_apache: 3
+			forgotten_wasp: 3
+			forgotten_cobracopter: 3
+			forgotten_cropplane: 3
+			forgotten_locustbomber: 3
+			forgotten_upgrade_genomemapping: 1
+			forgotten_upgrade_chemicalfuel: 1
+			forgotten_upgrade_friendlywildlife: 1
+			forgotten_upgrade_junkarmor: 1
+			forgotten_upgrade_tiberiumboosters: 1
+			forgotten_upgrade_unity: 1
+			forgotten_upgrade_chemicalweapons: 1
+			forgotten_upgrade_tiberiumadaptability: 1
+			forgotten_promotion_bowler: 1
+			forgotten_promotion_runnershotgal: 1
+			forgotten_promotion_viniferafiend: 1
+			forgotten_promotion_ghoststalker: 1
+			forgotten_promotion_warriortank: 1
+			forgotten_promotion_scoopertank: 1
+			forgotten_promotion_mlrs: 1
+			forgotten_promotion_experimentalmammothtank: 1
+			forgotten_promotion_cobracopter: 1
+			forgotten_promotion_flametank: 1
+			forgotten_promotion_locustbomber: 1
+			forgotten_promotion_chemicalmammothtank: 1
+		UnitLimits:
+			forgotten_ghoststalker: 1

@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
 using OpenRA.Mods.Cameo.Traits;
@@ -62,8 +63,8 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 		// Game.OnShellmapLoaded, which fires right after the shellmap load completes. Warm later loads re-randomize.
 		bool shellmapLoaded;
 
-		float2 scale;
-		float2 logoPos;
+		Vector2 scale;
+		Vector2 logoPos;
 		Sprite logo;
 
 		Sheet lastSheet;
@@ -251,7 +252,7 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 				lastDensity = density;
 
 				var rect = new Rectangle(0, 0, sheet.Size.Width, sheet.Size.Height);
-				scale = new float2(r.Resolution.Width / (float)sheet.Size.Width,
+				scale = new Vector2(r.Resolution.Width / (float)sheet.Size.Width,
 					(float)r.Resolution.Height / (float)sheet.Size.Height);
 
 				logo = scale.X > scale.Y
@@ -267,15 +268,15 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 				lastResolution = r.Resolution;
 
 				logoPos = scale.X > scale.Y
-					? new float2((r.Resolution.Width - sheet.Size.Width * scale.Y) / 2, 0)
-					: new float2(0, (-sheet.Size.Height * scale.X + r.Resolution.Height) / 2);
+					? new Vector2((r.Resolution.Width - sheet.Size.Width * scale.Y) / 2, 0)
+					: new Vector2(0, (-sheet.Size.Height * scale.X + r.Resolution.Height) / 2);
 			}
 
 			// Fade by scaling the tint RGB (darkening toward black), NOT the tint alpha. The sprite shader uses
 			// premultiplied-alpha blending (GL_ONE, GL_ONE_MINUS_SRC_ALPHA) and does c *= vTint, so reducing only
 			// the alpha channel leaves the colour at full brightness over the black background — no visible fade.
 			if (logo != null)
-				r.RgbaSpriteRenderer.DrawSprite(logo, logoPos, 1f, new float3(alpha, alpha, alpha), 1f);
+				r.RgbaSpriteRenderer.DrawSprite(logo, new Vector3(logoPos, 0), 1f, new Vector3(alpha, alpha, alpha), 1f);
 
 			// Tips belong to the loading screen, not the branding splash — only draw them once we've cut to the
 			// random screen (Done). Keeps the splash clean and shows each tip exactly once.
@@ -286,7 +287,7 @@ namespace OpenRA.Mods.Cameo.LoadScreens
 				var lit = (int)(255 * alpha);
 				var textSize = r.Fonts["Bold"].Measure(text);
 				r.Fonts["Bold"].DrawTextWithContrast(text,
-					new float2(r.Resolution.Width - textSize.X - 20, r.Resolution.Height - textSize.Y - 20),
+					new Vector2(r.Resolution.Width - textSize.X - 20, r.Resolution.Height - textSize.Y - 20),
 					Color.FromArgb(lit, lit, lit), Color.Black, 2);
 			}
 		}

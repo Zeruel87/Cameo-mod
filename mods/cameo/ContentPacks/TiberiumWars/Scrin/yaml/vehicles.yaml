@@ -1,0 +1,439 @@
+# Map/editor-ready visual foundation. Production, weapons, abilities, and final
+# gameplay values are intentionally deferred with the rest of the Scrin roster.
+
+^ScrinVehicleVisual:
+	Inherits: ^Vehicle
+	Inherits@materialization: ^ScrinFactoryMaterialization
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Locomotor: wheeled
+		Speed: 50
+		TurnSpeed: 8
+		PauseOnCondition: disabled || materializing
+		Voice: Move
+	DeathSounds:
+	Selectable:
+		Bounds: 1024, 1024
+	-Voiced:
+
+^ScrinHoverVisual:
+	Inherits: ^ScrinVehicleVisual
+	Mobile:
+		Locomotor: hover
+
+scrin_explorer:
+	Inherits: ^ScrinHoverVisual
+	Voiced:
+		VoiceSet: ScrinExplorerVoice
+	Tooltip:
+		Name: actor_scrin_explorer.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 10
+		Prerequisites: scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Deploys into a Scrin Outpost.
+	Valued:
+		Cost: 800
+	Health:
+		HP: 50000
+	Transforms:
+		IntoActor: scrin_outpost
+	RenderSprites:
+		PlayerPalette: scrin_explorer_player
+
+scrin_harvester:
+	Inherits: ^ScrinHoverVisual
+	Inherits@harvester: ^Harvester
+	Voiced:
+		VoiceSet: ScrinHarvesterVoice
+	Tooltip:
+		Name: actor_scrin_harvester.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 20
+		Prerequisites: scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Collects Tiberium for processing at an Extractor.
+	Valued:
+		Cost: 1400
+	Health:
+		HP: 140000
+	Harvester:
+		HarvestFacings: 32
+	StoresResources:
+		Capacity: 50
+	Mobile:
+		Speed: 60
+		TurnSpeed: 12
+	RenderSprites:
+		PlayerPalette: scrin_harvester_player
+
+scrin_seeker:
+	Inherits: ^ScrinHoverVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	BotRoles:
+		Roles: guerrilla
+	Voiced:
+		VoiceSet: ScrinSeekerVoice
+	Tooltip:
+		Name: actor_scrin_seeker.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 30
+		Prerequisites: scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Fast anti-ground and anti-air scout vehicle.
+	Valued:
+		Cost: 700
+	Health:
+		HP: 65000
+	Mobile:
+		Speed: 90
+	Armament:
+		Weapon: ScrinSeekerDiscs
+		LocalOffset: -27,2,490
+	AttackFrontal:
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	RenderSprites:
+		PlayerPalette: scrin_seeker_player
+
+scrin_devourer_tank:
+	Inherits: ^ScrinHoverVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Voiced:
+		VoiceSet: ScrinDevourerVoice
+	Tooltip:
+		Name: actor_scrin_devourer_tank.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 40
+		Prerequisites: scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Heavy anti-armor hover tank.
+	Valued:
+		Cost: 1200
+	Health:
+		HP: 120000
+	Mobile:
+		Speed: 60
+	Armament:
+		Weapon: ScrinDevourerBeam
+		LocalOffset: 909,0,438
+	AttackFrontal:
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	RenderSprites:
+		PlayerPalette: scrin_devourer_tank_player
+
+scrin_repair_drone:
+	Inherits: ^ScrinHoverVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Tooltip:
+		Name: actor_scrin_repair_drone.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 50
+		Prerequisites: scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Repairs allied units and structures.
+	Valued:
+		Cost: 600
+	Health:
+		HP: 30000
+	Mobile:
+		Speed: 100
+	Armament@REPAIR:
+		Weapon: ScrinRepairBeam
+		# BONE01 body emitter fit; heals, no front weapon. Lateral parts are within
+		# registration noise, height is the stable component.
+		LocalOffset: 17,60,984
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+	AttackFrontal:
+		FacingTolerance: 128
+		PauseOnCondition: disabled || materializing
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	RenderSprites:
+		PlayerPalette: scrin_repair_drone_player
+
+scrin_gun_walker:
+	Inherits: ^ScrinVehicleVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	BotRoles:
+		Roles: guerrilla
+	Voiced:
+		VoiceSet: ScrinGunWalkerVoice
+	Tooltip:
+		Name: actor_scrin_gun_walker.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 60
+		Prerequisites: scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Mobile rapid-fire anti-infantry walker.
+	Valued:
+		Cost: 600
+	Health:
+		HP: 60000
+	Mobile:
+		Speed: 75
+	Armament:
+		Weapon: ScrinGunWalkerBeam
+		LocalOffset: 511,-54,261
+	AttackFrontal:
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	RenderSprites:
+		PlayerPalette: scrin_gun_walker_player
+
+scrin_shard_walker:
+	Inherits: ^ScrinVehicleVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	BotRoles:
+		Roles: guerrilla
+	Voiced:
+		VoiceSet: ScrinShardWalkerVoice
+	Tooltip:
+		Name: actor_scrin_shard_walker.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 70
+		Prerequisites: scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Fires rapid Tiberium shard volleys.
+	Valued:
+		Cost: 800
+	Health:
+		HP: 70000
+	Mobile:
+		Speed: 75
+	Armament:
+		Weapon: ScrinShardWalkerStreak
+		LocalOffset: 511,-54,258
+	AttackFrontal:
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	RenderSprites:
+		PlayerPalette: scrin_shard_walker_player
+
+scrin_corrupter:
+	Inherits: ^ScrinVehicleVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Voiced:
+		VoiceSet: ScrinCorrupterVoice
+	Tooltip:
+		Name: actor_scrin_corrupter.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 80
+		Prerequisites: scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Sprays Tiberium-infused acid at enemy ground forces.
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 150000
+	Mobile:
+		Speed: 55
+	Armament:
+		Weapon: ScrinCorrupterSpew
+		# KW PRIMARY_WEAPON launch/fire bone FX_WEAPON_01 (AlienCorrupter.xml), fitted
+		# to production pixels; replaces the stale 512,0,960 authored guess.
+		LocalOffset: 622,73,348
+		MuzzleSequence: muzzle
+		MuzzlePalette: greenspark
+	Armament@REPAIR:
+		Weapon: ScrinRepairBeam
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+	AttackFrontal:
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	WithMuzzleOverlay:
+	RenderSprites:
+		PlayerPalette: scrin_corrupter_player
+
+scrin_annihilator_tripod:
+	Inherits: ^ScrinVehicleVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Voiced:
+		VoiceSet: ScrinAnnihilatorTripodVoice
+	Tooltip:
+		Name: actor_scrin_annihilator_tripod.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 90
+		Prerequisites: scrin_technology_assembler
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Heavy assault walker armed with energy beams.
+	Valued:
+		Cost: 2500
+	Health:
+		HP: 260000
+	Mobile:
+		Speed: 45
+		Voice: Move
+	Armament:
+		Weapon: ScrinTripodLaser
+		# Burst indexing is 0, 2, 1: center, right, left.
+		LocalOffset: 140,-73,2044, 673,-823,1944, 673,664,2100
+	WithAttackLensFlare:
+		Armaments: primary
+		RayColor: 3399FFD0
+		CoreColor: EEF8FFFF
+		Size: 34, 30
+		Width: 2.5
+		CoreSize: 5
+		Duration: 19
+		ZOffset: 2048
+	AttackFrontal:
+		Armaments: primary
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	Selectable:
+		Bounds: 2048, 2048
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	RenderSprites:
+		PlayerPalette: scrin_annihilator_tripod_player
+
+scrin_reaper_tripod:
+	Inherits: ^ScrinVehicleVisual
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Voiced:
+		VoiceSet: ScrinAnnihilatorTripodVoice
+	Tooltip:
+		Name: actor_scrin_reaper_tripod.name
+	Buildable:
+		Queue: ScrinVehicle, ScrinAdvancedVehicle
+		BuildPaletteOrder: 100
+		Prerequisites: scrin_technology_assembler
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Enhanced heavy walker with rapid energy weapons.
+	Valued:
+		Cost: 2800
+	Health:
+		HP: 300000
+	Mobile:
+		Speed: 45
+	Armament:
+		Weapon: ScrinReaperTripodLaser
+		# Burst indexing is 0, 2, 1: center, right, left.
+		LocalOffset: 140,-73,2044, 673,-823,1944, 673,664,2100
+	WithAttackLensFlare:
+		Armaments: primary
+		RayColor: 33FF66D0
+		CoreColor: EEFFF4FF
+		Size: 34, 30
+		Width: 2.5
+		CoreSize: 5
+		Duration: 19
+		ZOffset: 2048
+	AttackFrontal:
+		Armaments: primary
+		FacingTolerance: 128
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	Selectable:
+		Bounds: 2048, 2048
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	RenderSprites:
+		PlayerPalette: scrin_reaper_tripod_player
+
+scrin_eradicator_hexapod:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@materialization: ^ScrinFactoryMaterialization
+	Voiced:
+		VoiceSet: ScrinHexapodVoice
+	DeathSounds:
+	Tooltip:
+		Name: actor_scrin_eradicator_hexapod.name
+	Buildable:
+		Queue: ScrinAdvancedVehicle
+		BuildPaletteOrder: 110
+		Prerequisites: scrin_technology_assembler, scrin_signal_transmitter
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Colossal epic assault walker.
+	Valued:
+		Cost: 8000
+	Health:
+		HP: 750000
+	Armor:
+		Type: Heavy
+	Mobile:
+		Locomotor: wheeled
+		Speed: 30
+		TurnSpeed: 8
+		PauseOnCondition: disabled || materializing
+		Voice: Move
+	Armament:
+		Weapon: ScrinHexapodDiscs
+		# FX_MAINWEAPON, AIDA65; 75% sprite size and approved B_BODY screen anchor.
+		LocalOffset: 1014,56,820
+	AttackFrontal:
+		FacingTolerance: 256
+		Voice: Attack
+		PauseOnCondition: disabled || materializing
+	Selectable:
+		Bounds: 3072, 3072
+	WithMoveAnimation:
+		MoveSequence: move
+		ValidMovementTypes: Horizontal
+		RequiresCondition: !materializing
+	RenderSprites:
+		PlayerPalette: scrin_hexapod_player

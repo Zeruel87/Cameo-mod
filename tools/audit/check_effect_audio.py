@@ -193,7 +193,7 @@ CONCRETE_EXPECTED = {
             "gexpwasa.wav", "Water, Underwater", "Ship, Structure, Bridge"),
         "Warhead@ShieldHitEffect": row(SHELL_SHIELD, "Shielded"),
     },
-    "SCUDThermobaric": {
+    "ra1_soviets_v2rocketlauncher_scudthermobaric": {
         "Warhead@Effect": row("firebl3.aud", "Ground, Water"),
         "Warhead@Effect1": row("siege_impact.aud", "Ground, Ship"),
         "Warhead@Effect2": row("gexp14a.wav", "Ground, Ship", delay="6"),

@@ -13,6 +13,43 @@ so nothing below is final.
 Class anchors themselves live in [`anchor_decisions_log.md`](anchor_decisions_log.md) and
 `class_anchors.json`.
 
+## Role-review tests (2026-09-09)
+
+Source tree upstream `5f170ba07`. The eight pairs singled out by C8 in the current Astra request
+([§C8](../BLACKROBE_ASTRA_ORDERS_2026-09-07.md)) are separated by intended
+role, not by stats. Each row below is a **human review question about intended role** — it is NOT
+a numeric classifier, NOT reclassification authority, NOT proof that current weapons already
+conform, and NOT a sign-off. Membership is still decided by the shared classifier/template plus a
+maintainer role ruling; the binding definitions are [`FORMULA_V2.md`](../design/FORMULA_V2.md)
+(law) and [`class_anchors.json`](class_anchors.json). Numerical weapon/damage rules from old
+registry comments are deliberately not restated here; where a stale description (e.g. the AA
+damage-bonus grant in an old registry comment) conflicts with the current AA range law
+(`DESIGN.md`, 2026-09-08), the law wins.
+
+| pair | role-review test (one sentence) |
+|---|---|
+| `anti_air_vehicle` vs `missile_vehicle` | A dedicated air-defense vehicle versus a mobile all-round missile support unit — carrying an AA weapon is not decisive, because the AA range bonus is shared by several classes under the current AA range law. |
+| `archer` vs `flying_infantry` | A ground bow/arrow projectile-arc specialist versus infantry whose defining trait is airborne/over-terrain movement — the arrow's flight is projectile tracking, not unit flight. |
+| `rocket_trooper` vs `special_forces` | A dedicated infantry AA/AT launcher versus a versatile direct-fire anti-air/anti-armor specialist — shared air access alone does not separate them. |
+| `missile_vehicle` vs `tank_destroyer` | Mobile all-round missile support versus a frontal standoff anti-tank vehicle — judge the intended firing role, not nearby stats or the missile naming alone. |
+| `archer` vs `special_forces` | A bow/arrow projectile-arc specialist versus a direct-fire versatile specialist — air capability is shared by both, so it is not deciding evidence. |
+| `flying_infantry` vs `special_forces` | Airborne/over-terrain infantry mobility versus a ground specialist role — weapon strength does not determine movement class. |
+| `heavy_sniper` vs `mortar` | Precision all-ground sniper fire versus slow indirect arcing fire infantry — a similar range does not make them interchangeable. |
+| `pure_sniper` vs `rocket_trooper` | An infantry-target specialist versus a dedicated anti-armor/anti-air launcher — who the weapon may target separates them. |
+
+Notes (review flags, not new rules):
+
+- `anti_air_vehicle` vs `missile_vehicle` — **review-needed** on the registry text only:
+  `class_anchors.json` still carries the stale AA damage-bonus description; the twin-armament
+  mechanism itself is explicitly retained (`DESIGN.md`: the twin armament IS the engine's
+  mechanism, not duplication to collapse); the role test above follows the current AA range law,
+  and no automatic reclassification is inferred — human role questions remain reviewable.
+- The request's "area-fire" wording for `mortar` was tightened to "arcing" — the sources say
+  indirect arcing fire, and no area-damage claim is made here.
+
+These are human tests, not exhaustive mechanics requirements: anything a sentence cannot decide
+stays review-needed for a maintainer ruling.
+
 ---
 
 ## Scout infantry
@@ -25,7 +62,7 @@ Anchor spec: HP=20000, Speed=60, Range=5000, eff-DPS=60, Cost=100
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `naxis_naxiriflesoldier` | naxis | 29000 | 52 | 5495 | 100 | 6000 | 1 | 75 | 70 | 0.75 | 42.0 | 100 | +0 | anchor-ish baseline |
 | `forgotten_mutantsoldier` | forgotten | 40000 | 59 | 5000 | 250 | 8000 | 1 | 50 | 100 | 0.75 | 120.0 | 247 | -3 | verifier |
-| `asianalliance_asianmilitia` | asianalliance | 24000 | 57 | 4570 | 110 | 6000 | 1 | 50 | 70 | 0.75 | 63.0 | 106 | -4 |  |
+| `asianalliance_militia` | asianalliance | 24000 | 57 | 4570 | 110 | 6000 | 1 | 50 | 70 | 0.75 | 63.0 | 106 | -4 |  |
 | `ixian_lightinfantry` | ixian | 35000 | 55 | 4530 | 150 | 4000 | 1 | 20 | 54 | 0.75 | 81.0 | 154 | +4 |  |
 | `ordos_lightinfantry` | ordos | 37000 | 51 | 4500 | 150 | 4000 | 1 | 20 | 55 | 0.75 | 82.5 | 153 | +3 |  |
 | `light_inf` | d2k_shared | 36000 | 54 | 4510 | 150 | 4000 | 1 | 20 | 53 | 0.75 | 79.5 | 153 | +3 |  |
@@ -56,7 +93,7 @@ Anchor spec: HP=20000, Speed=60, Range=5000, eff-DPS=60, Cost=100
 
 - `forgotten_mutant` → reclassified to closecombat infantry (was range 3132).
 - `schwarzermond_lunarsoldier` → already moved to special forces; excluded from this scout pass.
-- `alien.nax` → civilian variant spawned from asteroids/dead aircraft; set Cost to **1000** (stats unchanged).
+- `naxis_alien` → civilian variant spawned from asteroids/dead aircraft; set Cost to **1000** (stats unchanged).
 - Spies, civilian Naxis variants, casters, and units priced outside the scout envelope remain for a future pass.
 - Raw Damage values are kept in 2000-step increments; effective-DPS uniqueness is enforced via per-actor FirepowerMultiplier.
 
@@ -64,7 +101,7 @@ Anchor spec: HP=20000, Speed=60, Range=5000, eff-DPS=60, Cost=100
 
 - `naxis_naxiriflesoldier`: HP 29000, Speed 52, Range 5495, weapon Damage 6000, ReloadDelay 75, Burst 1, FirepowerMultiplier@NAXISNAXIRIFLESOLDIER 70
 - `forgotten_mutantsoldier`: HP 40000, Speed 59, Range 5000, weapon Damage 8000, ReloadDelay 50, Burst 1, FirepowerMultiplier@FORGOTTENMUTANTSOLDIER 100
-- `asianalliance_asianmilitia`: HP 24000, Speed 57, Range 4570, weapon Damage 6000, ReloadDelay 50, Burst 1, FirepowerMultiplier@ASIANALLIANCEASIANMILITIA 70
+- `asianalliance_militia`: HP 24000, Speed 57, Range 4570, weapon Damage 6000, ReloadDelay 50, Burst 1, FirepowerMultiplier@ASIANALLIANCEASIANMILITIA 70
 - `ixian_lightinfantry`: HP 35000, Speed 55, Range 4530, weapon Damage 4000, ReloadDelay 20, Burst 1, FirepowerMultiplier@IXIANLIGHTINFANTRY 54
 - `ordos_lightinfantry`: HP 37000, Speed 51, Range 4500, weapon Damage 4000, ReloadDelay 20, Burst 1, FirepowerMultiplier@ORDOSLIGHTINFANTRY 55
 - `light_inf`: HP 36000, Speed 54, Range 4510, weapon Damage 4000, ReloadDelay 20, Burst 1, FirepowerMultiplier@LIGHTINF 53
@@ -184,7 +221,7 @@ the maintainer before any conversion.
 5. Melee + heavy anchors: after closecombat lands, same survey method
    (melee r₀ ~1500 band 1350–1650; heavy needs its own survey — many
    flame units already live there).
-6. Civilians (alien/undead/conehead2.nax): parked undecided per the
+6. Civilians (alien/undead/naxis_conehead2): parked undecided per the
    maintainer — they can slot into scout/closecombat/melee/heavy once
    the ladder is complete.
 
@@ -240,12 +277,12 @@ Lessons:
 
 _Merged 2026-08-23 from `docs/balance/formula_v2_mbt.md`, unedited below this line._
 
-anchor: `tiger.nax` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
+anchor: `naxis_tiger` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
 
 | unit | cost (actual) | class-formula price | delta |
 |---|---|---|---|
 | `asianalliance_lynxtank` | 850 | 761 | -11% ⚠ |
-| `assault.nax` | 900 | 4452 | +395% ❗ |
+| `naxis_assault` | 900 | 4452 | +395% ❗ |
 | `cabal_tarantula` | 1000 | 1065 | +7% |
 | `cabal_widow` | 3500 | 8264 | +136% ❗ |
 | `combat_tank.atreides` | 600 | 1018 | +70% ❗ |
@@ -263,7 +300,7 @@ anchor: `tiger.nax` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
 | `ordos_combatautoguntank` | 1500 | 916 | -39% ❗ |
 | `ordos_heavycombattank` | 950 | 1063 | +12% ⚠ |
 | `protoss_dragoon` | 1200 | 438 | -63% ❗ |
-| `ptnk.asian` | 2400 | 3485 | +45% ❗ |
+| `asianalliance_ptnk` | 2400 | 3485 | +45% ❗ |
 | `ra1_allies_alliedcybertank` | 1300 | 1381 | +6% |
 | `ra1_allies_alliedmediumtank` | 700 | 698 | -0% |
 | `ra1_allies_alliedtigerheavytank` | 1300 | 1381 | +6% |
@@ -278,7 +315,7 @@ anchor: `tiger.nax` (cost0 800, O0 946.79, P0 1093.58, Q0 1387.16)
 | `td_gdi_battletank` | 900 | 911 | +1% |
 | `td_gdi_predatortank` | 1250 | 1282 | +3% |
 | `terran_matador` | 1700.0 | (no combat stats) | |
-| `tiger.nax` | 800 | 800 | +0% |
+| `naxis_tiger` | 800 | 800 | +0% |
 | `tkm_abrams` | 1000 | 1046 | +5% |
 | `tkm_t72m` | 900 | 1287 | +43% ❗ |
 | `tkm_technicaltank` | 700 | 715 | +2% |
@@ -297,7 +334,7 @@ anchor: `td_nod_flametank` (cost0 800, O0 1403.88, P0 1226.56, Q0 1450.49)
 
 | unit | cost (actual) | class-formula price | delta |
 |---|---|---|---|
-| `asianalliance_asianflametank` | 1300 | 882 | -32% ❗ |
+| `asianalliance_flametank` | 1300 | 882 | -32% ❗ |
 | `asianalliance_warturtle` | 5000 | 567 | -89% ❗ |
 | `cabal_beholder` | 2500 | 856 | -66% ❗ |
 | `cobra.steel` | 3600 | 2515 | -30% ❗ |

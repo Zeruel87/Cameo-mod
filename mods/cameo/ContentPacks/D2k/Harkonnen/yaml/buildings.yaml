@@ -7,14 +7,14 @@ harkonnen_constructionyard:
 		Offset: 1,1
 		Facing: 432
 	RenderSprites:
-		Image: conyard.harkonnen
+		Image: harkonnen_conyard
 
 harkonnen_windtrap:
 	Inherits: ^WindTrap
 	Buildable:
 		Prerequisites: ~harkonnen_constructionyard
 	RenderSprites:
-		Image: power.harkonnen
+		Image: harkonnen_power
 
 harkonnen_barracks:
 	Inherits: ^D2KBuilding
@@ -38,7 +38,7 @@ harkonnen_barracks:
 		SpawnOffset: 512,480,0
 		ExitCell: 1,2
 	RenderSprites:
-		Image: barracks.harkonnen
+		Image: harkonnen_barracks
 	ProvidesPrerequisite@d2kbarracks:
 		Prerequisite: d2k_barracks
 	ProvidesPrerequisite@barracks:
@@ -66,8 +66,17 @@ harkonnen_refinery:
 	Buildable:
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_windtrap
 		Description: Processes spice into credits.
+	FreeActor:
+		Actor: harkonnen_spiceharvester
+		SpawnOffset: 0,2
+		Facing: 160
+	FreeActorWithDelivery@1:
+		Actor: harkonnen_spiceharvester
+		DeliveryOffset: 2,2
+		DeliveringActor: carryall.reinforce
+		Facing: 160
 	RenderSprites:
-		Image: refinery.harkonnen
+		Image: harkonnen_refinery
 
 harkonnen_storagesilo:
 	Inherits: ^D2KSilo
@@ -75,7 +84,7 @@ harkonnen_storagesilo:
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_refinery
 		Description: Stores excess spice.
 	RenderSprites:
-		Image: silo.harkonnen
+		Image: harkonnen_silo
 
 harkonnen_lightfactory:
 	Inherits: ^D2KBuilding
@@ -108,7 +117,7 @@ harkonnen_lightfactory:
 		SpawnOffset: 544,-224,0
 		ExitCell: 2,1
 	RenderSprites:
-		Image: light.harkonnen
+		Image: harkonnen_light
 	ProductionTimeMultiplier@light:
 		Multiplier: 50
 	SpawnActorOnDeath@death1:
@@ -147,13 +156,13 @@ harkonnen_heavyfactory:
 		SpawnOffset: 256,192,0
 		ExitCell: 0,2
 	ProvidesPrerequisite@atreides:
-		Prerequisite: heavy.atreides
+		Prerequisite: atreides_heavy
 	ProvidesPrerequisite@ordos:
-		Prerequisite: heavy.ordos
+		Prerequisite: ordos_heavy
 	ProvidesPrerequisite@harkonnen:
-		Prerequisite: heavy.harkonnen
+		Prerequisite: harkonnen_heavy
 	RenderSprites:
-		Image: heavy.harkonnen
+		Image: harkonnen_heavy
 	WithIdleOverlay@TOP:
 		RequiresCondition: !build-incomplete
 		Sequence: idle-top
@@ -211,7 +220,7 @@ harkonnen_repairpad:
 	Reservable:
 	RallyPoint:
 	RenderSprites:
-		Image: repair_pad.harkonnen
+		Image: harkonnen_repair_pad
 	WithRepairOverlay:
 		RequiresCondition: !build-incomplete
 		Palette: effect75alpha
@@ -243,7 +252,7 @@ harkonnen_outpost:
 		Dimensions: 3,3
 		LocalCenterOffset: 0,-512,0
 	RenderSprites:
-		Image: outpost.harkonnen
+		Image: harkonnen_outpost
 	WithIdleOverlay@DISH:
 		RequiresCondition: !build-incomplete && !severe-damaged
 		Sequence: idle-dish
@@ -268,7 +277,7 @@ harkonnen_outpost:
 
 harkonnen_autogunturret:
 	Inherits: ^D2KDefense
-	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@exp: ^D2KGainsExperienceRABuilding
 	Inherits@decoration: ^DuneRankDecoration
 	Inherits@Template: ^AdvancedDefenseTemplate
 	Inherits@muzzleglow: ^MuzzleGlowCannon
@@ -290,7 +299,11 @@ harkonnen_autogunturret:
 	Valued:
 		Cost: 1100
 	Buildable:
+		Queue: Defence, RADefence
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_barracks
+		BuildPaletteOrder: 510
+		Description: Defensive structure.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Tanks
+		IconPalette: cameo
 	Health:
 		HP: 75000
 	Armament:
@@ -343,7 +356,7 @@ harkonnen_autogunturret:
 
 harkonnen_flameturret:
 	Inherits: ^D2KDefense
-	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@exp: ^D2KGainsExperienceRABuilding
 	Inherits@decoration: ^DuneRankDecoration
 	Inherits@Template: ^BasicDefenseTemplate
 	Inherits@muzzleglow: ^MuzzleGlowCannon
@@ -411,7 +424,7 @@ harkonnen_flameturret:
 
 harkonnen_rocketturret:
 	Inherits: ^D2KDefense
-	Inherits@exp: ^GainsExperienceRABuilding
+	Inherits@exp: ^D2KGainsExperienceRABuilding
 	Inherits@decoration: ^DuneRankDecoration
 	Inherits@Template: ^AdvancedDefenseTemplate
 	Inherits@detect: ^GenericAllDetector
@@ -426,7 +439,11 @@ harkonnen_rocketturret:
 	Armor:
 		Type: Concrete
 	Buildable:
+		Queue: Defence, RADefence
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_outpost
+		BuildPaletteOrder: 610
+		Description: actor_harkonnen_rocketturret.description
+		IconPalette: d2kunit
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -471,28 +488,92 @@ harkonnen_rocketturret:
 	RenderSprites:
 		Image: ixian_rocketturret
 
+harkonnen_devastatorturret:
+	Inherits: ^D2KDefense
+	Inherits@exp: ^D2KGainsExperienceRABuilding
+	Inherits@decoration: ^DuneRankDecoration
+	Inherits@Template: ^AdvancedDefenseTemplate
+	Inherits@detect: ^GenericAllDetector
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@EMP: ^DefenseTurretedEMP
+	Inherits@D2KSprite: ^D2KPaletteRender
+	Inherits@AntiBuil: ^PrioritizeBuilding
+	Inherits@shape: ^1x1Shape
+	Inherits@Armor: ^D2K_GeneralPurposeArmor
+	Armor:
+		Type: Concrete
+	Buildable:
+		Queue: Defence, RADefence
+		Prerequisites: ~harkonnen_constructionyard, harkonnen_ixresearchcenter
+		BuildPaletteOrder: 580
+		Description: Heavy devastator turret.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry
+		IconPalette: cameo
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Harkonnen Devastator Turret
+	Health:
+		HP: 150000
+	BodyOrientation:
+		QuantizedFacings: 64
+	Armament:
+		Weapon: harkonnen_devastatorturret
+		LocalOffset: 256,0,768
+	Turreted:
+		TurnSpeed: 16
+		InitialFacing: 2048
+	AttackTurreted:
+		RequiresCondition: !build-incomplete
+	WithWallSpriteBody:
+		RequiresCondition: !build-incomplete
+	WithSpriteTurret:
+		RequiresCondition: !build-incomplete
+	WithSpriteBody:
+		Name: make
+		Sequence: invisible
+	WithMakeAnimation:
+		Condition: build-incomplete
+		BodyNames: make
+	Replacement:
+		ReplaceableTypes: Tower
+	-WithDeathAnimation:
+	FireProjectilesOnDeath:
+		Weapons: Debris2, Debris3
+		Pieces: 3, 5
+		Range: 1c512, 2c768
+	SpawnActorOnDeath@death1:
+		Actor: light_inf
+	Power:
+		Amount: -75
+	RevealsShroud:
+		Range: 10684
+	DetectCloaked:
+		Range: 5342
+	RenderSprites:
+		Image: harkonnen_devastatorturret
+
 harkonnen_hightechfactory:
 	Inherits: ^HighTechFactory
 	Buildable:
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_outpost
 	RenderSprites:
-		Image: hightech.harkonnen
+		Image: harkonnen_hightech
 
 harkonnen_ixresearchcenter:
 	Inherits: ^ResearchCentre
 	Buildable:
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_outpost
 	RenderSprites:
-		Image: research.harkonnen
+		Image: harkonnen_research
 
 harkonnen_starport:
 	Inherits: ^Starport
 	Buildable:
 		Prerequisites: ~harkonnen_constructionyard, harkonnen_ixresearchcenter, derricklimit
 	RenderSprites:
-		Image: starport.harkonnen
+		Image: harkonnen_starport
 	ProvidesPrerequisite@starport_harkonnen:
-		Prerequisite: heavy.harkonnen
+		Prerequisite: harkonnen_heavy
 	ProvidesPrerequisite@starport_harkonnen_combat:
 		Prerequisite: heavy.harkonnen_combat
 	ProvidesPrerequisite@starport_missile_tank:
@@ -527,7 +608,7 @@ harkonnen_palace:
 			TopLeft: -512, -1536
 			BottomRight: 512, -512
 	RenderSprites:
-		Image: palace.harkonnen
+		Image: harkonnen_palace
 	ProvidesPrerequisite@palace:
 		Prerequisite: palace
 	-WithDeathAnimation:

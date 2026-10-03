@@ -33,7 +33,7 @@ namespace OpenRA.Mods.CA
 			return cells.Select(a => map.FindTilesInCircle(a.Location, radius)
 				.Count(c => map.Contains(c) && terrainTypes.Contains(map.GetTerrainInfo(c).Type) &&
 					Util.AdjacentCells(world, Target.FromCell(world, c))
-						.All(ac => terrainTypes.Contains(map.GetTerrainInfo(ac).Type))))
+						.All(ac => map.Contains(ac) && terrainTypes.Contains(map.GetTerrainInfo(ac).Type))))
 							.Any(availableCells => availableCells > 0);
 		}
 
@@ -88,7 +88,8 @@ namespace OpenRA.Mods.CA
 
 		public static ActorInfo GetInfoByCommonName(HashSet<string> names, Player owner)
 		{
-			return owner.World.Map.Rules.Actors.Where(k => names.Contains(k.Key)).Random(owner.World.LocalRandom).Value;
+			var matches = owner.World.Map.Rules.Actors.Where(k => names.Contains(k.Key)).ToList();
+			return matches.Count > 0 ? matches.Random(owner.World.LocalRandom).Value : null;
 		}
 
 		// Common-name sets (e.g. HarvesterTypes) are shared across every faction in the mod, so a

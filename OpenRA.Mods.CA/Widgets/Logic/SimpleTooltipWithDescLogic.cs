@@ -21,14 +21,14 @@ namespace OpenRA.Mods.CA.Widgets.Logic
 		{
 			var label = widget.Get<LabelWidget>("LABEL");
 			var font = Game.Renderer.Fonts[label.Font];
-			var text = containerWidget.GetTooltipText();
+			var text = getText();
 			var labelWidth = font.Measure(text).X;
 
 			label.GetText = () => text;
 			label.Bounds.Width = labelWidth;
 			widget.Bounds.Width = 2 * label.Bounds.X + labelWidth;
 
-			var desc = containerWidget.GetTooltipDesc();
+			var desc = getDesc();
 			if (!string.IsNullOrEmpty(desc))
 			{
 				var descTemplate = widget.Get<LabelWidget>("DESC");
@@ -37,7 +37,7 @@ namespace OpenRA.Mods.CA.Widgets.Logic
 				var descFont = Game.Renderer.Fonts[descTemplate.Font];
 				var descWidth = 0;
 				var descOffset = descTemplate.Bounds.Y;
-				foreach (var line in desc.Split(new[] { "\\n" }, StringSplitOptions.None))
+				foreach (var line in desc.Split(new[] { "\\n", "\n" }, StringSplitOptions.None))
 				{
 					descWidth = Math.Max(descWidth, descFont.Measure(line).X);
 					var lineLabel = (LabelWidget)descTemplate.Clone();

@@ -140,13 +140,20 @@ def main() -> int:
         manifest = pack_dir / "content.yaml"
         if not ydir.is_dir() or not manifest.is_file():
             continue
-        on_disk = {f.name for f in ydir.glob("*.yaml")}
-        listed = set(re.findall(r"yaml/([a-z_0-9]+\.yaml)", manifest.read_text(encoding="utf-8-sig")))
         rel = pack_dir.relative_to(PACKS)
+        on_disk = {f.name for f in ydir.glob("*.yaml")}
+        includes = re.findall(r"ContentPacks\|([^\s]+?\.yaml)", manifest.read_text(encoding="utf-8-sig"))
+        # includes pointing at THIS pack's own yaml dir (basename set)
+        listed = {inc.rsplit("/", 1)[-1] for inc in includes
+                  if inc.replace("\\", "/").rsplit("/", 2)[-2] == "yaml"
+                  and inc.startswith(str(rel).replace("\\", "/") + "/")}
+        # every include must resolve to a real file under ContentPacks/
+        missing = [inc.rsplit("/", 1)[-1] for inc in includes
+                   if not (PACKS / inc.replace("\\", "/")).is_file()]
         for f in sorted(on_disk - listed):
             print(f"- `{rel}`: `{f}` on disk but NOT in content.yaml")
             p3 += 1
-        for f in sorted(listed - on_disk):
+        for f in sorted(set(missing)):
             print(f"- `{rel}`: `{f}` in content.yaml but MISSING on disk (crash risk)")
             p3 += 1
         for f in sorted(on_disk - STANDARD_FILES):

@@ -43,6 +43,12 @@ namespace OpenRA.Mods.CA.Traits
 		CPos? baseCenterKeepsFailing = null;
 
 		bool itemQueuedThisTick = false;
+
+		// An empty tolerance list in yaml would make ImmutableArray.Random throw.
+		int RandomTolerance(ImmutableArray<int> values)
+		{
+			return values.IsDefaultOrEmpty ? 0 : values.Random(world.LocalRandom);
+		}
 		bool limitBuildRadius = false;
 
 		WaterCheck waterState = WaterCheck.NotChecked;
@@ -52,6 +58,10 @@ namespace OpenRA.Mods.CA.Traits
 		int productionTypeLimit = 0;
 		int buildingDelayModifier = 100;
 		int buildingIntervalModifier = 100;
+
+		// Cameo (§12.20): lazy — resolved on first TickQueue, an OR-of-vetoes pause on new building
+		// production. Empty = nothing pauses, upstream-identical.
+		IBotRequestPauseBuildingProduction[] pauseBuilding;
 
 		public BaseBuilderQueueManagerCA(BaseBuilderBotModuleCA baseBuilder, string category, Player p, PowerManager pm,
 			PlayerResources pr, IResourceLayer rl)
@@ -85,6 +95,27 @@ namespace OpenRA.Mods.CA.Traits
 			productionTypeLimit = botLimits.Info.ProductionTypeLimit;
 			buildingDelayModifier = botLimits.Info.BuildingDelayModifier;
 			buildingIntervalModifier = botLimits.Info.BuildingIntervalModifier;
+		}
+
+		// Scale targets (DESIGN 19.10): an enabled provider's production target replaces BotLimits.ProductionTypeLimit
+		// (0 stays "no limit" when there are no BotLimits at all).
+		int ProductionTypeLimit => productionTypeLimit > 0 && baseBuilder.TryGetScaleTarget("production", out var scaled)
+			? scaled : productionTypeLimit;
+
+		// BotLimits carries the per-difficulty value on the DESIGN §19.1 line; negative there means the module's own.
+		// Build-order knobs (12.25): greed raises the cash the production priority override waits for (economy first), production lowers it.
+		int NewProductionCashThreshold
+		{
+			get
+			{
+				var threshold = botLimits != null && botLimits.Info.NewProductionCashThreshold >= 0
+					? botLimits.Info.NewProductionCashThreshold : baseBuilder.Info.NewProductionCashThreshold;
+				var knobs = baseBuilder.BuildOrderKnobs;
+				if (knobs == null || threshold <= 0)
+					return threshold;
+
+				return DivideByKnob(BotBuildOrderKnobs.Scale(threshold, knobs.KnobMilli(BuildOrderKnob.Greed)), knobs.KnobMilli(BuildOrderKnob.Production));
+			}
 		}
 
 		public void Tick(IBot bot)
@@ -133,7 +164,8 @@ namespace OpenRA.Mods.CA.Traits
 				// a) the number of buildings has decreased since last failure M ticks ago,
 				// or b) number of BaseProviders (construction yard or similar) has increased since then.
 				// Otherwise reset failRetryTicks instead to wait again.
-				else if (baseBuilder.BaseExpansionModules == null && --failRetryTicks <= 0)
+				// (BaseExpansionModules is a .ToArray() — never null; Length==0 was the intent.)
+				else if (baseBuilder.BaseExpansionModules.Length == 0 && --failRetryTicks <= 0)
 				{
 					var currentBuildings = world.ActorsHavingTrait<Building>().Count(a => a.Owner == player);
 					var baseProviders = world.ActorsHavingTrait<BaseProvider>().Count(a => a.Owner == player);
@@ -168,6 +200,8 @@ namespace OpenRA.Mods.CA.Traits
 					cachedBases = currentBases;
 					waterState = WaterCheck.NotChecked;
 				}
+				else
+					checkForBasesTicks = baseBuilder.Info.CheckForNewBasesDelay;
 			}
 
 			// Only update once per second or so
@@ -177,6 +211,11 @@ namespace OpenRA.Mods.CA.Traits
 			playerBuildings = world.ActorsHavingTrait<Building>().Where(a => a.Owner == player).ToArray();
 			var excessPowerBonus = baseBuilder.Info.ExcessPowerIncrement * (playerBuildings.Count() / baseBuilder.Info.ExcessPowerIncreaseThreshold.Clamp(1, int.MaxValue));
 			minimumExcessPower = (baseBuilder.Info.MinimumExcessPower + excessPowerBonus).Clamp(baseBuilder.Info.MinimumExcessPower, baseBuilder.Info.MaximumExcessPower);
+
+			// Build-order knobs (12.25): power_margin scales the surplus target (no provider = unchanged).
+			var knobs = baseBuilder.BuildOrderKnobs;
+			if (knobs != null)
+				minimumExcessPower = BotBuildOrderKnobs.Scale(minimumExcessPower, knobs.KnobMilli(BuildOrderKnob.PowerMargin));
 
 			// PERF: Queue only one actor at a time per category
 			itemQueuedThisTick = false;
@@ -193,6 +232,10 @@ namespace OpenRA.Mods.CA.Traits
 
 			WaitTicks = active ? baseBuilder.Info.StructureProductionActiveDelay + randomFactor
 				: baseBuilder.Info.StructureProductionInactiveDelay + randomFactor;
+
+			// Build-order knobs (12.25): tempo shortens (above 1000) or lengthens the general build interval.
+			if (knobs != null)
+				WaitTicks = DivideByKnob(WaitTicks, knobs.KnobMilli(BuildOrderKnob.Tempo));
 		}
 
 		bool TickQueue(IBot bot, ProductionQueue queue)
@@ -213,8 +256,21 @@ namespace OpenRA.Mods.CA.Traits
 				if ((playerResources.GetCashAndResources() < minCashRequirement && !baseBuilder.Info.RefineryTypes.Contains(item.Name)) || itemQueuedThisTick)
 					return false;
 
+				// Cameo (§12.20): the army-first vote - a provider (ArmyFirstBotModule, the one owner) can hold new
+				// non-essential buildings so cash flows to unit production while it needs to. Construction yards,
+				// refineries, power and the first production building are essential and always pass.
+				pauseBuilding ??= player.PlayerActor.TraitsImplementing<IBotRequestPauseBuildingProduction>().ToArray();
+				if (pauseBuilding.Length > 0)
+				{
+					var essential = IsArmyFirstEssential(item);
+					if (pauseBuilding.Any(p => p.PausesBuilding(item, essential)))
+						return false;
+				}
+
 				baseBuilder.RecordOpeningStructureQueued(queue, item);
+				baseBuilder.BuildOrderKnobs?.NotifyQueued(item.Name);
 				bot.QueueOrder(Order.StartProduction(queue.Actor, item.Name, 1));
+				queuedAt[queue.Actor.ActorID] = (item.Name, world.WorldTick);
 				itemQueuedThisTick = true;
 				SetBuildingInterval(item.Name);
 			}
@@ -232,9 +288,9 @@ namespace OpenRA.Mods.CA.Traits
 				string orderString = "PlaceBuilding";
 
 				// Check if we've hit the limit for this building already, if so cancel it
-				if (baseBuilder.Info.BuildingLimits.ContainsKey(currentBuilding.Item))
+				if (baseBuilder.TryGetBuildingLimit(currentBuilding.Item, out var currentLimit))
 				{
-					if ((AIUtils.CountBuildingByCommonName(new HashSet<string> { currentBuilding.Item }, player) >= baseBuilder.Info.BuildingLimits[currentBuilding.Item]))
+					if ((AIUtils.CountBuildingByCommonName(new HashSet<string> { currentBuilding.Item }, player) >= currentLimit))
 					{
 						AIUtils.BotDebug($"{player} has already has enough {currentBuilding.Item}; cancelling production");
 						bot.QueueOrder(Order.CancelProduction(queue.Actor, currentBuilding.Item, 1));
@@ -246,6 +302,8 @@ namespace OpenRA.Mods.CA.Traits
 				var plugInfo = actorInfo.TraitInfoOrDefault<PlugInfo>();
 				var valueInfo = actorInfo.TraitInfoOrDefault<ValuedInfo>();
 				var distanceToBaseIsImportant = true;
+				CPos? advisedDefense = null;
+				refineryClaimed = false;
 				if (plugInfo != null)
 				{
 					var possibleBuilding = world.ActorsWithTrait<Pluggable>().FirstOrDefault(a =>
@@ -271,16 +329,25 @@ namespace OpenRA.Mods.CA.Traits
 					}
 					else if (actorInfo.HasTraitInfo<AttackBaseInfo>())
 					{
-						if (baseBuilder.Info.AntiAirTypes.Contains(actorInfo.Name))
-							placeDefenseTowardsEnemyChance = (int)Math.Ceiling(placeDefenseTowardsEnemyChance / 1.5);
+						// Cameo: an active advisor picks the cell itself, skipping the roll (no random draw is consumed);
+						// without one, or when it has no answer, the code below is unchanged.
+						advisedDefense = AdvisedDefenseCell(actorInfo, distanceToBaseIsImportant, queue.Actor);
+						if (advisedDefense == null)
+						{
+							if (baseBuilder.Info.AntiAirTypes.Contains(actorInfo.Name))
+								placeDefenseTowardsEnemyChance = (int)Math.Ceiling(placeDefenseTowardsEnemyChance / 1.5);
 
-						if (world.LocalRandom.Next(100) < placeDefenseTowardsEnemyChance)
-							type = BuildingType.Defense;
+							if (world.LocalRandom.Next(100) < placeDefenseTowardsEnemyChance)
+								type = BuildingType.Defense;
+						}
 					}
-					else if (!limitBuildRadius && valueInfo.Cost < baseBuilder.Info.BaseCrawlCostThreshold && world.LocalRandom.Next(100) < baseBuilder.Info.BaseCrawlChance)
+					else if (!limitBuildRadius && valueInfo != null && valueInfo.Cost < baseBuilder.Info.BaseCrawlCostThreshold && world.LocalRandom.Next(100) < baseBuilder.Info.BaseCrawlChance)
 						type = BuildingType.BaseCrawl;
 
-					(location, baseCenterKeepsFailing, actorVariant) = ChooseBuildLocation(currentBuilding.Item, distanceToBaseIsImportant, queue.Actor, type);
+					if (advisedDefense != null)
+						location = advisedDefense;
+					else
+						(location, baseCenterKeepsFailing, actorVariant) = ChooseBuildLocation(currentBuilding.Item, distanceToBaseIsImportant, queue.Actor, type);
 				}
 
 				if (location == null)
@@ -301,6 +368,7 @@ namespace OpenRA.Mods.CA.Traits
 				else
 				{
 					failCount = 0;
+					NotifyPlacement(currentBuilding.Item, location.Value, queue.Actor.ActorID, orderString, type, advisedDefense != null);
 
 					bot.QueueOrder(new Order(orderString, player.PlayerActor, Target.FromCell(world, location.Value), false)
 					{
@@ -330,9 +398,9 @@ namespace OpenRA.Mods.CA.Traits
 						var tolerateOnCash = playerResources.GetCashAndResources() / Math.Max(baseBuilder.Info.PerExpansionTolerateOnCash, 1);
 
 						if (numRef >= baseBuilder.Info.InititalMinimumRefineryCount + baseBuilder.Info.AdditionalMinimumRefineryCount
-							&& numProd > 0 && numProd + numTech - baseBuilder.Info.ExpansionTolerate.Random(world.LocalRandom) - tolerateOnCash >= numRef)
+							&& numProd > 0 && numProd + numTech - RandomTolerance(baseBuilder.Info.ExpansionTolerate) - tolerateOnCash >= numRef)
 						{
-							var undeployEvenNoBase = numProd + numTech - baseBuilder.Info.ForceExpansionTolerate.Random(world.LocalRandom) - tolerateOnCash >= numRef;
+							var undeployEvenNoBase = numProd + numTech - RandomTolerance(baseBuilder.Info.ForceExpansionTolerate) - tolerateOnCash >= numRef;
 
 							foreach (var be in baseBuilder.BaseExpansionModules)
 								be.UpdateExpansionParams(bot, true, undeployEvenNoBase, null);
@@ -345,6 +413,28 @@ namespace OpenRA.Mods.CA.Traits
 			return true;
 		}
 
+		// Cameo (12.24 FE-0 / 12.25 BO-0): record-only telemetry. The queue tick per producer and the refinery-claim flag are read by
+		// NotifyPlacement only; nothing here feeds a decision.
+		readonly Dictionary<uint, (string Item, int Tick)> queuedAt = new();
+		bool refineryClaimed;
+		IBotPlacementObserver[] placementObservers;
+
+		void NotifyPlacement(string item, CPos cell, uint producerId, string orderString, BuildingType type, bool advisedDefence)
+		{
+			placementObservers ??= world.WorldActor.TraitsImplementing<IBotPlacementObserver>().ToArray();
+			if (placementObservers.Length == 0)
+				return;
+
+			var reason = orderString != "PlaceBuilding" ? "other"
+				: advisedDefence || type == BuildingType.Defense ? "defence"
+				: type == BuildingType.BaseCrawl ? "crawl"
+				: type == BuildingType.Refinery && refineryClaimed ? "refinery_claim"
+				: "base";
+			var queued = queuedAt.TryGetValue(producerId, out var q) && q.Item == item ? q.Tick : world.WorldTick;
+			foreach (var observer in placementObservers)
+				observer.BuildingPlaced(player, world.WorldTick, item, cell, reason, queued);
+		}
+
 		ActorInfo GetProducibleBuilding(IReadOnlySet<string> actors, IEnumerable<ActorInfo> buildables, Func<ActorInfo, int> orderBy = null)
 		{
 			var available = buildables.Where(actor =>
@@ -353,7 +443,7 @@ namespace OpenRA.Mods.CA.Traits
 				if (!actors.Contains(actor.Name))
 					return false;
 
-				if (!baseBuilder.Info.BuildingLimits.TryGetValue(actor.Name, out var limit))
+				if (!baseBuilder.TryGetBuildingLimit(actor.Name, out var limit))
 					return true;
 
 				return playerBuildings.Count(a => a.Info.Name == actor.Name) +
@@ -369,7 +459,113 @@ namespace OpenRA.Mods.CA.Traits
 		bool HasSufficientPowerForActor(ActorInfo actorInfo)
 		{
 			return playerPower == null || (actorInfo.TraitInfos<PowerInfo>().Where(i => i.EnabledByDefault)
-				.Sum(p => p.Amount) + playerPower.ExcessPower) >= baseBuilder.Info.MinimumExcessPower;
+				.Sum(p => p.Amount) + playerPower.ExcessPower) >= ScaledBaseMinimumExcessPower();
+		}
+
+		// Build-order knobs (12.25): power_margin scales the configured surplus floor too.
+		int ScaledBaseMinimumExcessPower()
+		{
+			var knobs = baseBuilder.BuildOrderKnobs;
+			return knobs == null ? baseBuilder.Info.MinimumExcessPower
+				: BotBuildOrderKnobs.Scale(baseBuilder.Info.MinimumExcessPower, knobs.KnobMilli(BuildOrderKnob.PowerMargin));
+		}
+
+		// Build-order knobs (12.25): the milli multiplier of a building's fraction by its rules-derived category (1000 = none).
+		int FractionMilli(string actorName)
+		{
+			var knobs = baseBuilder.BuildOrderKnobs;
+			if (knobs == null)
+				return BuildOrderKnob.Neutral;
+
+			var knob = BuildOrderCategory.KnobFor(knobs.CategoryOf(actorName));
+			return knob == null ? BuildOrderKnob.Neutral : knobs.KnobMilli(knob);
+		}
+
+		// Build-order knobs (12.25): the opening's next wanted building, preferred over the fraction table. It runs AFTER the
+		// low-power and refinery priority overrides, so an opening never blocks a power or refinery emergency, and it respects
+		// the same limits and the power check as every other choice. Null = no opening, nothing wanted here, or nothing buildable
+		// in this queue (another queue's manager may take the step).
+		ActorInfo ChooseOpeningBuilding(IBotBuildOrderKnobs knobs, IEnumerable<ActorInfo> buildableThings, ActorInfo power)
+		{
+			var wanted = knobs.OpeningWanted;
+			if (wanted == null)
+				return null;
+
+			ActorInfo best = null;
+			var bestFraction = -1;
+			foreach (var candidate in buildableThings)
+			{
+				var name = candidate.Name;
+				if (!BuildOrderCategory.Satisfies(wanted, knobs.CategoryOf(name)))
+					continue;
+
+				if (baseBuilder.Info.NavalProductionTypes.Contains(name) || baseBuilder.Info.RefineryTypes.Contains(name) && baseBuilder.HasMaxRefineriesFor(candidate))
+					continue;
+
+				var count = playerBuildings.Count(a => a.Info.Name == name) +
+					(baseBuilder.BuildingsBeingProduced.TryGetValue(name, out var num) ? num : 0);
+
+				if (botLimits != null && baseBuilder.Info.ProductionTypes.Contains(name) && count >= ProductionTypeLimit)
+					continue;
+
+				if (baseBuilder.TryGetBuildingLimit(name, out var limit) && limit <= count)
+					continue;
+
+				var fraction = baseBuilder.Info.BuildingFractions != null && baseBuilder.Info.BuildingFractions.TryGetValue(name, out var f) ? f : 0;
+				if (best == null || fraction > bestFraction || fraction == bestFraction && string.CompareOrdinal(name, best.Name) < 0)
+				{
+					best = candidate;
+					bestFraction = fraction;
+				}
+			}
+
+			if (best == null)
+				return null;
+
+			if (!HasSufficientPowerForActor(best))
+				return power != null && power.TraitInfos<PowerInfo>().Where(i => i.EnabledByDefault).Sum(pi => pi.Amount) > 0 ? power : null;
+
+			AIUtils.BotDebug("{0} decided to build {1}: opening step {2}", player, best.Name, wanted);
+			return best;
+		}
+
+		static int DivideByKnob(int ticks, int milli) => milli == BuildOrderKnob.Neutral ? ticks : (int)(ticks * 1000L / Math.Max(1, milli));
+
+		// Build-order knobs (12.25): a delay or interval in ticks for one building. tempo divides every one (above 1000 = faster);
+		// a tech/superweapon building's also divides by the tech knob, a refinery's by greed. No provider = unchanged.
+		int KnobTicks(int ticks, string actorName)
+		{
+			var knobs = baseBuilder.BuildOrderKnobs;
+			if (knobs == null)
+				return ticks;
+
+			ticks = DivideByKnob(ticks, knobs.KnobMilli(BuildOrderKnob.Tempo));
+			var knob = BuildOrderCategory.KnobFor(knobs.CategoryOf(actorName));
+			if (knob == BuildOrderKnob.Tech || knob == BuildOrderKnob.Greed)
+				ticks = DivideByKnob(ticks, knobs.KnobMilli(knob));
+
+			return ticks;
+		}
+
+		// Cameo (army-first): buildings that stay allowed while the army-first vote holds
+		// the rest. Construction yards, refineries and power are always essential; the first
+		// production building must pass too — no factory means no army, so blocking it deadlocks.
+		bool IsArmyFirstEssential(ActorInfo actorInfo)
+		{
+			var name = actorInfo.Name;
+			if (baseBuilder.Info.ConstructionYardTypes.Contains(name)
+				|| baseBuilder.Info.RefineryTypes.Contains(name)
+				|| baseBuilder.Info.PowerTypes.Contains(name))
+				return true;
+
+			// One queued-but-unplaced factory is enough to break the deadlock — don't let the
+			// gate admit a second one while the first is still producing.
+			if (baseBuilder.Info.ProductionTypes.Contains(name)
+				&& !baseBuilder.HasAdequateProductionCount()
+				&& !baseBuilder.BuildingsBeingProduced.Keys.Any(baseBuilder.Info.ProductionTypes.Contains))
+				return true;
+
+			return false;
 		}
 
 		ActorInfo ChooseBuildingToBuild(ProductionQueue queue)
@@ -451,12 +647,21 @@ namespace OpenRA.Mods.CA.Traits
 				}
 			}
 
+			// Build-order knobs (12.25): the active opening's next wanted building.
+			var buildOrderKnobs = baseBuilder.BuildOrderKnobs;
+			if (buildOrderKnobs != null)
+			{
+				var opening = ChooseOpeningBuilding(buildOrderKnobs, buildableThings, power);
+				if (opening != null)
+					return opening;
+			}
+
 			// Make sure that we can spend as fast as we are earning
-			if (baseBuilder.Info.NewProductionCashThreshold > 0 && playerResources.GetCashAndResources() > baseBuilder.Info.NewProductionCashThreshold)
+			if (NewProductionCashThreshold > 0 && playerResources.GetCashAndResources() > NewProductionCashThreshold)
 			{
 				var production = GetProducibleBuilding(baseBuilder.Info.ProductionTypes, buildableThings);
 
-				if (production != null && (productionTypeLimit <= 0 || playerBuildings.Count(a => a.Info.Name == production.Name) < productionTypeLimit))
+				if (production != null && (ProductionTypeLimit <= 0 || playerBuildings.Count(a => a.Info.Name == production.Name) < ProductionTypeLimit))
 				{
 					if (HasSufficientPowerForActor(production))
 					{
@@ -473,8 +678,8 @@ namespace OpenRA.Mods.CA.Traits
 			}
 
 			// Only consider building this if there is enough water inside the base perimeter and there are close enough adjacent buildings
-			if (waterState == WaterCheck.EnoughWater && baseBuilder.Info.NewProductionCashThreshold > 0
-				&& playerResources.Resources > baseBuilder.Info.NewProductionCashThreshold
+			if (waterState == WaterCheck.EnoughWater && NewProductionCashThreshold > 0
+				&& playerResources.Resources > NewProductionCashThreshold
 				&& AIUtils.IsAreaAvailable<GivesBuildableArea>(world, player, world.Map, baseBuilder.Info.CheckForWaterRadius, baseBuilder.Info.WaterTerrainTypes))
 			{
 				var navalproduction = GetProducibleBuilding(baseBuilder.Info.NavalProductionTypes, buildableThings);
@@ -516,7 +721,7 @@ namespace OpenRA.Mods.CA.Traits
 				// Does this building have initial delay, if so have we passed it?
 				if (baseBuilder.Info.BuildingDelays != null &&
 					baseBuilder.Info.BuildingDelays.TryGetValue(name, out var delay) &&
-					delay * buildingDelayModifier / 100 > world.WorldTick)
+					KnobTicks(delay * buildingDelayModifier / 100, name) > world.WorldTick)
 					continue;
 
 				// Does this building have an interval which hasn't elapsed yet?
@@ -539,18 +744,19 @@ namespace OpenRA.Mods.CA.Traits
 					(baseBuilder.BuildingsBeingProduced.TryGetValue(name, out var num) ? num : 0);
 
 				// Do we want to build this structure?
-				if (count * 100 > frac.Value * playerBuildings.Length)
+				// Build-order knobs (12.25): production/tech/defence/support/greed scale the fraction of their categories (milli = 1000 without a provider).
+				if (count * 100L * 1000 > (long)frac.Value * FractionMilli(name) * playerBuildings.Length)
 					continue;
 
-				if (botLimits != null && baseBuilder.Info.ProductionTypes.Contains(name) && count >= botLimits.Info.ProductionTypeLimit)
+				if (botLimits != null && baseBuilder.Info.ProductionTypes.Contains(name) && count >= ProductionTypeLimit)
 				{
-					AIUtils.BotDebug("{0} decided to build {1} but limit of {2} already reached)", queue.Actor.Owner, name, botLimits.Info.ProductionTypeLimit);
+					AIUtils.BotDebug("{0} decided to build {1} but limit of {2} already reached)", queue.Actor.Owner, name, ProductionTypeLimit);
 					continue;
 				}
 
-				if (baseBuilder.Info.BuildingLimits.TryGetValue(name, out var limit) && limit <= count)
+				if (baseBuilder.TryGetBuildingLimit(name, out var limit) && limit <= count)
 				{
-					AIUtils.BotDebug("{0} decided to build {1} but limit of {2} already reached)", queue.Actor.Owner, name, baseBuilder.Info.BuildingLimits[name]);
+					AIUtils.BotDebug("{0} decided to build {1} but limit of {2} already reached)", queue.Actor.Owner, name, limit);
 					continue;
 				}
 
@@ -592,8 +798,10 @@ namespace OpenRA.Mods.CA.Traits
 			return null;
 		}
 
-		// Find the buildable cell that is closest to pos and centered around center
-		(CPos? Location, CPos Center, int Variant) findPos(string actorType, bool distanceToBaseIsImportant, Actor producer, CPos center, CPos target, int minRange, int maxRange, int distanceRequirement = 0, bool sortMax = false)
+		// Find the buildable cell that is closest to pos and centered around center.
+		// The building gap belongs to the placement advisor (BuildingGapRule.Resolve; no advisor = no gap);
+		// defense-style callers pass defenseGap so walls/turrets can still form tighter lines.
+		(CPos? Location, CPos Center, int Variant) findPos(string actorType, bool distanceToBaseIsImportant, Actor producer, CPos center, CPos target, int minRange, int maxRange, int distanceRequirement = 0, bool sortMax = false, bool defenseGap = false, CPos? anchorTieBreak = null, bool anchorOrder = false)
 		{
 			var actorInfo = world.Map.Rules.Actors[actorType];
 			var actorVariant = 0;
@@ -605,9 +813,17 @@ namespace OpenRA.Mods.CA.Traits
 			var cells = world.Map.FindTilesInAnnulus(center, minRange, maxRange);
 
 			// Sort by distance to target if we have one
-			if (center != target)
+			if (center != target || anchorOrder)
 			{
 				cells = sortMax ? cells.OrderByDescending(c => (c - target).LengthSquared) : cells.OrderBy(c => (c - target).LengthSquared);
+
+				// FE-1 (§12.24): the refinery claim takes the placeable cell nearest its anchor; ties go to the cell
+				// closest to the field's resource cells. OrderBy is stable, so every other caller is unchanged.
+				if (anchorOrder && anchorTieBreak.HasValue)
+				{
+					var tie = anchorTieBreak.Value;
+					cells = ((IOrderedEnumerable<CPos>)cells).ThenBy(c => (c - tie).LengthSquared);
+				}
 
 				// Rotate building if we have a Facings in buildingVariantInfo.
 				// If we don't have Facings in buildingVariantInfo, use a random variant
@@ -616,6 +832,10 @@ namespace OpenRA.Mods.CA.Traits
 					if (buildingVariantInfo.Facings != null)
 					{
 						var vector = world.Map.CenterOfCell(target) - world.Map.CenterOfCell(center);
+
+						// FE-1: centre == target (anchor placement) has no direction; keep variant 0 instead of dividing by zero.
+						if (vector.Length == 0)
+							vector = new WVec(0, 1, 0);
 
 						// The rotation Y point to upside vertically, so -Y = Y(rotation)
 						var desireFacing = new WAngle(WAngle.ArcSin((int)((long)Math.Abs(vector.X) * 1024 / vector.Length)).Angle);
@@ -654,21 +874,109 @@ namespace OpenRA.Mods.CA.Traits
 				bi = actorInfo.TraitInfoOrDefault<BuildingInfo>();
 			}
 
-			foreach (var cell in cells)
+			// Cameo (building spacing): cells within `gap` of an own building's footprint are
+			// off-limits so a new building keeps that much empty space to existing structures.
+			// The buffer is built once per search from the per-tick playerBuildings cache —
+			// never relaxed inside this call; an exhausted annulus returns null and the
+			// caller retries later. AllowInvalidPlacement actors bypass CanPlaceBuilding
+			// entirely, so they keep bypassing the spacing rule too — same opt-out semantic.
+			var advisor = player.PlayerActor.TraitsImplementing<IBotPlacementAdvisor>().FirstOrDefault(a => a.IsActive);
+
+			// Refineries are owned by field proximity (EX-2 claims, SP-1 fix 1ba1db9b8): spacing never touches them,
+			// the hard gap included — a gap-pushed refinery reads its field as unserved and the builder stacks another.
+			var isRefinery = world.Map.Rules.Actors.TryGetValue(actorType, out var placedInfo) && placedInfo.HasTraitInfo<RefineryInfo>();
+			var gap = isRefinery ? 0 : BuildingGapRule.Resolve(advisor, defenseGap);
+			var ownBuildingBuffer = gap > 0 ? OwnBuildingBufferCells(gap) : null;
+
+			// Cameo (§12.20): an advisor that ranks re-ranks a bounded prefix of placeable, gap-valid cells
+			// (spread-out bases instead of first-valid packing). No ranking advisor = first valid cell wins,
+			// exactly as upstream.
+			if (advisor != null && advisor.RanksCandidates && !anchorOrder)
 			{
-				if (!world.CanPlaceBuilding(cell, actorInfo, bi, null))
-					continue;
+				var candidates = new List<CPos>();
+				foreach (var cell in cells)
+				{
+					if (!world.CanPlaceBuilding(cell, actorInfo, bi, null))
+						continue;
 
-				if (distanceToBaseIsImportant && !bi.IsCloseEnoughToBase(world, player, actorInfo, producer, cell))
-					continue;
+					if (distanceToBaseIsImportant && !bi.IsCloseEnoughToBase(world, player, actorInfo, producer, cell))
+						continue;
 
-				if (distanceRequirement > 0 && (cell - target).LengthSquared > distanceRequirement * distanceRequirement)
-					continue;
+					if (distanceRequirement > 0 && (cell - target).LengthSquared > distanceRequirement * distanceRequirement)
+						continue;
 
-				return (cell, center, actorVariant);
+					if (ownBuildingBuffer != null && !bi.AllowInvalidPlacement && bi.Tiles(cell).Any(ownBuildingBuffer.Contains))
+						continue;
+
+					candidates.Add(cell);
+					if (candidates.Count >= baseBuilder.Info.PlacementAdvisorCandidates)
+						break;
+				}
+
+				if (candidates.Count > 0)
+				{
+					var chosen = advisor.ChooseCell(actorInfo, candidates,
+						c => world.CanPlaceBuilding(c, actorInfo, bi, null));
+					if (chosen.HasValue && candidates.Contains(chosen.Value))
+						return (chosen.Value, center, actorVariant);
+
+					return (candidates[0], center, actorVariant);
+				}
+			}
+			else
+			{
+				foreach (var cell in cells)
+				{
+					if (!world.CanPlaceBuilding(cell, actorInfo, bi, null))
+						continue;
+
+					if (distanceToBaseIsImportant && !bi.IsCloseEnoughToBase(world, player, actorInfo, producer, cell))
+						continue;
+
+					if (distanceRequirement > 0 && (cell - target).LengthSquared > distanceRequirement * distanceRequirement)
+						continue;
+
+					if (ownBuildingBuffer != null && !bi.AllowInvalidPlacement && bi.Tiles(cell).Any(ownBuildingBuffer.Contains))
+						continue;
+
+					return (cell, center, actorVariant);
+				}
 			}
 
 			return (null, center, 0);
+		}
+
+		// Cameo (building spacing): every cell within `gap` cells of an own building's footprint —
+		// the buffer zone a new footprint must not overlap. Symmetric check: a candidate is rejected
+		// when one of its footprint cells lands in this set.
+		HashSet<CPos> OwnBuildingBufferCells(int gap)
+		{
+			if (playerBuildings == null)
+				return new HashSet<CPos>();
+
+			return BuildingGapRule.BufferCells(
+				playerBuildings.SelectMany(b => b.Info.TraitInfoOrDefault<BuildingInfo>()?.Tiles(b.Location) ?? Enumerable.Empty<CPos>()), gap);
+		}
+
+		// Cameo: ask the first ACTIVE defence-placement advisor (resolved on each use, so a late-enabled one is seen)
+		// for a cell. canPlace is the check findPos applies.
+		CPos? AdvisedDefenseCell(ActorInfo actorInfo, bool distanceToBaseIsImportant, Actor producer)
+		{
+			var advisor = player.PlayerActor.TraitsImplementing<IBotDefensePlacementAdvisor>().FirstOrDefault(a => a.IsActive);
+			var bi = actorInfo.TraitInfoOrDefault<BuildingInfo>();
+			if (advisor == null || bi == null)
+				return null;
+
+			var baseCenter = baseBuilder.GetBaseCenterForActor(actorInfo);
+
+			// The advisor's candidate cells get the same spacing rule as findPos defenses.
+			var gap = BuildingGapRule.Resolve(player.PlayerActor.TraitsImplementing<IBotPlacementAdvisor>().FirstOrDefault(a => a.IsActive), true);
+			var ownBuildingBuffer = gap > 0 ? OwnBuildingBufferCells(gap) : null;
+
+			return advisor.ChooseDefenseCell(actorInfo, baseBuilder.Info.AntiAirTypes.Contains(actorInfo.Name), baseCenter,
+				cell => world.CanPlaceBuilding(cell, actorInfo, bi, null)
+					&& (!distanceToBaseIsImportant || bi.IsCloseEnoughToBase(world, player, actorInfo, producer, cell))
+					&& (ownBuildingBuffer == null || bi.AllowInvalidPlacement || !bi.Tiles(cell).Any(ownBuildingBuffer.Contains)));
 		}
 
 		(CPos? Location, CPos? BaseCenter, int Variant) ChooseBuildLocation(string actorType, bool distanceToBaseIsImportant, Actor producer, BuildingType type)
@@ -686,7 +994,8 @@ namespace OpenRA.Mods.CA.Traits
 						.ClosestToIgnoringPath(world.Map.CenterOfCell(defenseCenter));
 
 					var targetCell = closestEnemy != null ? closestEnemy.Location : baseCenter;
-					return findPos(actorType, distanceToBaseIsImportant, producer, defenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius);
+					return findPos(actorType, distanceToBaseIsImportant, producer, defenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius,
+						defenseGap: true);
 
 				case BuildingType.Fragile:
 					// Build away from where enemy last attacked
@@ -697,6 +1006,39 @@ namespace OpenRA.Mods.CA.Traits
 				case BuildingType.Refinery:
 
 					var requestRef = baseBuilder.RequestedRefineries.Count > 0 ? baseBuilder.RequestedRefineries.Keys.First() : null;
+
+					// Cameo (AI_ARCHITECTURE §12.13, EX-2): the planner's field is in reach and unclaimed, so the refinery goes
+					// there, close enough to count as claiming it. A refinery the MCV module requested keeps priority.
+					var claimer = requestRef == null ? baseBuilder.ExpansionWantsRefinery() : null;
+					if (claimer != null)
+					{
+						// EX-2c: the claim field may differ from the crawl aim — any free field already in
+						// reach qualifies, so an outpost yard claims its local field without waiting to
+						// become the crawl target. Null falls back to the expansion target (EX-2).
+						var field = claimer.RefineryClaimTarget ?? claimer.ExpansionTarget.Value;
+
+						// The annulus must be around the FIELD, not baseCenter: a crawled-to field sits beyond
+						// baseCenter + MaxBaseRadius + claimRadius, so centering on the base yields zero candidate
+						// cells, the claim silently fails, and the fallback drops the refinery back home.
+						// FE-1 (§12.24): under the refinery law the field is an ANCHOR and the cell nearest it wins
+						// (then the cell nearest the field's resource cells); the home-base fallback below is skipped,
+						// because a refinery stacked at home is exactly what the law forbids (a failed attempt retries).
+						var law = claimer.RefineryLawActive;
+						var claim = law
+							? findPos(actorType, distanceToBaseIsImportant, producer, field, field,
+								0, claimer.ExpansionTargetClaimRadius, anchorTieBreak: claimer.RefineryClaimFieldCenter, anchorOrder: true)
+							: findPos(actorType, distanceToBaseIsImportant, producer, field, baseCenter,
+								0, claimer.ExpansionTargetClaimRadius);
+						if (claim.Location != null)
+						{
+							Log.Write("debug", $"AI ({player.ClientIndex}): EX-2 refinery {actorType} at {claim.Location.Value} claims field {field} at tick {world.WorldTick}");
+							refineryClaimed = true;
+							return claim;
+						}
+
+						if (law)
+							return (null, null, 0);
+					}
 
 					// Try and place the refinery near a resource field
 					if (resourceLayer != null)
@@ -728,8 +1070,27 @@ namespace OpenRA.Mods.CA.Traits
 								.Take(baseBuilder.Info.MaxResourceCellsToCheck);
 						}
 						else
-							resourcesShouldCheck = nearbyResources.OrderByDescending(c => (c - closestRefinery.Location).LengthSquared)
+						{
+							// Cameo (§12.13, EX-2): an expansion planner wants every field served — sample only cells
+							// of fields no own refinery covers yet, so refineries spread to new fields instead of
+							// stacking on the far edge of the home field. No provider or no resource map (classic):
+							// today's ordering, unchanged.
+							var candidates = nearbyResources;
+							if (baseBuilder.HasExpansionGuidance && baseBuilder.ResourceMapModule != null)
+							{
+								var ownRefineryCells = baseBuilder.RefineryBuildings.Actors
+									.Where(a => !a.IsDead)
+									.Select(a => a.Location)
+									.ToList();
+								candidates = BaseBuilderBotModuleCA.PreferUnservedResourceCells(
+									nearbyResources,
+									c => baseBuilder.ResourceMapModule.FindClosestIndiceFromCPos(c).ResourceCellsCenter,
+									ownRefineryCells, baseBuilder.Info.RefineryUnservedRadiusCells);
+							}
+
+							resourcesShouldCheck = candidates.OrderByDescending(c => (c - closestRefinery.Location).LengthSquared)
 								.Take(baseBuilder.Info.MaxResourceCellsToCheck);
+						}
 
 						foreach (var r in resourcesShouldCheck)
 						{
@@ -750,6 +1111,21 @@ namespace OpenRA.Mods.CA.Traits
 					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius, baseBuilder.Info.MaxBaseRadius);
 
 				case BuildingType.BaseCrawl:
+
+					// Cameo (AI_ARCHITECTURE §12.13, EX-1): walk toward the planner's target field, one building at a
+					// time (findPos takes the placeable cell nearest the target), instead of a random resource cell or
+					// the enemy building found by scanning every building on the map.
+					var expansionTarget = baseBuilder.ExpansionTarget();
+					if (expansionTarget != null)
+					{
+						var toward = findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, expansionTarget.Value,
+							baseBuilder.Info.MinBaseRadius, baseBuilder.Info.BaseCrawlRadius);
+						if (toward.Location != null)
+						{
+							Log.Write("debug", $"AI ({player.ClientIndex}): EX-1 BaseCrawl {actorType} at {toward.Location.Value} toward field {expansionTarget.Value} at tick {world.WorldTick}");
+							return toward;
+						}
+					}
 
 					// Try and place the refinery near a resource field
 					if (resourceLayer != null)
@@ -773,7 +1149,11 @@ namespace OpenRA.Mods.CA.Traits
 						.ClosestToIgnoringPath(world.Map.CenterOfCell(crawlDefenseCenter));
 
 					targetCell = closestEnemy != null ? closestEnemy.Location : baseCenter;
-					return findPos(actorType, distanceToBaseIsImportant, producer, crawlDefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius);
+
+					// Defense-style placement (defense center, defense radii, toward the enemy):
+					// gets the tighter defense gap like BuildingType.Defense.
+					return findPos(actorType, distanceToBaseIsImportant, producer, crawlDefenseCenter, targetCell, baseBuilder.Info.MinimumDefenseRadius, baseBuilder.Info.MaximumDefenseRadius,
+						defenseGap: true);
 
 				case BuildingType.Building:
 					return findPos(actorType, distanceToBaseIsImportant, producer, baseCenter, baseCenter, baseBuilder.Info.MinBaseRadius,
@@ -789,7 +1169,7 @@ namespace OpenRA.Mods.CA.Traits
 			if (baseBuilder.Info.BuildingIntervals == null || !baseBuilder.Info.BuildingIntervals.ContainsKey(name))
 				return;
 
-			activeBuildingIntervals[name] = baseBuilder.Info.BuildingIntervals[name] * buildingIntervalModifier / 100;
+			activeBuildingIntervals[name] = KnobTicks(baseBuilder.Info.BuildingIntervals[name] * buildingIntervalModifier / 100, name);
 		}
 	}
 }

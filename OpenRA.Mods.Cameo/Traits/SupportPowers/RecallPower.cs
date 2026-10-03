@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.AS.Traits;
@@ -317,7 +318,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				var palette = wr.Palette(((RecallPowerInfo)power.Info).TargetOverlayPalette);
 				foreach (var t in tiles)
 					yield return new SpriteRenderable(
-						tile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, palette, 1f, alpha, float3.Ones, TintModifiers.IgnoreWorldTint, true);
+						tile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, palette, 1f, alpha, Vector3.One, TintModifiers.IgnoreWorldTint, true);
 			}
 
 			bool IsValidTarget(CPos xy)

@@ -82,8 +82,15 @@ namespace OpenRA.Mods.Cameo.Traits
 			}
 		}
 
-		bool ComputePaused()
+		/// <summary>
+		/// This bot's share of the combat-unit budget right now (budget / living bots, clamped), or -1 when the budget
+		/// is off. A physical cap for the scale targets (DESIGN 19.10): an army or aircraft target never exceeds it.
+		/// </summary>
+		public int CurrentShare()
 		{
+			if (IsTraitDisabled || Info.GlobalUnitBudget <= 0)
+				return -1;
+
 			var livingBots = 0;
 			foreach (var p in world.Players)
 				if (p.IsBot && p.WinState == WinState.Undefined)
@@ -97,6 +104,21 @@ namespace OpenRA.Mods.Cameo.Traits
 				cap = Info.MaxUnitsPerBot;
 			if (cap < Info.MinUnitsPerBot)
 				cap = Info.MinUnitsPerBot;
+
+			return cap;
+		}
+
+		bool ComputePaused()
+		{
+			var livingBots = 0;
+			foreach (var p in world.Players)
+				if (p.IsBot && p.WinState == WinState.Undefined)
+					livingBots++;
+
+			if (livingBots < 1)
+				livingBots = 1;
+
+			var cap = CurrentShare();
 
 			// Count this bot's live mobile units (IPositionable excludes buildings) - same notion of
 			// "army" the unit builders use. Stop as soon as we reach the cap; no need to count further.

@@ -47,9 +47,40 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			var protectionScanRadius = WDist.FromCells(owner.SquadManager.Info.ProtectionScanRadius);
 			var closestEnemy = owner.SquadManager.FindClosestEnemy(leader, protectionScanRadius);
 
-			if (closestEnemy == null && !owner.IsTargetValid)
+			var holding = owner.SquadManager.TryGetProtectionRally(out var rally);
+			// "Quiet" also covers a target that is still valid but invisible (fled into fog): the squad cannot
+			// fight it and would otherwise loop Attack→Flee forever with the release timer reset every pass.
+			if (closestEnemy == null && (!owner.IsTargetValid || !owner.IsTargetVisible))
 			{
+				// DF-2: a predicted attack is on its way — wait at the rally point instead of going home.
+				if (holding)
+				{
+					if ((leader.Location - rally).LengthSquared > owner.SquadManager.Info.LureRallyRadiusCells * owner.SquadManager.Info.LureRallyRadiusCells)
+						owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, rally), false,
+							groupedActors: owner.Units.Select(u => u.Actor).ToArray()));
+					return;
+				}
+
+				// DF release: a defence that stayed quiet long enough is over — everyone back to their job.
+				if (owner.SquadManager.ShouldReleaseDefenders(true))
+				{
+					owner.SquadManager.ReleaseDefenders(owner.Bot, owner);
+					return;
+				}
+
 				owner.FuzzyStateMachine.ChangeState(owner, new UnitsForProtectionFleeState(), false);
+				return;
+			}
+
+			owner.SquadManager.ShouldReleaseDefenders(false);
+
+			// DF-2 lure: out beyond the rally point and losing alone -> fall back under the own defences.
+			if (holding && closestEnemy != null && owner.SquadManager.Info.UseCombatPredictor
+				&& (leader.Location - rally).LengthSquared > owner.SquadManager.Info.LureRallyRadiusCells * owner.SquadManager.Info.LureRallyRadiusCells
+				&& owner.SquadManager.PredictsLoss(owner, owner.SquadManager.VisibleEnemiesNear(leader.CenterPosition, protectionScanRadius)))
+			{
+				owner.Bot.QueueOrder(new Order("Move", null, Target.FromCell(owner.World, rally), false,
+					groupedActors: owner.Units.Select(u => u.Actor).ToArray()));
 				return;
 			}
 			else if (closestEnemy != null && owner.TargetActor != closestEnemy)
@@ -95,7 +126,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 						if (!ReloadsAutomatically(ammoPools, u.Actor.TraitOrDefault<Rearmable>()))
 						{
-							if (IsRearming(u.Actor))
+							if (IsRearming(u.Actor, owner))
 								continue;
 
 							if (!HasAmmo(ammoPools))

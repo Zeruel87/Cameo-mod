@@ -29,11 +29,18 @@ namespace OpenRA.Mods.CA.Traits
 	public class AttachOnTransform : ConditionalTrait<AttachOnTransformInfo>, INotifyTransform
 	{
 		public new readonly AttachOnTransformInfo Info;
+		IFacing facing;
 
 		public AttachOnTransform(ActorInitializer init, AttachOnTransformInfo info)
 			: base(info)
 		{
 			Info = info;
+		}
+
+		protected override void Created(Actor self)
+		{
+			base.Created(self);
+			facing = self.TraitOrDefault<IFacing>();
 		}
 
 		void INotifyTransform.OnTransform(Actor self) { }
@@ -47,9 +54,8 @@ namespace OpenRA.Mods.CA.Traits
 		{
 			var map = self.World.Map;
 			var targetCell = map.CellContaining(self.CenterPosition);
-
-			var facing = self.TraitOrDefault<IFacing>();
 			var attachedFacing = WAngle.Zero;
+
 			if (facing != null)
 				attachedFacing = facing.Facing;
 
@@ -69,8 +75,11 @@ namespace OpenRA.Mods.CA.Traits
 				if (attachable == null)
 					return;
 
-				var attachableToTrait = self.Trait<AttachableTo>();
-				var attached = attachableToTrait.Attach(attachable);
+				var attachableTo = self.TraitOrDefault<AttachableTo>();
+				if (attachableTo == null)
+					return;
+
+				var attached = attachableTo.Attach(actorToAttach, attachable);
 
 				if (!attached)
 					actorToAttach.Dispose();

@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Traits;
 
@@ -61,8 +62,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		readonly IShader shader;
 		readonly IVertexBuffer<RenderPostProcessPassVertex> buffer;
 
-		readonly List<(WPos Center, float Scale)> pendingDistortions = new();
-		readonly List<(WPos Center, float Scale, float TicksRemaining, float TotalTicks, float FadeInTicks)> fadingDistortions = new();
+		readonly List<(WPos Center, float RadiusScale, float StrengthScale, bool Reverse, float ReverseEndRadiusFraction)> pendingDistortions = new();
+		readonly List<(WPos Center, float RadiusScale, float StrengthScale, float TicksRemaining, float TotalTicks, float FadeInTicks, bool Reverse, float ReverseEndRadiusFraction)> fadingDistortions = new();
 
 		// World tick at the previous Draw; used to advance the ring by elapsed ticks rather than render frames.
 		int lastWorldTick = -1;
@@ -83,7 +84,23 @@ namespace OpenRA.Mods.Cameo.Traits
 			}, false);
 		}
 
-		public void RegisterShockwave(WPos center, float scale = 1f, int fadeFrames = 0, int fadeInFrames = 0)
+		public void RegisterShockwave(
+			WPos center,
+			float scale = 1f,
+			int fadeFrames = 0,
+			int fadeInFrames = 0)
+		{
+			RegisterShockwave(center, scale, scale, fadeFrames, fadeInFrames, false, 0f);
+		}
+
+		public void RegisterShockwave(
+			WPos center,
+			float radiusScale,
+			float strengthScale,
+			int fadeFrames,
+			int fadeInFrames,
+			bool reverse = false,
+			float reverseEndRadiusFraction = 0f)
 		{
 			// Render-only cosmetic state that is drained exclusively by Draw (render tick). While the window
 			// is minimized the render tick never runs, so nothing drains these lists, yet the simulation keeps
@@ -108,14 +125,14 @@ namespace OpenRA.Mods.Cameo.Traits
 
 				var totalTicks = fadeFrames * FramesToTicks;
 				var fadeInTicks = fadeInFrames * FramesToTicks;
-				fadingDistortions.Add((center, scale, totalTicks, totalTicks, fadeInTicks));
+				fadingDistortions.Add((center, radiusScale, strengthScale, totalTicks, totalTicks, fadeInTicks, reverse, reverseEndRadiusFraction));
 				return;
 			}
 
 			if (pendingDistortions.Count >= MaxActiveEffects)
 				return;
 
-			pendingDistortions.Add((center, scale));
+			pendingDistortions.Add((center, radiusScale, strengthScale, reverse, reverseEndRadiusFraction));
 		}
 
 		PostProcessPassType IRenderPostProcessPass.Type => PostProcessPassType.AfterActors;
@@ -133,19 +150,19 @@ namespace OpenRA.Mods.Cameo.Traits
 			var downscale = renderer.WorldDownscaleFactor;
 			var topLeft = wr.Viewport.TopLeft;
 
-			float2 ToFb(WPos pos)
+			Vector2 ToFb(WPos pos)
 			{
 				var screenPx = wr.ScreenPxPosition(pos);
-				return new float2(
+				return new Vector2(
 					(screenPx.X - topLeft.X) * downscale,
 					(screenPx.Y - topLeft.Y) * downscale);
 			}
 
 			// Collect all shockwaves for this frame into one flat list (Center, Scale, Progress) so they can
 			// be batched together. Progress 0->1 drives the ring's expanding radius and its fade.
-			var batch = new List<(WPos Center, float Scale, float Progress)>(pendingDistortions.Count + fadingDistortions.Count);
+			var batch = new List<(WPos Center, float RadiusScale, float StrengthScale, float Progress, bool Reverse, float ReverseEndRadiusFraction)>(pendingDistortions.Count + fadingDistortions.Count);
 			foreach (var d in pendingDistortions)
-				batch.Add((d.Center, d.Scale, 0f));
+				batch.Add((d.Center, d.RadiusScale, d.StrengthScale, 0f, d.Reverse, d.ReverseEndRadiusFraction));
 			pendingDistortions.Clear();
 
 			for (var i = fadingDistortions.Count - 1; i >= 0; i--)
@@ -161,13 +178,13 @@ namespace OpenRA.Mods.Cameo.Traits
 					? ticksPassed / d.FadeInTicks
 					: 1f;
 
-				batch.Add((d.Center, d.Scale * fadeIn, progress));
+				batch.Add((d.Center, d.RadiusScale, d.StrengthScale * fadeIn, progress, d.Reverse, d.ReverseEndRadiusFraction));
 
 				var remaining = d.TicksRemaining - ticksElapsed;
 				if (remaining <= 0f)
 					fadingDistortions.RemoveAt(i);
 				else
-					fadingDistortions[i] = (d.Center, d.Scale, remaining, d.TotalTicks, d.FadeInTicks);
+					fadingDistortions[i] = (d.Center, d.RadiusScale, d.StrengthScale, remaining, d.TotalTicks, d.FadeInTicks, d.Reverse, d.ReverseEndRadiusFraction);
 			}
 
 			// Draw shockwaves in fixed-size batches. Each batch takes one framebuffer snapshot and runs a
@@ -185,10 +202,13 @@ namespace OpenRA.Mods.Cameo.Traits
 					centers[i * 2 + 1] = p.Y;
 
 					// Per-ring animated radius: expands from 0 to MaxRadius over the lifetime.
-					radii[i] = info.MaxRadius * d.Scale * d.Progress;
+					var radiusProgress = d.Reverse
+						? 1f - d.Progress * (1f - d.ReverseEndRadiusFraction)
+						: d.Progress;
+					radii[i] = info.MaxRadius * d.RadiusScale * radiusProgress;
 
 					// Strength fades as the ring expands, so it vanishes as it reaches MaxRadius.
-					strengths[i] = info.Strength * d.Scale * (1f - d.Progress);
+					strengths[i] = info.Strength * d.StrengthScale * (1f - d.Progress);
 				}
 
 				shader.SetTexture("WorldTexture", Game.Renderer.GetRenderBufferSnapshot());

@@ -32,8 +32,8 @@ namespace OpenRA.Mods.Cameo.Graphics
 		public void Render(WorldRenderer wr)
 		{
 			Game.Renderer.RgbaColorRenderer.DrawLine(
-				wr.Viewport.WorldToViewPx(Pos),
-				wr.Viewport.WorldToViewPx(end),
+				wr.Viewport.WorldToViewPx(Pos).ToVector3(),
+				wr.Viewport.WorldToViewPx(end).ToVector3(),
 				width, startColor, endColor);
 		}
 
@@ -60,8 +60,8 @@ namespace OpenRA.Mods.Cameo.Graphics
 		void IFinalizedRenderable.Render(WorldRenderer wr)
 		{
 			Game.Renderer.RgbaColorRenderer.DrawRect(
-				start,
-				end,
+				start.ToVector3(),
+				end.ToVector3(),
 				width, drawColor);
 		}
 

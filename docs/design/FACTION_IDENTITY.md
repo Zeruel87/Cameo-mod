@@ -12,6 +12,14 @@ Within a class, cost is pinned and price must stay Δ≤1. Because the price is 
 raising one stat forces another down — so each faction spends its budget on the stat
 its source-game identity leans into, and pays for it in the opposite stat.
 
+**Narrow classic-four duplicate exception (maintainer, 2026-09-15).** For a complete
+TD GDI / TD Nod / RA Allies / RA Soviets combat cohort that still shares duplicate
+values, apply a slight faction-themed change to **each** stat, following the already
+accepted Minigunner/Rifle Infantry pattern. This direct ruling allows cost to move
+inside that duplicate cohort despite the general cost pin above. Preserve the TD and
+RA pair totals, shared cadence, roles and behavior; it does not authorize drifting
+unrelated units or incomplete role matches.
+
 **Primary axis (confirmed across every source game): HP ↔ Speed.**
 - **Brute / Heavy / Turtle** factions → **+HP, +Damage, −Speed** (tanky, hard-hitting, slow; in the original games also more expensive / fewer units — here that becomes stat weight since cost is pinned).
 - **Rush / Mobile / Stealth / Swarm** factions → **+Speed, −HP** (fast, fragile; cheaper/more numerous in-game → here they trade raw durability for reach/speed).
@@ -59,8 +67,8 @@ Legend: **HP** / **SPD** / **DMG** / **RNG** columns are the lean (＋ high, −
 
 | Faction | Playstyle | HP | SPD | DMG | RNG | Special / signature |
 |---|---|:-:|:-:|:-:|:-:|---|
-| Allies RA1 | Tech / Mobility / Naval | ・ | ・ | ・ | ・ | **Infantry = utility** (Medic/Spy/Thief/Mechanic), *no durability edge — shared 50-HP rifleman*. Identity lives in **vehicles (−HP/+SPD light-fast) + navy (Cruiser 700)** → vehicle/naval pass. |
-| Soviets RA1 | Brute Force | ・ | ＋ | ＋ | ・ | **Infantry = faster + more offensive variety** (Grenadier/Flamethrower/Shock Trooper), cheap fodder — *not tankier* (same 50 HP, spd 5 > Allied 4). Identity lives in **vehicles (+HP/−SPD, Mammoth monopoly) + air** → vehicle/air pass. |
+| Allies RA1 | Tech / Mobility / Naval | − | ＋ | − | ＋ | For duplicate Cameo combat infantry, follow the accepted Rifle pattern: slightly lighter/faster with more reach. Utility identity remains in Medic/Spy/Thief/Mechanic; vehicle/naval identity is still stronger. |
+| Soviets RA1 | Brute Force | ＋ | − | ＋ | − | For duplicate Cameo combat infantry, follow the accepted Rifle pattern: slightly tougher/slower with a harder, shorter-ranged shot. Offensive variety remains Grenadier/Flamethrower/Shock Trooper; vehicle/air identity is still stronger. |
 | Japan RA1 | Rush / Mobility (← RA3 Empire + WW2 + Touhou) | − | ＋ | ・ | ・ | ← a **funny mix: RA3 Empire of the Rising Sun + WW2 Japan + Touhou + misc**. Core units weak → fast + massed; **transforming** mecha, naval/air, Rocket Angels, Samurai/Tsunami; **Touhou** bullet-hell / character flavour. |
 
 ### Red Alert 2 / Yuri
@@ -71,13 +79,13 @@ Legend: **HP** / **SPD** / **DMG** / **RNG** columns are the lean (＋ high, −
 | Soviets RA2 | Brute Force / Tank Rush | ＋ | − | ＋ | ・ | Heavy defense, macro; tanks, flak, Desolator. |
 | Yuri | Mind Control | ・ | ＋ | ＋ | ・ | **Mind control**; cheap-but-strong psychic Initiates; Brutes = melee anti-tank; Gattling ramp-up. |
 
-**Layer-1 correction (RA1 — `ORIGINAL_UNIT_STATS.md`):** RA1 infantry are **not** a
-durability differentiator — both factions share the 50-HP rifleman and 25-HP engineer. The
-old "Allies −HP / Soviets +HP" rows described the **vehicle** lean and were per-type-wrong for
-infantry (Soviet infantry are actually *faster*: spd 5 vs 4). The tanky-Allied / frail-Soviet
-**infantry** split is an **RA2-era development**, absent in RA1. *Open choice for the maintainer:*
-if RA1↔RA2 franchise coherence is wanted, apply a mild **Allied +HP / Soviet −HP** infantry
-shift; RA1 source data alone keeps them near-shared.
+**Layer-1 source note (RA1 — `ORIGINAL_UNIT_STATS.md`):** Source RA1 infantry are not a
+durability differentiator — both factions share the 50-HP rifleman and 25-HP engineer, and
+the Soviet rifleman is faster (speed 5 vs 4). Cameo now deliberately departs from that source
+symmetry for complete duplicate combat cohorts: the maintainer's 2026-09-15 ruling follows
+the already accepted Cameo Rifle pattern, giving Allies a slight mobility/reach lean and
+Soviets a slight durability/damage lean. Do not infer this narrow choice from source RA1 or
+apply the stronger Soviet vehicle bias wholesale to other infantry.
 
 ### Dune (Dune 2000 / Emperor)
 

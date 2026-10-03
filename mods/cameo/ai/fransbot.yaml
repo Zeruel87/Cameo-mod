@@ -1,0 +1,3135 @@
+# Fransbot side-by-side integration (OpenRA.Mods.Fransbot.dll).
+# A separate lobby bot type (`fransbot`) that runs the vendored Fransbot stack
+# instead of the Cameo module stack. Every module is gated on `enable-fransbot`,
+# which only `ModularBot@Fransbot` owners receive, so Cameo/human players and
+# Cameo bot types never tick Frans modules (and fransbot bots never receive the
+# genericbot/difficulty conditions, so Cameo modules stay dormant for them).
+# Unit/composition lists are empty for now (content port is a follow-up), so the
+# stack boots but does little — this PR proves assembly load + isolation.
+
+Player:
+	ModularBot@Fransbot:
+		Name: bot_ai.fransbot
+		Type: fransbot
+		# Donor only (maintainer 2026-09-28): its modules join the Frankenstein stack one at a time,
+		# each A/B-tested; the type is deleted after. Not a lobby choice.
+		HiddenInLobby: True
+	GrantConditionOnBotOwner@fransbot:
+		Condition: enable-fransbot
+		Bots: fransbot
+	FransbotControllerBotModule:
+		RequiresCondition: enable-fransbot
+		DecisionInterval: 25
+	# W1 intel substrate: these pure-service modules (no orders, no production
+	# requests) armed on `hard` via `genericbot && hardbot` until the W3 verdict
+	# (cand 0-24) sent the whole Frans stack back to donor-only: `hard` keeps
+	# the CA producers/services, and DESIGN 19.1 forbids tier-gated modules
+	# anyway — strength scales via BotLimits, not RequiresCondition.
+	# INC-3 (F1's question as a switch): `inc3_frans_services` re-arms exactly
+	# these eight services on the A/B arm's bot population; granted only via
+	# GrantConditionOnBotOwner@inc3f1 in ai.yaml, which names `fransbot` by
+	# default so master behaviour is unchanged.
+	FransCombatIntelBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+	FransStrategicMapBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+		# Representative actors whose locomotives derive the passability layers.
+		# All ContentPacks are unconditionally Included today, so TD/RA picks
+		# always resolve; a missing actor leaves that layer inert by design.
+		GroundProbeActorType: td_gdi_battletank
+		McvProbeActorType: td_gdi_mobileconstructionvehicle
+		NavalProbeActorType: ra1_allies_gunboat
+	FransRiskModelBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+	FransMineClusterBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+	FransEconomicSaturationBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+	FransCommanderCoreBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+	FransCommandBidBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+	FransGeneralBotModule:
+		RequiresCondition: enable-fransbot || inc3_frans_services
+		RaidPublishRememberedBuildings: true
+		ReconProbeSpawnRepeatTicks: 4500
+		RaidInterferencePriorityBonus: 40
+		RaidInterferenceMemoryTicks: 500
+	FransBaseBuilderBotModule:
+		RequiresCondition: enable-fransbot
+		MaximumMainBaseWarFactories: 3
+	ResourceMapBotModule@fransbot:
+		RequiresCondition: enable-fransbot
+	FransMcvExpansionManagerBotModule:
+		RequiresCondition: enable-fransbot
+		PreSurplusMaximumConstructionYardSlots: 3
+		PreSurplusPermanentConstructionYards: 2
+		DesiredPermanentConstructionYards: 3
+		MaximumPermanentConstructionYards: 4
+		MinimumGroundCombatValueForAdditionalMcv: 6000
+		ExpansionConyardRetreatRecentDamageRisk: 150
+		ExpansionTargetFailureCooldownTicks: 1500
+	FransUnitBuilderBotModule:
+		RequiresCondition: enable-fransbot
+		# Fog-honest adaptive counter-production: CombatIntel's seen/remembered enemy
+		# army steers a minority of combat picks toward the best Versus counter.
+		AdaptiveCounterWeight: 40
+		AdaptiveCounterObservationInterval: 250
+	FransHarvesterBotModule:
+		RequiresCondition: enable-fransbot
+		HarvestersPerServicedMine: 3
+	FransSupplyTruckBotModule:
+		RequiresCondition: enable-fransbot
+	# Ground commanders are parallel bid capacities: one BidderKey can own only one
+	# committed mission at a time (CommandBid capacity rule). A single instance means a
+	# single persistent RECON patrol locks the entire Ground bid surface — the "bids 0"
+	# kill-chain blocker. Upstream wires 10 (fransbot-personalities @ground1-10); six
+	# covers 4 fan RECON + 2 concurrent RAID + SECURE/DEFEND contention. CommanderIndex
+	# phases each instance's scan. Required no-default tuning repeats per instance.
+	FransGroundCommanderBotModule@ground1:
+		RequiresCondition: enable-fransbot
+		BidderKey: ground1
+		CommanderIndex: 0
+		# Hold fresh units at rally until a fighting group exists; lone trickle-push fed
+		# single rifles to roaming raids. Releases automatically under DEFEND pressure.
+		ForwardMoveMinimumIdleUnits: 6
+		SecureKnownThreatMultiplierPercent: 500
+		SecureUncertaintyAllowanceValue: 600
+		SecureMinimumControlValue: 1600
+		SecureSurplusCostWeight: 4
+		DefendForcePreservationMinimumPackageUnits: 20
+		DefendForcePreservationTriggerCommitPercent: 70
+		DefendForcePreservationLowReservePercent: 25
+		DefendForcePreservationMinimumReserveUnits: 8
+		DefendForcePreservationTargetReservePercent: 50
+		DefendForcePreservationLongEtaMinimumTicks: 1000
+		GroundRememberedRaidMaximumAge: 3000
+	FransGroundCommanderBotModule@ground2:
+		RequiresCondition: enable-fransbot
+		BidderKey: ground2
+		CommanderIndex: 1
+		# Hold fresh units at rally until a fighting group exists; lone trickle-push fed
+		# single rifles to roaming raids. Releases automatically under DEFEND pressure.
+		ForwardMoveMinimumIdleUnits: 6
+		SecureKnownThreatMultiplierPercent: 500
+		SecureUncertaintyAllowanceValue: 600
+		SecureMinimumControlValue: 1600
+		SecureSurplusCostWeight: 4
+		DefendForcePreservationMinimumPackageUnits: 20
+		DefendForcePreservationTriggerCommitPercent: 70
+		DefendForcePreservationLowReservePercent: 25
+		DefendForcePreservationMinimumReserveUnits: 8
+		DefendForcePreservationTargetReservePercent: 50
+		DefendForcePreservationLongEtaMinimumTicks: 1000
+		GroundRememberedRaidMaximumAge: 3000
+	FransGroundCommanderBotModule@ground3:
+		RequiresCondition: enable-fransbot
+		BidderKey: ground3
+		CommanderIndex: 2
+		# Hold fresh units at rally until a fighting group exists; lone trickle-push fed
+		# single rifles to roaming raids. Releases automatically under DEFEND pressure.
+		ForwardMoveMinimumIdleUnits: 6
+		SecureKnownThreatMultiplierPercent: 500
+		SecureUncertaintyAllowanceValue: 600
+		SecureMinimumControlValue: 1600
+		SecureSurplusCostWeight: 4
+		DefendForcePreservationMinimumPackageUnits: 20
+		DefendForcePreservationTriggerCommitPercent: 70
+		DefendForcePreservationLowReservePercent: 25
+		DefendForcePreservationMinimumReserveUnits: 8
+		DefendForcePreservationTargetReservePercent: 50
+		DefendForcePreservationLongEtaMinimumTicks: 1000
+		GroundRememberedRaidMaximumAge: 3000
+	FransGroundCommanderBotModule@ground4:
+		RequiresCondition: enable-fransbot
+		BidderKey: ground4
+		CommanderIndex: 3
+		# Hold fresh units at rally until a fighting group exists; lone trickle-push fed
+		# single rifles to roaming raids. Releases automatically under DEFEND pressure.
+		ForwardMoveMinimumIdleUnits: 6
+		SecureKnownThreatMultiplierPercent: 500
+		SecureUncertaintyAllowanceValue: 600
+		SecureMinimumControlValue: 1600
+		SecureSurplusCostWeight: 4
+		DefendForcePreservationMinimumPackageUnits: 20
+		DefendForcePreservationTriggerCommitPercent: 70
+		DefendForcePreservationLowReservePercent: 25
+		DefendForcePreservationMinimumReserveUnits: 8
+		DefendForcePreservationTargetReservePercent: 50
+		DefendForcePreservationLongEtaMinimumTicks: 1000
+		GroundRememberedRaidMaximumAge: 3000
+	FransGroundCommanderBotModule@ground5:
+		RequiresCondition: enable-fransbot
+		BidderKey: ground5
+		CommanderIndex: 4
+		# Hold fresh units at rally until a fighting group exists; lone trickle-push fed
+		# single rifles to roaming raids. Releases automatically under DEFEND pressure.
+		ForwardMoveMinimumIdleUnits: 6
+		SecureKnownThreatMultiplierPercent: 500
+		SecureUncertaintyAllowanceValue: 600
+		SecureMinimumControlValue: 1600
+		SecureSurplusCostWeight: 4
+		DefendForcePreservationMinimumPackageUnits: 20
+		DefendForcePreservationTriggerCommitPercent: 70
+		DefendForcePreservationLowReservePercent: 25
+		DefendForcePreservationMinimumReserveUnits: 8
+		DefendForcePreservationTargetReservePercent: 50
+		DefendForcePreservationLongEtaMinimumTicks: 1000
+		GroundRememberedRaidMaximumAge: 3000
+	FransGroundCommanderBotModule@ground6:
+		RequiresCondition: enable-fransbot
+		BidderKey: ground6
+		CommanderIndex: 5
+		# Hold fresh units at rally until a fighting group exists; lone trickle-push fed
+		# single rifles to roaming raids. Releases automatically under DEFEND pressure.
+		ForwardMoveMinimumIdleUnits: 6
+		SecureKnownThreatMultiplierPercent: 500
+		SecureUncertaintyAllowanceValue: 600
+		SecureMinimumControlValue: 1600
+		SecureSurplusCostWeight: 4
+		DefendForcePreservationMinimumPackageUnits: 20
+		DefendForcePreservationTriggerCommitPercent: 70
+		DefendForcePreservationLowReservePercent: 25
+		DefendForcePreservationMinimumReserveUnits: 8
+		DefendForcePreservationTargetReservePercent: 50
+		DefendForcePreservationLongEtaMinimumTicks: 1000
+		GroundRememberedRaidMaximumAge: 3000
+	FransGroundTransferBotModule:
+		RequiresCondition: enable-fransbot
+	# Air/Sea/SpecOps stay single-instance per upstream (only Ground is wired
+	# as parallel capacities in fransbot-personalities.yaml @ground1-10).
+	FransAirCommanderBotModule:
+		RequiresCondition: enable-fransbot
+	FransSeaCommanderBotModule:
+		RequiresCondition: enable-fransbot
+	FransSpecOpsCommanderBotModule:
+		RequiresCondition: enable-fransbot
+	FransDefenseCommanderBotModule:
+		RequiresCondition: enable-fransbot
+		PeacetimeDefensePerAnchorTarget: 5
+		PeacetimeDefenseEarliestTick: 3200
+	FransTransportCommanderBotModule:
+		# ENG-T (DESIGN §22): the ONE transport system — also armed for genericbot under its own
+		# flag so EngineerBotModule can request capture runs through IBotCaptureTransportProvider.
+		RequiresCondition: enable-fransbot || engt-transport
+	FransMinelayerBotModule:
+		RequiresCondition: enable-fransbot
+	FransSupportPowerBotModule:
+		RequiresCondition: enable-fransbot
+		Decisions:
+			AirstrikePower@mininuke:
+				OrderName: Parachuted Mininuke
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			Roast@skeletonroast:
+				OrderName: HalloweenSkeletonRoast
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			ZombiesAmbush:
+				OrderName: ZombieAmbush
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 7
+					TargetMetric: Value
+					CheckRadius: 7c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 7c0
+			ZombieAmbush2:
+				OrderName: ZombieAmbush2
+				MinimumAttractiveness: 5000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 10
+					TargetMetric: Value
+					CheckRadius: 10000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 5c0
+			ZombieToxins:
+				OrderName: ZombieToxins
+				MinimumAttractiveness: 1000
+				FineScanRadius: 3
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry
+					Attractiveness: 5
+					TargetMetric: Value
+					CheckRadius: 5c0
+			Airstrike@Chopper:
+				OrderName: AirstrikeChopper
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			Airstrike@Polmav:
+				OrderName: AirstrikePolmav
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			ParatroopersPower@paratroopers:
+				OrderName: Scavenger Supply
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water
+					Attractiveness: -5
+					TargetMetric: None
+					CheckRadius: 8000
+			ParatroopersPower@paratroopers2:
+				OrderName: Scavenger Supply x3
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water
+					Attractiveness: -5
+					TargetMetric: None
+					CheckRadius: 8000
+			ParatroopersPower@OrdosSmugglers:
+				OrderName: OrdosSmugglers
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water
+					Attractiveness: -5
+					TargetMetric: None
+					CheckRadius: 8000
+			AirstrikePower@greenbombs:
+				OrderName: Tiberium Seeds
+				Consideration:
+					Against: Ally
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+			AirstrikePower@bluebombs:
+				OrderName: Blue Tiberium Seeds
+				Consideration:
+					Against: Ally
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+			CityInstructor:
+				OrderName: UpgradeVeteran
+				Consideration:
+					Against: Ally
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 2c0
+			CityEliteInstructor:
+				OrderName: UpgradeElite
+				Consideration:
+					Against: Ally
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 2c0
+			CityArchitect:
+				OrderName: UpgradeBuilding
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			CityEliteArchitect:
+				OrderName: UpgradeBuilding2
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			spyplane:
+				OrderName: SovietSpyPlane
+				MinimumAttractiveness: 1111
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry, Vehicle, Defense
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 10000
+				Consideration@2:
+					Against: Enemy
+					Types: Infantry, Vehicle, Defense
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@3:
+					Against: Ally
+					Types: Ground, Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 12345
+			IronCurtain:
+				OrderName: IronCurtain
+				MinimumAttractiveness: 3333
+				FineScanRadius: 3
+				Consideration@1:
+					Against: Ally
+					Types: Vehicle, Tank
+					Attractiveness: 33
+					TargetMetric: Value
+					CheckRadius: 3333
+				Consideration@2:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 11111
+			Chronoshift:
+				OrderName: ChronoshiftAI
+				MinimumAttractiveness: 5
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			ChronoReinforcements:
+				OrderName: ChronoReinforcements
+				MinimumAttractiveness: 1234
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Infantry, Vehicle, Tank, Aircraft, Defense
+					Attractiveness: -1
+					TargetMetric: Value
+					CheckRadius: 12345
+				Consideration@3:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 12345
+			GeneticMutator:
+				OrderName: GeneticMutator
+				MinimumAttractiveness: 1000
+				FineScanRadius: 3
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry
+					Attractiveness: 5
+					TargetMetric: Value
+					CheckRadius: 2500
+			ForceShield:
+				OrderName: ForceShield
+				MinimumAttractiveness: 1000
+				FineScanRadius: 3
+				Consideration@1:
+					Against: Ally
+					Types: aiforceshield
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+			ra2spyplane:
+				OrderName: SovietRA2SpyPlane
+				MinimumAttractiveness: 1
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			paratroopers:
+				OrderName: SovietParatroopers
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			japanparatroopers:
+				OrderName: japanparatroopers
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			NaxisParatroopers:
+				OrderName: NaxisParatroopers
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			NaxiSupportZombies:
+				OrderName: NaxiSupportZombies
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			rapidreinforcements:
+				OrderName: rapidreinforcements
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			ra2paratroopers:
+				OrderName: USA Paratroopers
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			aaparatroopers:
+				OrderName: aaparatroopers
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			SteelSupportSpawner:
+				OrderName: SteelSupportSpawner
+				MinimumAttractiveness: 3333
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 33
+					TargetMetric: None
+					CheckRadius: 12345
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -55
+					TargetMetric: Value
+					CheckRadius: 9999
+				Consideration@3:
+					Against: Enemy
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: -22
+					TargetMetric: Value
+					CheckRadius: 11111
+				Consideration@4:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 77
+					TargetMetric: Value
+					CheckRadius: 7777
+				Consideration@5:
+					Against: Ally
+					Types: Infantry, Vehicle, Tank, Aircraft
+					Attractiveness: 44
+					TargetMetric: Value
+					CheckRadius: 22222
+			aaclusterbomb:
+				OrderName: AAClusterBomb
+				MinimumAttractiveness: 5
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 10000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 10000
+			aachaospower:
+				OrderName: AsianChaosSuperweapon
+				MinimumAttractiveness: 7
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 10000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 10000
+			ra2airportpara:
+				OrderName: Allies2Paratroopers
+				MinimumAttractiveness: 5
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			ra2chrono:
+				OrderName: RA2ChronoshiftAI
+				MinimumAttractiveness: 5
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			droppods:
+				OrderName: GDI Drop
+				MinimumAttractiveness: 5
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			MutCommando:
+				OrderName: MutantCommando
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 4c0
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 4c0
+			wh40kDeepStrike1:
+				OrderName: Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike2:
+				OrderName: Extra Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike3:
+				OrderName: Flamer Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike4:
+				OrderName: Plasma Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike5:
+				OrderName: Rocket Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike6:
+				OrderName: Bolter Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike7:
+				OrderName: Dreadnought Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			wh40kDeepStrike8:
+				OrderName: Hellfire Dreadnought Deep Strike
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			OrkSneakAttack:
+				OrderName: OrkSneakAttack
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			Airstrike:
+				OrderName: AirstrikePowerInfoOrder
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2500
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 7500
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5000
+				Consideration@4:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 5
+					TargetMetric: Value
+					CheckRadius: 1000
+			Parabombs:
+				OrderName: Parabombs
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5000
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2500
+			JapanSuperBomber:
+				OrderName: JapanSuperBomber
+				MinimumAttractiveness: 1
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5000
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2500
+			IonCannonPower:
+				OrderName: IonCannonPowerInfoOrder
+				MinimumAttractiveness: 1000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Enemy
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 6000
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 4
+					TargetMetric: Value
+					CheckRadius: 2000
+				Consideration@3:
+					Against: Enemy
+					Types: Defense
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3000
+				Consideration@4:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -9
+					TargetMetric: Value
+					CheckRadius: 9000
+			Blizzard:
+				OrderName: wc2_blizzard
+				MinimumAttractiveness: 1000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Enemy
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 6000
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 4
+					TargetMetric: Value
+					CheckRadius: 2000
+				Consideration@3:
+					Against: Enemy
+					Types: Defense
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3000
+				Consideration@4:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -9
+					TargetMetric: Value
+					CheckRadius: 9000
+			DeathAndDecay:
+				OrderName: wc2_deathanddecay
+				MinimumAttractiveness: 1000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Enemy
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 6000
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 4
+					TargetMetric: Value
+					CheckRadius: 2000
+				Consideration@3:
+					Against: Enemy
+					Types: Defense
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3000
+				Consideration@4:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -9
+					TargetMetric: Value
+					CheckRadius: 9000
+			InquisitionIonCannon:
+				OrderName: InquisitionIonCannon
+				MinimumAttractiveness: 1000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Enemy
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 3c0
+			Red Ring of Death:
+				OrderName: redringofdeath
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			Demo Disk Strike:
+				OrderName: demodiskstrike
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			NukePower:
+				OrderName: NukePowerInfoOrder
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			NaxiMeteor:
+				OrderName: NaxiMeteor
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			NaxiV1Rocket:
+				OrderName: NaxiV1Rocket
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			PulseMissile:
+				OrderName: PulseMissile
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			LightningStorm:
+				OrderName: LightningStorm
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			12Rockets:
+				OrderName: 12Rockets
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			MagicOrbHailstorm:
+				OrderName: MagicOrbHailstorm
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			ra1_allies_chronovortex:
+				OrderName: ra1_allies_chronovortex
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			EMPPower:
+				OrderName: EMPPower
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Tank, Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 6c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 6c0
+			SteelEmpCannon:
+				OrderName: SteelEmpCannon
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Tank, Vehicle, Air
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 10000
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 10000
+			MultiMissile:
+				OrderName: TSClusterMissile
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+			ChemicalMissile:
+				OrderName: TSChemicalMissile
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 4c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 4c0
+				Consideration@3:
+					Against: Enemy
+					Types: Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+			MutRampage:
+				OrderName: WildlifeRampage
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 6c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+			PsychicDominator:
+				OrderName: PsychicDominator
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Structure
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 8000
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8000
+			TraitorsPower:
+				OrderName: TraitorsPower
+				MinimumAttractiveness: 3000
+				IgnoreVisibility: true
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 1500
+			GLAAmbush:
+				OrderName: GLAmbush
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			GLASneak:
+				OrderName: GLSneakAttack
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			GLAAnthraxBomb:
+				OrderName: GLAAnthraxBomb
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			GLAScudStorm:
+				OrderName: GLAScudStorm
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			CHArtilleryBarrage:
+				OrderName: CHArtilleryBarrage
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			EmergencyRepair:
+				OrderName: EmergencyRepair
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Ally
+					Types: Repair
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			FrenzyPower:
+				OrderName: FrenzyPower
+				MinimumAttractiveness: 3000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Ally
+					Types: Vehicle, Tank
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			CHCarpetBombing:
+				OrderName: CHCarpetBombing
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry, Vehicle, Defense
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			CHEMP:
+				OrderName: CH_EMP_Bomb
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+			SCHNeutronBomb:
+				OrderName: SCHNeutronBomb
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+			schnapalmstrike:
+				OrderName: schnapalmstrike
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Infantry
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			CHClusterBomb:
+				OrderName: CHClusterBomb
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			SCHNeutronClusterBomb:
+				OrderName: SCHNeutronClusterBomb
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+			TankDrop:
+				OrderName: TankDrop
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			SCHTankDrop1:
+				OrderName: SCHTankDrop1
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			SCHTankDrop2:
+				OrderName: SCHTankDrop2
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			SCHTankDrop3:
+				OrderName: SCHTankDrop3
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			MinigunnerDrop:
+				OrderName: MinigunnerDrop
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			spydrone:
+				OrderName: SpydronePower
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			susaintelligence:
+				OrderName: susaintelligence
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			USAParatroopers:
+				OrderName: USAParatroopers
+				MinimumAttractiveness: 1
+				Consideration@1:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 5c0
+			usapopuppatriotsp1:
+				OrderName: usapopuppatriotsp1
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Ground
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 6c0
+				Consideration@2:
+					Against: Ally
+					Types: Structure, Ground
+					Attractiveness: 500
+					TargetMetric: Value
+					CheckRadius: 6c0
+			usapopuppatriotsp2:
+				OrderName: usapopuppatriotsp2
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Ground
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 6c0
+				Consideration@2:
+					Against: Ally
+					Types: Structure, Ground
+					Attractiveness: 500
+					TargetMetric: Value
+					CheckRadius: 6c0
+			usapopuppatriotsp3:
+				OrderName: usapopuppatriotsp3
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Ground
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 6c0
+				Consideration@2:
+					Against: Ally
+					Types: Structure, Ground
+					Attractiveness: 500
+					TargetMetric: Value
+					CheckRadius: 6c0
+			AirstrikePowerSpectre:
+				OrderName: AirstrikePowerSpectre
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			AirstrikePowerSpectre2:
+				OrderName: AirstrikePowerSpectre2
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			AirstrikePowerSpectre3:
+				OrderName: AirstrikePowerSpectre3
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			RodsFromGods1:
+				OrderName: RodsFromGods1
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			RodsFromGods2:
+				OrderName: RodsFromGods2
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			RodsFromGods3:
+				OrderName: RodsFromGods3
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			HyperSonicBomb:
+				OrderName: HyperSonicBomb
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Defence
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susabradleyparadrop1:
+				OrderName: susabradleyparadrop1
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Defence
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susabradleyparadrop2:
+				OrderName: susabradleyparadrop2
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Defence
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susabradleyparadrop3:
+				OrderName: susabradleyparadrop3
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Defence
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaamdggrenade1:
+				OrderName: susaamdggrenade1
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			susaamdggrenade2:
+				OrderName: susaamdggrenade2
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			susaamdggrenade3:
+				OrderName: susaamdggrenade3
+				MinimumAttractiveness: 5
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 8000
+				Consideration@2:
+					Against: Enemy
+					Types: Water, Defense
+					Attractiveness: -1
+					TargetMetric: None
+					CheckRadius: 8000
+			susaparadrop1:
+				OrderName: susaparadrop1
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaparadrop2:
+				OrderName: susaparadrop2
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaparadrop3:
+				OrderName: susaparadrop3
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaparadrop1laser:
+				OrderName: susaparadrop1laser
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaparadrop2laser:
+				OrderName: susaparadrop2laser
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaparadrop3laser:
+				OrderName: susaparadrop3laser
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susahalodrop1:
+				OrderName: susahalodrop1
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susahalodrop2:
+				OrderName: susahalodrop2
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susahalodrop3:
+				OrderName: susahalodrop3
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			USAA101:
+				OrderName: USAA101
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			USAA102:
+				OrderName: USAA102
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			USAA103:
+				OrderName: USAA103
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaf16sp:
+				OrderName: susaf16sp
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaucav1:
+				OrderName: susaucav1
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaucav2:
+				OrderName: susaucav2
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			susaucav3:
+				OrderName: susaucav3
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			USAFuelBomb:
+				OrderName: USAFuelBomb
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Defence
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			USALeaflet:
+				OrderName: USALeaflet
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 2c0
+			USAParticleCannon:
+				OrderName: ParticleCannon
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 3c0
+			sowfighter:
+				OrderName: sowfighter
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 1c0
+				Consideration@2:
+					Against: Enemy
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 1c0
+			sowbomber:
+				OrderName: sowbomber
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Enemy
+					Types: Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			sowtripler:
+				OrderName: sowtripler
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Enemy
+					Types: Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+			sowasteroid:
+				OrderName: sowasteroid
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+			ornistrike:
+				OrderName: ornistrike
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Tank, Infantry
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 4c0
+			oornistrike:
+				OrderName: oornistrike
+				MinimumAttractiveness: 2000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Tank, Infantry
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 4c0
+			deathhand:
+				OrderName: deathhand
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			CashBounty1:
+				OrderName: CashBounty1
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Air, Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			CashBounty2:
+				OrderName: CashBounty2
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Air, Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			CashBounty3:
+				OrderName: CashBounty3
+				MinimumAttractiveness: 1000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Air, Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			odeathhand:
+				OrderName: odeathhand
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			chaoslightning:
+				OrderName: chaoslightning
+				MinimumAttractiveness: 1000
+				Consideration:
+					Against: Enemy
+					Types: Vehicle, Tank, Infantry
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 2c0
+			callatrfremen:
+				OrderName: callatrfremen
+				Consideration@1:
+					Against: Ally
+			ProduceActorPower.Fremen:
+				OrderName: ProduceActorPower.Fremen
+				Consideration@1:
+					Against: Ally
+			ProduceActorPower.Saboteur:
+				OrderName: ProduceActorPower.Saboteur
+				Consideration@1:
+					Against: Ally
+			callfremen:
+				OrderName: callfremen
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			sardaukardrop:
+				OrderName: sardaukardrop
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			callsaboteur:
+				OrderName: callsaboteur
+				Consideration@1:
+					Against: Ally
+			sandworm:
+				OrderName: sandworm
+				Consideration@1:
+					Against: Enemy
+			mercenary_reinforcements:
+				OrderName: mercenary_reinforcements
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			rainoffire:
+				OrderName: rainoffire
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 10
+					TargetMetric: Value
+					CheckRadius: 5c0
+			poisoncloud:
+				OrderName: poisoncloud
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 10
+					TargetMetric: Value
+					CheckRadius: 5c0
+			AndyRepair:
+				OrderName: AndyRepair
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			AndyUpgrade:
+				OrderName: AndyUpgrade
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			MaxForce:
+				OrderName: MaxForce
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			MaxBlast:
+				OrderName: MaxBlast
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			SamiDoubleTime:
+				OrderName: SamiDoubleTime
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			SamiVictoryMarch:
+				OrderName: SamiVictoryMarch
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			NellLuckyStar:
+				OrderName: NellLuckyStar
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			NellLadyLuck:
+				OrderName: NellLadyLuck
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			HachiBarter:
+				OrderName: HachiBarter
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 22
+					TargetMetric: None
+					CheckRadius: 3c0
+			JakeBeatDown:
+				OrderName: JakeBeatDown
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			JakeBlockRock:
+				OrderName: JakeBlockRock
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			RachelLuckyLass:
+				OrderName: RachelLuckyLass
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			RachelCoveringFire:
+				OrderName: RachelCoveringFire
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+			OlafBlizzard:
+				OrderName: OlafBlizzard
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 3c0
+			OlafWinterFury:
+				OrderName: OlafWinterFury
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 3c0
+			GritSnipeAttack:
+				OrderName: GritSnipeAttack
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			GritSuperSnipe:
+				OrderName: GritSuperSnipe
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			ColinGoldRush:
+				OrderName: ColinGoldRush
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			ColinThePowerofMoney:
+				OrderName: ColinThePowerofMoney
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			SashaWarBonds:
+				OrderName: SashaWarBonds
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 5
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 3c0
+			KanbeiMoraleBoost:
+				OrderName: KanbeiMoraleBoost
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			KanbeiSamuraiSpirit:
+				OrderName: KanbeiSamuraiSpirit
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			SonjaEnhancedVision:
+				OrderName: SonjaEnhancedVision
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			SonjaCounterBreak:
+				OrderName: SonjaCounterBreak
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			GrimmKnuckleduster:
+				OrderName: GrimmKnuckleduster
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			GrimmHaymaker:
+				OrderName: GrimmHaymaker
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			SenseiCopterCommand:
+				OrderName: SenseiCopterCommand
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 22
+					TargetMetric: None
+					CheckRadius: 3c0
+			SenseiAirborneAssault:
+				OrderName: SenseiAirborneAssault
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 22
+					TargetMetric: None
+					CheckRadius: 3c0
+			DrakeTsunami:
+				OrderName: DrakeTsunami
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 3c0
+			DrakeTyphoon:
+				OrderName: DrakeTyphoon
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 3c0
+			EagleLightningDrive:
+				OrderName: EagleLightningDrive
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			EagleLightningStrike:
+				OrderName: EagleLightningStrike
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			JessTurboCharge:
+				OrderName: JessTurboCharge
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			JessOverdrive:
+				OrderName: JessOverdrive
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			JavierTowerShield:
+				OrderName: JavierTowerShield
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			JavierTowerofPower:
+				OrderName: JavierTowerofPower
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			FlakBruteForce:
+				OrderName: FlakBruteForce
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			FlakBarbaricBlow:
+				OrderName: FlakBarbaricBlow
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			LashTerrainTactics:
+				OrderName: LashTerrainTactics
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			LashPrimeTactics:
+				OrderName: LashPrimeTactics
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			AdderSideslip:
+				OrderName: AdderSideslip
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			AdderSidewinder:
+				OrderName: AdderSidewinder
+				Consideration:
+					Against: Ally
+					Types: Power
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			HawkeBlackWave:
+				OrderName: HawkeBlackWave
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 1c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 1c0
+			HawkeBlackStorm:
+				OrderName: HawkeBlackStorm
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 1c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 1c0
+			KindleUrbanBlight:
+				OrderName: KindleUrbanBlight
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure, Building
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -1
+					TargetMetric: Value
+					CheckRadius: 1c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 1c0
+			SturmMeteorStrike:
+				OrderName: SturmMeteorStrike
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			BoltExmachina:
+				OrderName: BoltExmachina
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			WillRallyCry:
+				OrderName: WillRallyCry
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			BrennerReinforce:
+				OrderName: BrennerReinforce
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			IsabellaDeepStrike:
+				OrderName: IsabellaDeepStrike
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			LinScout:
+				OrderName: LinScout
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			DavisTankBlast:
+				OrderName: DavisTankBlast
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			GreyfieldSupplyChain:
+				OrderName: GreyfieldSupplyChain
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			WaylonWingman:
+				OrderName: WaylonWingman
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			GageLongshot:
+				OrderName: GageLongshot
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			TashaSonicBoom:
+				OrderName: TashaSonicBoom
+				Consideration:
+					Against: Ally
+					Types: Air
+					Attractiveness: 1
+					TargetMetric: None
+					CheckRadius: 3c0
+			TabithaFirestorm:
+				OrderName: TabithaFirestorm
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 1c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 1c0
+			PennyStormFront:
+				OrderName: PennyStormFront
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 3
+					TargetMetric: Value
+					CheckRadius: 3c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -20
+					TargetMetric: Value
+					CheckRadius: 1c0
+				Consideration@3:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 1c0
+			AnswerA10Strike:
+				OrderName: AnswerA10Strike
+				MinimumAttractiveness: 1000
+				FineScanRadius: 2
+				Consideration@1:
+					Against: Enemy
+					Types: Air, Tank, Vehicle, Infantry, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@2:
+					Against: Enemy
+					Types: Structure
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 2c0
+				Consideration@3:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 3c0
+			GDIArtilleryBarrage:
+				OrderName: GDIArtilleryBarrage
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			FalconLauncher:
+				OrderName: FalconLauncher
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Air
+					Attractiveness: 2
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+				Consideration@3:
+					Against: Ally
+					Types: Air
+					Attractiveness: -1
+					TargetMetric: Value
+					CheckRadius: 7c0
+			FistofKane:
+				OrderName: FistofKane
+				MinimumAttractiveness: 3000
+				Consideration@1:
+					Against: Enemy
+					Types: Infantry, Vehicle
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Air, Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+	FransSupportCoordinatorBotModule:
+		RequiresCondition: enable-fransbot

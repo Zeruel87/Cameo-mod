@@ -56,7 +56,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 			if (r <= 0)
 			{
-				WidgetUtils.DrawSprite(sprite, origin, size);
+				WidgetUtils.DrawSprite(sprite, origin.ToVector2(), size);
 				return;
 			}
 
@@ -85,7 +85,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 				return;
 
 			Game.Renderer.EnableScissor(clip);
-			WidgetUtils.DrawSprite(sprite, origin, size);
+			WidgetUtils.DrawSprite(sprite, origin.ToVector2(), size);
 			Game.Renderer.DisableScissor();
 		}
 	}

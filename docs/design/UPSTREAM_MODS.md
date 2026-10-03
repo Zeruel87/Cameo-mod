@@ -38,12 +38,15 @@ That also explains the shape of the existing drift. CA's code targets an engine 
 past the 2024 base; Cameo's is 2 581 past it. So a vendored file usually differs because someone
 **forward-ported** it — not because it went stale. A blind `cp -r` from CA would REVERT those
 adaptations and break the build. Some files are the other way round (CA fixed a bug after we
-copied it), which is exactly why this needs a per-file three-way merge and not a sync script.
+copied it), which is exactly why this needs a per-file three-way merge and not a blind copy.
+**2026-09-27:** that three-way merge is now a tool. `audit_ca_drift` finds each file's upstream
+base from CA's history, and `ca_vendor_sync` merges from it (§4a).
 
 ## 2. Where we stand today
 
 Run `python tools/audit/audit_ca_drift.py` (set `CA_ROOT` if the clone is not at
-`../CAmod`). As of 2026-08-23:
+`../CAmod`). **The 2026-09-27 numbers, by cause rather than by diff size, are in §4a.** As of
+2026-08-23:
 
 | | files |
 |---|--:|
@@ -118,10 +121,38 @@ fail to compile here. What can be automated is **noticing**, and that is the par
    `mod.yaml`'s `Assemblies:` order, which is **AS, CA, Cameo, Cnc, D2k, Common**. A Cameo type
    cannot shadow an AS one; a CA type cannot shadow an AS one either.
 
+## 4a. CA sync, tooled (2026-09-27)
+
+**Why it is manual.** Cameo's engine is the RV fork (§1), so nothing from CA arrives with engine
+updates. Every CA fix is missing until someone copies it. On 2026-09-27 a latent crash in
+`Activities/HuntCA.cs` turned out to be **fixed upstream already**. It looked unused only because
+its caller, the Lua binding `Scripting/CombatCAProperties.cs` (`actor.HuntCA()`, used by CA's
+campaign attack waves), had never been copied (#557). Three tools make the check routine:
+
+| Tool | Answers |
+|---|---|
+| `tools/audit/audit_ca_drift.py` (rewritten) | per file: IDENTICAL / **STALE** (an old upstream copy, no Cameo edits) / MODIFIED / **MODIFIED+STALE** (Cameo edits + upstream moved) / MOVED-REMOVED / CAMEO_ONLY, plus every upstream file never adopted. It compares normalised content against **every version in CA's history**, which the old two-way diff could not do. Needs a **full** clone (`git fetch --unshallow`); a shallow one is reported as NOT a clean result |
+| `tools/audit/ca_vendor_sync.py` | applies it: STALE → upstream verbatim; MODIFIED+STALE → `git merge-file` from the found base (clean → written; conflict → listed, or written with markers under `--write-conflicts`). **Skips the bot modules** unless `--include-frankenstein`, and reports **yaml field losses** (a field the sync removes that Cameo yaml sets on that trait; rule 8b). Dry run by default |
+| `tools/audit/audit_ai_frankenstein.py` | fails when a sync or refactor removes any of the **140** RV-merged or Cameo-added symbols in the CA bot modules (manifest `tools/audit/ai_frankenstein_manifest.json`) |
+| `tools/audit/audit_ca_unused.py` | every vendored type Cameo never uses, and **what CA uses it for**: the §5 list, finally named |
+
+**Measured 2026-09-27** (CAmod `f31049d2`, 185 vendored files): 39 identical · **41 stale** ·
+23 modified · **45 modified+stale** · 12 moved/removed · 25 Cameo-only · **313 never adopted**.
+Sync dry run: 41 verbatim + 16 clean merges + **21 conflicts** + 8 Frankenstein files skipped,
+**0 yaml field losses**. All 9 Frankenstein bot files conflict with upstream (routing, harasser
+squads, indirect routes, compositions): see `AI_SYNTHESIS.md` §1.2 and the runbook in §3.
+
+**Rules.** Fetch the clone before judging. Take upstream verbatim where Cameo has no edits (less
+drift than a local fix). Build + boot every sync (CA targets an older engine, so a clean merge
+can still fail to compile). Bot modules: one file per PR, and the Frankenstein guard plus a
+squad-forming match before merging.
+
 ## 5. The honest bottleneck
 
 The scarce resource is not C# — it is deciding which mechanics Cameo wants and wiring them into
-yaml. 86 of the 142 vendored CA trait types are already unused. Before adopting another 322,
+yaml. 86 of the 142 vendored CA trait types are already unused (2026-09-27, `audit_ca_unused`:
+**85 of 247** traits across CA and Cameo are unused, and **CA itself uses 57 of them**; that list
+is the menu). Before adopting another 322,
 the higher-value pass is over what is already here: pick the unused traits worth having, wire
 them, and let that tell us what kind of CA mechanics are actually wanted.
 

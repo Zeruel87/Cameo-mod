@@ -204,7 +204,10 @@
 			TiberiumDeath: 6
 			RadiationDeath: 6
 			RA2VirusDeath: 6
+			ToxicDeath: 6
 			ElectricityDeath: 7
+	DeathSounds@POISONED:
+		DeathTypes: TiberiumDeath, RA2VirusDeath, RadiationDeath, ToxicDeath
 	Huntable:
 	SelectionDecorations:
 	WithSpriteControlGroupDecoration:
@@ -413,7 +416,7 @@
 	TemporaryOwnerManager:
 	MustBeDestroyed:
 	Voiced:
-		VoiceSet: D2kVehicleVoice
+		VoiceSet: D2KVehicleVoice
 	AutoCarryable:
 		CarriedCondition: notmobile
 		ReservedCondition: carryall-reserved
@@ -911,13 +914,13 @@
 		Queues: Aircraft
 		Sequence: production-welding
 	ProvidesPrerequisite@upgrade3:
-		Prerequisite: hightech.harkonnen
+		Prerequisite: harkonnen_hightech
 		Factions: harkonnen, corrino, guild
 	ProvidesPrerequisite@upgrade:
-		Prerequisite: hightech.atreides
+		Prerequisite: atreides_hightech
 		Factions: atreides, ixian, fremen
 	ProvidesPrerequisite@upgrade2:
-		Prerequisite: hightech.ordos
+		Prerequisite: ordos_hightech
 		Factions: ordos, mercenary, smugglers, tleilaxu
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@high_tech_factory:
@@ -1000,13 +1003,13 @@
 		RequiresCondition: !build-incomplete
 		#Palette: starportlights
 	ProvidesPrerequisite@atreides:
-		Prerequisite: starport.atreides
+		Prerequisite: atreides_starport
 		Factions: atreides
 	ProvidesPrerequisite@ordos:
 		Prerequisite: ordos_starport
 		Factions: ordos
 	ProvidesPrerequisite@harkonnen:
-		Prerequisite: starport.harkonnen
+		Prerequisite: harkonnen_starport
 		Factions: harkonnen
 	ProvidesPrerequisite@atreides_combat:
 		Prerequisite: starport.atreides_combat
@@ -1030,7 +1033,7 @@
 ^CombatTank:
 	Inherits@D2KT: ^D2KTank
 	Inherits@Template: ^MainBattleTankTemplate
-	Inherits@exp: ^GainsExperienceRA
+	Inherits@exp: ^D2KGainsExperienceRA
 	Inherits@decoration: ^DuneRankDecoration
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@D2KSprite: ^D2KPaletteRender
@@ -1133,3 +1136,192 @@
 	AutoTarget:
 		ScanRadius: 10
 	# RejectsOrders:
+
+^EngineerInfantryTemplate:
+
+^AntiTankInfantryTemplate:
+
+^RocketTrooperInfantryTemplate:
+
+# D2k-local trait templates (renamed copies; D2k packs must not inherit RA/TD/RA2 pack defs).
+^D2KGainsExperienceRA:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+		Conditions:
+			200: rank-veteran
+			400: rank-veteran
+			600: rank-veteran
+			800: rank-veteran
+
+
+^D2KGainsExperienceRABuilding:
+	GainsExperience:
+		LevelUpNotification: LevelUpRA1
+		Conditions:
+			250: rank-veteran
+			500: rank-veteran
+			750: rank-veteran
+			1000: rank-veteran
+
+####################################################################################################
+#		Red Alert
+####################################################################################################
+
+####################################################################################################
+#		Soviet Upgrade Inherits
+####################################################################################################
+
+
+^D2KGainsExperienceTD:
+	GainsExperience:
+		LevelUpNotification: LevelUp
+		Conditions:
+			200: rank-veteran
+			400: rank-veteran
+			600: rank-veteran
+			800: rank-veteran
+
+
+^D2KSpawnActorsOnSell:
+	SpawnActorsOnSell:
+		ActorTypes: e6,td_gdi_minigunner,td_gdi_minigunner,td_gdi_minigunner
+
+
+^D2KTiberiumCloakAnimation:
+	Cloak:
+		CloakStyle: Palette
+		CloakedPalette: cloak_stealth
+		IsPlayerPalette: true
+		EffectImage: stealthfade
+		EffectPalette: greenspark
+		CloakEffectSequence: reversed
+		UncloakEffectSequence: idle
+		EffectTracksActor: True
+
+
+^D2KRA2Infantry:
+	Inherits@shadow: ^D2KRA2InfantryDeathAnimations
+	Inherits@para: ^D2KRA2Parachutes
+	RenderSprites:
+		PlayerPalette: ra2infantry
+	Crushable:
+		CrushSound: igensqua.wav
+	DeathSounds@NORMAL:
+		DeathTypes: DefaultDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, RippedApartDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@ZAPPED:
+		Voice: Zapped
+		DeathTypes: ElectricityDeath
+		RequiresCondition: !chronobeamed
+	DeathSounds@radiation:
+		Voice: Poisoned
+		DeathTypes: RadiationDeath, TiberiumDeath
+		RequiresCondition: !chronobeamed
+	#DeathSounds@psychic:
+	#	Voice: PsyCrush
+	#	DeathTypes: PsychicDeath
+	#	RequiresCondition: !chronobeamed
+	#DeathSounds@virus:
+	#	Voice: Virus
+	#	DeathTypes: RA2VirusDeath
+	#	RequiresCondition: !chronobeamed
+
+
+^D2KRA2InfantryDeathAnimations:
+	WithDeathAnimation:
+		DeathSequencePalette: ra2infantry
+		DeathTypes:
+			DefaultDeath: 1
+			BulletDeath: 1
+			SmallExplosionDeath: 2
+			ExplosionDeath: 2
+			RippedApartDeath: 2
+	WithDeathAnimation@effect:
+		DeathSequencePalette: ra2effect
+		DeathPaletteIsPlayerPalette: False
+		DeathTypes:
+			RadiationDeath: 4
+			PsychicDeath: 5
+			TiberiumDeath: 7
+			ElectricityDeath: 6
+			#RA2VirusDeath: 7
+	SpawnActorOnDeath@Flameguy:
+		Probability: 100
+		Actor: d2k_flameguy
+		DeathType: FireDeath
+	FireWarheadsOnDeath@Corpse:
+		DeathTypes: DefaultDeath, BulletDeath, RippedApartDeath
+		Weapon: D2K_CorpseSpawner
+		EmptyWeapon: D2K_CorpseSpawner
+		RequiresCondition: !chronobeamed
+	#Explodes@CorpseThrow:
+	#	DeathTypes: ExplosionDeath
+	#	Weapon: RA2CorpseThrower
+	#	EmptyWeapon: RA2CorpseThrower
+	#	RequiresCondition: !chronobeamed
+
+
+^D2KRA2Parachutes:
+	WithParachute:
+		ShadowImage: parach_shadow
+		ShadowSequence: idle
+		Image: ra2parach
+		Sequence: idle
+		OpeningSequence: open
+		ClosingSequence: disolve
+		Offset: 0,0,427
+		RequiresCondition: parachute
+		Palette: ra2infantry
+		IsPlayerPalette: true
+
+^BiologicalWarfareUpgradeOrdos:
+	ReloadDelayMultiplier@ordos_upgrade_biologicalwarfare:
+		RequiresCondition: ordos_upgrade_biologicalwarfare
+		Modifier: 90
+	SpeedMultiplier@ordos_upgrade_biologicalwarfare:
+		RequiresCondition: ordos_upgrade_biologicalwarfare
+		Modifier: 110
+	DamageMultiplier@ordos_upgrade_biologicalwarfare:
+		RequiresCondition: ordos_upgrade_biologicalwarfare
+		Modifier: 90
+	GrantConditionOnPrerequisite@ordos_upgrade_biologicalwarfare:
+		Condition: ordos_upgrade_biologicalwarfare
+		Prerequisites: ordos_upgrade_biologicalwarfare
+	ActorStatValues:
+		Upgrades: ordos_upgrade_biologicalwarfare
+
+^ContrabandUpgradeOrdos:
+	FirepowerMultiplier@ordos_upgrade_contraband:
+		RequiresCondition: ordos_upgrade_contraband
+		Modifier: 125
+	GrantConditionOnPrerequisite@ordos_upgrade_contraband:
+		Condition: ordos_upgrade_contraband
+		Prerequisites: ordos_upgrade_contraband
+	ActorStatValues:
+		Upgrades: ordos_upgrade_contraband
+
+d2k_flameguy:
+	Inherits@1: ^ExistsInWorld
+	Inherits@2: ^SpriteActor
+	Mobile:
+		Speed: 71
+		Locomotor: foot
+	HiddenUnderFog:
+	RenderSprites:
+		Palette: ra2effect
+	WithInfantryBody:
+		IdleSequences: run
+	Health:
+		HP: 160
+	ChangesHealth:
+		Step: -10
+		StartIfBelow: 101
+	ScaredyCat:
+		PanicSequencePrefix:
+	WithDeathAnimation:
+		FallbackSequence: die
+		UseDeathTypeSuffix: false
+		DeathSequencePalette: ra2effect
+		DeathPaletteIsPlayerPalette: false
+	HitShape:
+

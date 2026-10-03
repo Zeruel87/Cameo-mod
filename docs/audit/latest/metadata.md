@@ -1,14 +1,25 @@
 # audit_metadata — tooltip/metadata rot (B7)
 
-Duplicate-tooltip groups: **32**, buildables missing Tooltip name: **0**
+Duplicate-tooltip groups: **43**, buildables missing Tooltip name: **0**
 
 
 ## M1 — same tooltip name on multiple buildables of one faction
 
 | faction | tooltip name | actors |
 |---|---|---|
+| atreides | barracks upgrade | atreides_upgrade_barracks, upgrade_barracks |
+| atreides | concrete slab | concreteabuilding, concreteadefense |
+| atreides | heavy factory upgrade | atreides_upgrade_heavy, upgrade_heavy |
+| atreides | large concrete slab | concretebbuilding, concretebdefense |
+| corrino | barracks upgrade | corrino_upgrade_barracks, upgrade_barracks |
+| corrino | concrete slab | concreteabuilding, concreteadefense |
+| corrino | heavy factory upgrade | corrino_upgrade_heavy, upgrade_heavy |
+| corrino | large concrete slab | concretebbuilding, concretebdefense |
 | eden | impulse items | eden_impulseitems, eden_impulseitems_2, eden_impulseitems_3 |
+| harkonnen | barracks upgrade | harkonnen_upgrade_barracks, upgrade_barracks |
 | harkonnen | concrete slab | concreteabuilding, concreteadefense |
+| harkonnen | construction yard upgrade | harkonnen_upgrade_conyard, upgrade_conyard |
+| harkonnen | heavy factory upgrade | harkonnen_upgrade_heavy, upgrade_heavy |
 | harkonnen | large concrete slab | concretebbuilding, concretebdefense |
 | ixian | concrete slab | concreteabuilding, concreteadefense |
 | ixian | large concrete slab | concretebbuilding, concretebdefense |

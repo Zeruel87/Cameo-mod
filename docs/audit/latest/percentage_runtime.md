@@ -1,30 +1,70 @@
 # Folded percentage runtime audit
 
-- Reachable direct-hit weapons activated: **184**
-- Folded direct-hit applications activated: **189**
+- Reachable direct-hit weapons activated: **195**
+- Folded direct-hit applications activated: **195**
 - Direct weapons also carrying standalone percentage hits: **7**
-- Direct weapons whose folded hit feeds physical state: **7**
+- Direct weapons whose folded hit feeds physical state: **8**
 - Direct weapons whose folded hit feeds integrity: **5**
-- Legacy Int32 overflow applications repaired: **7**
+- Legacy Int32 overflow applications repaired: **10**
+- Authored shared-mode (SharedVersus) applications: **23** (of which zero-unit: **0** — visibly listed, not counted as percentage hits)
 - Non-default direct relationship sets: **0**
 - Dispatch structural findings: **0**
 
 ## Repaired overflow cases
 
-| weapon | warhead | legacy units | repaired units |
-|---|---|---:|---:|
-| `DalekCannon` | `Railgun_HeavyFlatCompatibility` | -6474 | 15000 |
-| `DalekCannon_elite` | `Railgun_HeavyFlatCompatibility` | 8525 | 30000 |
-| `ExecutionerSword` | `Melee_Medium` | 8525 | 30000 |
-| `Hakureiring2` | `Magic_Heavy` | -9474 | 12000 |
-| `OIHakureiring2` | `Magic_Heavy` | -9474 | 12000 |
-| `d2kStormLasher` | `Storm_Heavy` | -6474 | 15000 |
-| `sandmarinemortar` | `Demolition_HeavyFlatCompatibility` | -9474 | 12000 |
+A repair is ONLY a legacy Int32 wrap independent of SharedVersus. The `runtime units` column shows the value actually applied today; for shared-mode rows it already carries the approved h/2 design scale (Scale itself moved 10000 -> 2000), so that column alone is NOT the before-migration value.
+
+| weapon | warhead | legacy Int32 units | wide legacy units | runtime units |
+|---|---|---:|---:|---:|
+| `DalekCannon` | `Railgun_Heavy_Flat` | -6474 | 15000 | 15000 |
+| `DalekCannon_elite` | `Railgun_Heavy_Flat` | -7849 | 35100 | 35100 |
+| `ExecutionerSword` | `Melee_Medium` | 8525 | 30000 | 30000 |
+| `Hakureiring2` | `Magic_Heavy` | -9474 | 12000 | 12000 |
+| `OIHakureiring2` | `Magic_Heavy` | -9474 | 12000 | 12000 |
+| `SteelInspectorIonCannon` | `Tesla_Super` | -8974 | 12500 | 12500 |
+| `SteelInspectorIonCannonDamage` | `Tesla_Super` | -8974 | 12500 | 12500 |
+| `TSLocustBombChem` | `Chemical_Heavy` | -7974 | 13500 | 13500 |
+| `d2kStormLasher` | `Storm_Heavy` | -6474 | 15000 | 15000 |
+| `sandmarinemortar` | `Demolition_Heavy_Flat` | -9474 | 12000 | 12000 |
+
+## Shared-mode inventory
+
+Every authored reachable SharedVersus AreaDamage application, including zero-unit profiles. Zero-unit rows are authored configurations with no effective percentage hit, NOT activated percentage hits.
+
+| weapon | warhead | h | Damage | Scale | shared runtime units |
+|---|---|---:|---:|---:|---:|
+| `120mm_cobra` | `CannonAP` | 0 | 120000 | 2000 | 960 |
+| `120mm_cobra_deploy` | `CannonAP` | 0 | 120000 | 2000 | 960 |
+| `120mm_python` | `CannonAP` | 0 | 120000 | 2000 | 960 |
+| `120mm_python_deploy` | `CannonAP` | 0 | 120000 | 2000 | 960 |
+| `AlliedTankDestroyerCannon` | `CannonAP` | 0 | 24000 | 2000 | 192 |
+| `NaxiAntiTankCannon` | `CannonAP` | 0 | 28000 | 2000 | 224 |
+| `NaxiAntiTankCannon_elite` | `CannonAP` | 0 | 28000 | 2000 | 224 |
+| `NaxiHetzerDestroyer` | `CannonAP` | 0 | 40000 | 2000 | 320 |
+| `NaxiHetzerDestroyer_elite` | `CannonAP` | 0 | 40000 | 2000 | 320 |
+| `RA2120xmm` | `CannonAP` | 0 | 12000 | 2000 | 96 |
+| `RA2120xmm_elite` | `CannonAP` | 0 | 12000 | 2000 | 96 |
+| `RA2sabot` | `CannonAP` | 0 | 80000 | 2000 | 640 |
+| `RA2sabot_elite` | `CannonAP` | 0 | 160000 | 2000 | 1280 |
+| `SkyHawkCannon` | `CannonAP` | 0 | 16000 | 2000 | 128 |
+| `TS90mm` | `CannonAP` | 1000 | 6000 | 2000 | 60 |
+| `TS90mmDep` | `CannonAP` | 1000 | 6000 | 2000 | 60 |
+| `TSHighVelocity` | `CannonAP` | 0 | 30000 | 2000 | 240 |
+| `TSHighVelocity2` | `CannonAP` | 0 | 40000 | 2000 | 320 |
+| `TSHighVelocityTur` | `CannonAP` | 0 | 48000 | 2000 | 384 |
+| `TSLaser90mm` | `CannonAP` | 1000 | 12000 | 2000 | 120 |
+| `TSLaser90mmDep` | `CannonAP` | 1000 | 12000 | 2000 | 120 |
+| `corrino_buggy_gun` | `CannonAP` | 0 | 3000 | 2000 | 24 |
+| `ra1_allies_gunboat_cannon` | `CannonAP` | 0 | 30000 | 2000 | 240 |
+
+## Zero-unit shared applications
+
+_none_
 
 ## Direct-hit mixed effects
 
 - Standalone plus folded: `RA2HeavyMirageGun`, `RA2HeavyMirageGun_elite`, `RA2MirageGun`, `RA2MirageGun_elite`, `SteelMegaSword_elite`, `Tentacle`, `WaveTurretImpact`
-- Physical state: `ChainGunMH60Cryo`, `M60mgCryo`, `NaxDieGlocke`, `RAVulcanCryo`, `SheridanVulcanCryo`, `wc2deathknightDeathAndDecay_Hit`, `zsu_23Cryo`
+- Physical state: `NaxDieGlocke`, `TSSonicZapWeaponSonic`, `ra1_allies_alliedaagun_flak_cryo`, `ra1_allies_blackhawk_chaingun_cryo`, `ra1_allies_machinegunner_machinegun_cryo`, `ra1_allies_ranger_machinegun_cryo`, `ra1_allies_sheridanassaulttank_chaingun_cryo`, `wc2deathknightDeathAndDecay_Hit`
 - Integrity: `PsiStorm`, `RA2DiskDrain`, `TSSonicZapWeapon`, `WaveArtilleryImpact`, `WaveTurretImpact`
 
 _PASS — the active rules contain no invalid or double-percentage shapes._

@@ -21,25 +21,21 @@ namespace OpenRA.Mods.CA.Traits
 
 	public class BuildingRepairBotModuleCA : ConditionalTrait<BuildingRepairBotModuleCAInfo>, IBotRespondToAttack
 	{
-		RepairableBuilding rb;
-
 		public BuildingRepairBotModuleCA(Actor self, BuildingRepairBotModuleCAInfo info)
 			: base(info) { }
-
-		protected override void Created(Actor self)
-		{
-			base.Created(self);
-			rb = self.TraitOrDefault<RepairableBuilding>();
-		}
 
 		void IBotRespondToAttack.RespondToAttack(IBot bot, Actor self, AttackInfo e)
 		{
 			// HACK: We don't want D2k bots to repair all their buildings on placement
 			// where half their HP is removed via neutral terrain damage.
 			// TODO: Implement concrete placement for D2k bots and remove this hack on players relationship check.
-			if (self.IsDead || self.Owner.RelationshipWith(e.Attacker.Owner) == PlayerRelationship.Neutral)
+			if (self.IsDead || e.Attacker == null || self.Owner.RelationshipWith(e.Attacker.Owner) == PlayerRelationship.Neutral)
 				return;
 
+			// The module lives on the player actor, which never carries RepairableBuilding —
+			// the lookup must run per damaged building, not once at construction (upstream
+			// does this; caching it here left the whole module inert).
+			var rb = self.TraitOrDefault<RepairableBuilding>();
 			if (rb != null)
 			{
 				if (e.DamageState > DamageState.Undamaged && e.PreviousDamageState < e.DamageState && !rb.RepairActive)

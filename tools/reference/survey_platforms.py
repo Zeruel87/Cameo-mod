@@ -34,6 +34,7 @@ import pathlib
 import re
 import statistics
 import sys
+import warnings
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools" / "reference"))
@@ -45,7 +46,9 @@ if hasattr(sys.stdout, "reconfigure"):
 
 TYPE_LISTS = {"InfantryTypes": "INF", "VehicleTypes": "VEH",
               "AircraftTypes": "AIR", "BuildingTypes": "BLD"}
-LIST_ENTRY = re.compile(r"^\s*(\d+)\s*=\s*([^;\s]+)")
+# INI registry keys are labels, not necessarily numeric (DTA uses A_01,
+# ......131072, etc.). The value identifies the actor.
+LIST_ENTRY = re.compile(r"^\s*([^=;\s]+)\s*=\s*([^;\s]+)")
 
 # Weapon families, by the name of the warhead OR of the weapon firing it. Kept
 # deliberately broad: the point of this tool is to SPLIT a broad family by
@@ -107,22 +110,28 @@ def platform_of(actor: str, macro: str, node: dict) -> str:
 
 
 def survey(family: str) -> list[dict]:
+    from warhead_source_selection import selected_sources
     pattern = re.compile(FAMILIES[family], re.I)
     corpus = json.loads((ROOT / "docs/reference/versus_raw.json")
                         .read_text(encoding="utf-8"))
+    corpus["sources"] = selected_sources(corpus["sources"])
     rows = []
     for sid, _lineage, kind, path, _engine in ev.SOURCES:
-        if kind != "ini" or not path.exists():
+        if kind != "ini":
             continue
         entry = corpus["sources"].get(sid)
         if not entry:
             continue
+        path = ag.source_path(sid, corpus["sources"])
         by_name = {str(r["warhead"]): r for r in entry["rows"] if "versus" in r}
-        ini = ag.read_ini_resolved(sid, path)
+        try:
+            ini = ag.read_ini_resolved(sid, path, corpus["sources"])
+        except FileNotFoundError as exc:
+            warnings.warn(f"{sid}: platform survey unavailable: {exc}")
+            continue
         registry = type_registry(path)
         if sid in ag.INI_BASE:                       # a delta inherits its base's lists
-            base = next((p for s, _l, _k, p, _e in ev.SOURCES
-                         if s == ag.INI_BASE[sid]), None)
+            base = ag.source_base_path(sid, corpus["sources"])
             if base and base.exists():
                 registry = {**type_registry(base), **registry}
 

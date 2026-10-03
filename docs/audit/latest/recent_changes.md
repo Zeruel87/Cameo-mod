@@ -1,97 +1,126 @@
 # audit_recent_changes — last 14 day(s) of history
 
-Commits reviewed: **376**, files touched: **876**
+Commits reviewed: **666**, files touched: **4912**
 
 | code | meaning | count | blocking |
 |---|---|---|---|
-| R1 | balance yaml edited without the ledger | 16 | yes |
-| R2 | audit script never run by run_all.sh | 3 | yes |
-| R3 | provenance (wrong-identity trailer blocks; missing one on the shared identity is review-only) | 12 | partly |
-| R4 | engine/mod.config change (needs boot gate) | 8 | no |
+| R1 | balance yaml edited without the ledger | 24 | yes |
+| R2 | audit script never run by run_all.sh | 10 | yes |
+| R3 | provenance (wrong-identity trailer blocks; missing one on the shared identity is review-only) | 29 | partly |
+| R4 | engine/mod.config change (needs boot gate) | 5 | no |
 
 
-## R1 — hand-edited balance numbers (16)
+## R1 — hand-edited balance numbers (24)
 
 | commit | date | subject | fields |
 |---|---|---|---|
-| 71ea9200 | 2026-08-23 | separate AI chrono from chrono reinforcements an | Range, ReloadDelay |
-| c49a8f20 | 2026-08-23 | Add drop pods to the dropship bay and rework scr | Range, Speed |
-| 924e4f68 | 2026-08-23 | Add the dropship bay | BuildDuration, Cost, HP, Speed |
-| 47a66b6c | 2026-08-21 | fix(w24): the nuclear batch collapsed 15 warhead | Damage |
-| 33959758 | 2026-08-21 | HeatRayBeam1-4: complete Inferno 3-way split + s | Range, ReloadDelay |
-| 89c94c89 | 2026-08-20 | D2K: 3-way split OrniBomb and OrniBombC | Range |
-| 86634636 | 2026-08-20 | W24: D2K ^ORocket/^OMissile 3-way split | MinRange |
-| bd215785 | 2026-08-18 | feat(weapons): convert legacy flame/chemical App | Damage |
-| b010cc6e | 2026-08-18 | Hover Transport Added | Cost, HP, Range, Speed |
-| 786bb2f2 | 2026-08-18 | Added all Combat ships for GDI/Nod | Burst, BurstDelays, Cost, Damage, HP, Range, ReloadDelay, Speed |
-| a20cda71 | 2026-08-12 | W2: convert wc2deathknightDeathAndDecay_Hit to I | Damage |
-| 086efefc | 2026-08-11 | feat(balance): convert HonestJohn to 3-way split | Damage |
-| 14713d57 | 2026-08-11 | fix(tesla): rename extra-damage chips and restor | Damage |
-| 0d2cd6e8 | 2026-08-10 | feat(warhead): auto-scaling Integrity/EMP + unif | Damage, Spread |
-| 39995bba | 2026-08-10 | balance(weapons): wire D2K_StormGunInf/Cymek to  | Damage |
-| 4e9c3198 | 2026-08-10 | balance(weapons): collapse Exorcist family + Shr | Damage |
+| d300295e | 2026-10-01 | packs: materialize 12 hard cross-pack refs (reso | Damage, Range, ReloadDelay, Speed, Spread |
+| 2f440999 | 2026-09-26 | W7 tail-2: 5 more de-parented after collision pr | Burst, BurstDelays, Damage, Range, ReloadDelay, Speed, Spread |
+| 5eff1183 | 2026-09-26 | rule-4 Versus remediation: restore weapon-parent | BurstDelays, MinRange |
+| 01c89a5a | 2026-09-26 | fix(W7): restore Inherits edges where splices ma | Damage |
+| 8e553991 | 2026-09-26 | feat(W7): chain-collapse batch-3 — 57 children o | Burst, BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| 9ec11477 | 2026-09-26 | feat(W7): collapse 52 more weapon->weapon edges  | Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| e4000127 | 2026-09-26 | feat(W7): collapse 55 weapon->weapon edges onto  | BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| 1ae9c7d0 | 2026-09-26 | R17 chip folds (W5 batch-1): 20 weapons / 21 chi | Damage |
+| 2c0cf719 | 2026-09-26 | W8 batch-2: 13 more legacy edges -> covering edg | Burst, BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed |
+| 2ba249f0 | 2026-09-26 | feat(W7): convert YuriGatlingTankMG{1,2,3}[_AA]  | ReloadDelay, Speed |
+| bc676e8d | 2026-09-26 | W8 batch-1: 52 legacy-template edges -> covering | Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| 90aef52d | 2026-09-26 | W7: replace 19 concrete-weapon inherits with cov | Damage, Range, ReloadDelay, Speed, Spread |
+| 6b0f3fdb | 2026-09-25 | W2 sweep: drop 152 dead ^Warhead_ edges (-77), 4 | Range, ReloadDelay |
+| 450dcea5 | 2026-09-26 | feat(W7): materialize held-67 ExtraDamage batch  | BurstDelays, Damage, Range, ReloadDelay, Speed, Spread |
+| 434413f0 | 2026-09-26 | W7 packs: restore resolved child-order parity (N | Damage, Range, Spread |
+| 5407fd8a | 2026-09-25 | W7 ContentPack batch: 97 pack-level weapon-paren | Burst, BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| c63c0415 | 2026-09-25 | W7: materialize 33 remaining DAWN-file-set weapo | Burst, BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| 95e18490 | 2026-09-25 | pack self-containment: eliminate hard value-ref  | Burst, BurstDelays, Damage, HP, MinRange, Range, ReloadDelay, Speed, Spread |
+| 72468eb3 | 2026-09-25 | TD/TS/SC self-containment: eliminate cross-pack  | Damage, Range, ReloadDelay, Speed |
+| f51320c8 | 2026-09-25 | D2k self-containment: eliminate all cross-pack i | Burst, BurstDelays, Range, ReloadDelay, Spread |
+| d46ecd9d | 2026-09-24 | W7/W27/R17: DAWN lane — weapon 3-way conversions | Burst, BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| 86577a7a | 2026-09-24 | W7: convert unclaimed weapon-parent edges in out | Damage, Range, ReloadDelay, Speed, Spread |
+| 004a9cb8 | 2026-09-24 | W7: convert all weapon-parent edges in weapons.y | Burst, BurstDelays, Damage, MinRange, Range, ReloadDelay, Speed, Spread |
+| d36f3b0a | 2026-09-24 | W23-RA batch 1: TKM file retrofit (20/21 weapons | Damage, MinRange, Range, ReloadDelay, Speed, Spread |
 
 
-## R2 — audits missing from run_all.sh (3)
+## R2 — audits missing from run_all.sh (10)
 
 | script | problem |
 |---|---|
+| tools/audit/audit_bot_insurance.py | not invoked by run_all.sh |
+| tools/audit/audit_bot_wiring.py | not invoked by run_all.sh |
+| tools/audit/audit_chrome_master_freshness.py | not invoked by run_all.sh |
+| tools/audit/audit_chrome_scale_variants.py | not invoked by run_all.sh |
 | tools/audit/audit_inline_effects.py | not invoked by run_all.sh |
+| tools/audit/audit_orphan_removals.py | not invoked by run_all.sh |
+| tools/audit/audit_promotion_superiority.py | not invoked by run_all.sh |
+| tools/audit/audit_scaled_bullet_overrides.py | not invoked by run_all.sh |
 | tools/audit/audit_upgrade_regression.py | not invoked by run_all.sh |
 | tools/audit/audit_weapon_identity.py | not invoked by run_all.sh |
 
 
-## R3 — commits without provenance (12)
+## R3 — commits without provenance (29)
 
 | commit | date | author | problem | severity |
 |---|---|---|---|---|
-| 1d18d5d4 | 2026-08-23 | Claude | agent trailer `Claude Opus 5 <noreply@anthropic.com>` on a non-shared identity | review |
-| 4ec4fd1c | 2026-08-23 | Claude | agent trailer `Claude Opus 5 <noreply@anthropic.com>` on a non-shared identity | review |
-| 20f15194 | 2026-08-23 | Claude | agent trailer `Claude Opus 5 <noreply@anthropic.com>` on a non-shared identity | review |
-| 026963fd | 2026-08-23 | Claude | agent trailer `Claude Opus 5 <noreply@anthropic.com>` on a non-shared identity | review |
-| 2bb046ae | 2026-08-20 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 7800eaab | 2026-08-17 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 519105d4 | 2026-08-16 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| e62ac4ea | 2026-08-16 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 988a7580 | 2026-08-11 | Devin AI | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 1d5d5e55 | 2026-08-11 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
-| 7155a0f1 | 2026-08-11 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
-| 59ade89e | 2026-08-11 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 8a86238b | 2026-10-01 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 27de8684 | 2026-10-01 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| be34aa6d | 2026-10-01 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 3e889dc5 | 2026-09-30 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| a47642cf | 2026-09-30 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 2e52abaf | 2026-09-30 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| d891992d | 2026-09-28 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 2a7e2e29 | 2026-09-28 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| cefceacd | 2026-09-28 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 624348f6 | 2026-09-29 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 7b0cd5d7 | 2026-09-28 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 5b526e79 | 2026-09-28 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| 86b463d6 | 2026-09-28 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| 58005b41 | 2026-09-28 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| b862072c | 2026-09-28 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| 8f1e5579 | 2026-09-28 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| c6c990b7 | 2026-09-28 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| b92183f3 | 2026-09-28 | Blackrobe | agent trailer `OpenAI GPT-6 Astra <noreply@openai.com>` on a non-shared identity | review |
+| cfafbbf0 | 2026-09-28 | Blackrobe | agent trailer `OpenAI GPT-6 Astra <noreply@openai.com>` on a non-shared identity | review |
+| 045d0c37 | 2026-09-27 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
+| 67b18009 | 2026-09-27 | Zan Yewang | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
+| e9d50021 | 2026-09-27 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| 56de7db0 | 2026-09-27 | Zan Yewang | agent trailer `Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>` on a non-shared identity | review |
+| 043e6c40 | 2026-09-24 | AedisToru | no Co-Authored-By trailer (shared identity) | review |
+| 8f53b8dd | 2026-09-23 | devin-ai-integration[bot] | agent trailer `Zan Yewang <inyucedora@gmail.com>` on a non-shared identity | review |
+| c6894f19 | 2026-09-23 | devin-ai-integration[bot] | agent trailer `Zan Yewang <inyucedora@gmail.com>` on a non-shared identity | review |
+| d81a1bfd | 2026-09-23 | Blackrobe | agent trailer `Codex GPT-5.6 Luna <noreply@openai.com>` on a non-shared identity | review |
+| 1519a758 | 2026-09-22 | devin-ai-integration[bot] | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
+| fdbb58ef | 2026-09-22 | devin-ai-integration[bot] | agent trailer `Devin AI <devin@cognition.ai>` on a non-shared identity | review |
 
 
-## R4 — engine/config changes to re-verify (8)
+## R4 — engine/config changes to re-verify (5)
 
 | commit | date | note |
 |---|---|---|
-| f1c64e93 | 2026-08-22 | mod.config changed (rebuild + boot gate required) |
-| c69604be | 2026-08-17 | mod.config changed (rebuild + boot gate required) |
-| a74638de | 2026-08-16 | mod.config changed (rebuild + boot gate required) |
-| 41f2870b | 2026-08-16 | mod.config changed (rebuild + boot gate required) |
-| d6e8712c | 2026-08-15 | mod.config changed (rebuild + boot gate required) |
-| 988a7580 | 2026-08-11 | mod.config changed (rebuild + boot gate required) |
-| 1d5d5e55 | 2026-08-11 | mod.config changed (rebuild + boot gate required) |
-| f2284b1c | 2026-08-11 | mod.config changed (rebuild + boot gate required) |
+| 11f1825c | 2026-09-29 | mod.config changed (rebuild + boot gate required) |
+| 5441ace1 | 2026-09-29 | mod.config changed (rebuild + boot gate required) |
+| 5b526e79 | 2026-09-28 | mod.config changed (rebuild + boot gate required) |
+| 86b463d6 | 2026-09-28 | mod.config changed (rebuild + boot gate required) |
+| 7489f8e9 | 2026-09-28 | mod.config changed (rebuild + boot gate required) |
 
 
 ## R5 — most-churned files (re-read these first)
 
 | file | commits touching it |
 |---|---|
-| docs/design/BALANCE_PROGRAM_PLAN.md | 104 |
-| mods/cameo/weapons/weapons.yaml | 66 |
-| tools/balance/gen_weapon_template.py | 51 |
-| docs/balance/derived/redalert_soviets.json | 46 |
-| docs/design/ROADMAP.md | 42 |
-| docs/balance/derived/d2k_ixian.json | 38 |
-| docs/balance/derived/redalert2mod_consortium.json | 38 |
-| docs/balance/derived/redalert2mod_futuretech.json | 38 |
-| docs/balance/derived/tiberiandawn_nod.json | 38 |
-| docs/balance/derived/tiberiansun_forgotten.json | 38 |
-| DEVELOPMENT_LOG.md | 38 |
-| docs/balance/derived/shared_redalert.json | 36 |
-| docs/balance/derived/starcraft_protoss.json | 36 |
-| docs/balance/derived/tiberiansun_nod.json | 36 |
-| docs/balance/derived/d2k_ordos.json | 35 |
+| DEVELOPMENT_LOG.md | 206 |
+| docs/design/AI_ARCHITECTURE.md | 120 |
+| mods/cameo/ai/ai.yaml | 118 |
+| docs/HANDOFF.md | 103 |
+| OpenRA.Mods.CA/Traits/BotModules/SquadManagerBotModuleCA.cs | 72 |
+| docs/LESSONS_LEARNED.md | 68 |
+| docs/DESIGN.md | 63 |
+| OpenRA.Mods.Cameo/Traits/BotModules/BotSituation.cs | 60 |
+| docs/design/ROADMAP.md | 53 |
+| tools/ai/increment_switches.yaml | 45 |
+| docs/design/AI_MODULE_MAP.md | 34 |
+| tools/audit/fog_honesty_manifest.json | 34 |
+| docs/audit/doc_claims.yaml | 32 |
+| docs/balance/derived/tiberiandawn_nod.json | 32 |
+| OpenRA.Mods.Cameo.Test/MasterAiBotModuleTest.cs | 30 |
 
 
 ## Reviewer checklist (not machine-checkable)
@@ -105,10 +134,10 @@ Commits reviewed: **376**, files touched: **876**
 
 ## Enforcement
 
-R1/R3 block only for commits on or after **2026-08-12**: 11 R1 and 0 R3 of 16/12 findings are in scope; the rest predate the gate.
+R1/R3 block only for commits on or after **2026-08-12**: 24 R1 and 0 R3 of 24/29 findings are in scope; the rest predate the gate.
 
 
 ## FAIL
 
-- 11 R1, 3 R2, 0 R3 blocking finding(s)
+- 24 R1, 10 R2, 0 R3 blocking finding(s)
 

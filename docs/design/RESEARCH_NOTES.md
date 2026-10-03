@@ -1103,10 +1103,10 @@ Extrapolation:
 | RedAlert2/Shared | 42 | 0 | 3,000 | `ra2carrier`, `ra2dest`, `ra2dlph` |
 | RedAlert2/Soviets | 38 | 10,600 | 30,100 | `ra2_soviets_upgrade_kirovatomicbombs` |
 | RedAlert2/Yuri | 48 | 15,600 | 26,600 | `yuri_biotrooper` |
-| RedAlert2Mod/AsianAlliance | 53 | 12,750 | 24,250 | `tsun.asian`, `up_tsunami.asian` |
+| RedAlert2Mod/AsianAlliance | 53 | 12,750 | 24,250 | `asianalliance_tsun`, `asianalliance_upgrade_tsunami` |
 | RedAlert2Mod/Consortium | 41 | 13,500 | 25,500 | `steelconsortium_cloudbreaker` |
 | RedAlert2Mod/FutureTech | 33 | 16,800 | 29,800 | `futuretech_harbingergunship` |
-| RedAlert2Mod/Naxis | 57 | 13,300 | 20,300 | `muboat.nax`, `nax_bitsmark` |
+| RedAlert2Mod/Naxis | 57 | 13,300 | 20,300 | `naxis_muboat`, `nax_bitsmark` |
 | RedAlert2Mod/SchwarzerMond | 35 | 14,300 | 19,300 | `schwarzermond_blackbomb`, `schwarzermond_corruptorpiercer`, `schwarzermond_dieglocke` |
 | RedAlert2Mod/Syndicate | 42 | 13,000 | 28,500 | `latinsyndicate_tortugatank` |
 | RedAlert2Mod/TKM | 51 | 12,900 | 19,900 | `tkm_viper` |

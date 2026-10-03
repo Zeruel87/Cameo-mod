@@ -43,7 +43,8 @@ class Model:
         self.rs = Ruleset(self.root)
         self.factions = self._load_factions()
         self._provides: dict[str, set[str]] | None = None
-        self._rosters: dict[str, set[str]] = {}
+        self._rosters: dict[tuple, set[str]] = {}
+        self._lobby_tokens: set[str] | None = None
 
     # ---- factions --------------------------------------------------------- #
 
@@ -106,6 +107,39 @@ class Model:
         "difficulty", "shortgame", "crates", "domination", "kotch",
     )
 
+    # Trait roots whose fields grant prerequisite tokens only when the player
+    # picks/enables the option in the lobby (checkboxes, dropdowns, tech level).
+    LOBBY_TRAIT_PREFIXES = ("lobbyprerequisite", "providestechprerequisite")
+
+    def lobby_tokens(self) -> set[str]:
+        """Prerequisite tokens any lobby option can grant: `Prerequisites:`
+        on `LobbyPrerequisiteCheckbox`/`ProvidesTechPrerequisite` traits, plus
+        every `Values:` key of `LobbyPrerequisiteDropdown` (each value is the
+        token granted when that option is selected)."""
+        if self._lobby_tokens is not None:
+            return self._lobby_tokens
+        toks: set[str] = set()
+        for name in self.rs.actors:
+            if name.startswith(("^", "$", "-")):
+                continue
+            res = self.rs.resolve(name)
+            if res is None:
+                continue
+            for c in res.children:
+                root = c.key.split("@", 1)[0].lower()
+                if not root.startswith(self.LOBBY_TRAIT_PREFIXES):
+                    continue
+                for tok in (c.get("Prerequisites") or "").split(","):
+                    tok = tok.strip().lstrip("~").strip().lower()
+                    if tok and not tok.startswith("!"):
+                        toks.add(tok)
+                vals = c.child("Values")
+                if vals is not None:
+                    for v in vals.children:
+                        toks.add(v.key.lower())
+        self._lobby_tokens = toks
+        return toks
+
     def _provider_tokens(self, name: str, resolved: Node) -> set[str]:
         """Every prerequisite token owning this actor grants."""
         toks = {name.lower()}
@@ -163,10 +197,26 @@ class Model:
         b = resolved.child("Buildable")
         return b is not None and bool(b.get("Queue"))
 
-    def roster(self, faction: str) -> set[str]:
-        """Fixpoint prerequisite closure: every actor the faction can obtain."""
-        if faction in self._rosters:
-            return self._rosters[faction]
+    @staticmethod
+    def _factions_allows(resolved: Node, faction: str) -> bool:
+        """`Buildable.Factions` is an engine-level roster gate the prereq
+        closure does not see: a buildable listing other factions' InternalNames
+        is unobtainable here even when its prereq tokens are satisfied."""
+        b = resolved.child("Buildable")
+        if b is None:
+            return True
+        raw = (b.get("Factions") or "").split("#", 1)[0]
+        allowed = {x.strip().lower() for x in raw.split(",") if x.strip()}
+        return not allowed or faction.lower() in allowed
+
+    def roster(self, faction: str,
+               extra_tokens: frozenset[str] = frozenset()) -> set[str]:
+        """Fixpoint prerequisite closure: every actor the faction can obtain.
+        `extra_tokens` are treated as already satisfied (e.g. lobby_tokens()
+        to model "live when the option is ticked")."""
+        key = (faction, extra_tokens)
+        if key in self._rosters:
+            return self._rosters[key]
 
         owned: set[str] = set()
         tokens: set[str] = set()
@@ -191,7 +241,7 @@ class Model:
             tokens.update(self._provider_tokens("player", player) - {"player"})
 
         def satisfied(tok: str) -> bool:
-            if tok in tokens:
+            if tok in tokens or tok in extra_tokens:
                 return True
             return tok.startswith(self.OPTION_TOKEN_PREFIXES)
 
@@ -206,16 +256,19 @@ class Model:
             for lname, res in buildables:
                 if lname in owned:
                     continue
+                if not self._factions_allows(res, faction):
+                    continue
                 if all(satisfied(t) for t in self.positive_prereqs(res)):
                     own(lname)
                     changed = True
 
-        self._rosters[faction] = owned
+        self._rosters[key] = owned
         return owned
 
-    def buildable_roster(self, faction: str) -> set[str]:
+    def buildable_roster(self, faction: str,
+                         extra_tokens: frozenset[str] = frozenset()) -> set[str]:
         out = set()
-        for lname in self.roster(faction):
+        for lname in self.roster(faction, extra_tokens):
             res = self.rs.resolve(lname)
             if res is not None and self.is_buildable(res):
                 out.add(lname)

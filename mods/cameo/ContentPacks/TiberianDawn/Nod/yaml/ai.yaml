@@ -1,57 +1,154 @@
-# ai.yaml — CNC faction AI configuration
+# AI configuration owned by this ContentPack (TiberianDawn/Nod).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (7 entries for td_nod) ---
-# 			td_nod_tiberiumrefinery: 10
-# 			td_nod_handofnod: 10
-# 			td_nod_airstrip: 10
-# 			td_nod_helipad: 10
-# 			td_nod_communicationscenter: 1
-# 			td_nod_templeofnod: 2
-# 			td_nod_repairfacility: 1
-#
-# --- BuildingFractions (14 entries for td_nod) ---
-# 			td_nod_constructionyard: 5
-# 			td_nod_tiberiumrefinery: 15
-# 			td_nod_handofnod: 15
-# 			td_nod_airstrip: 15
-# 			td_nod_helipad: 15
-# 			td_nod_communicationscenter: 1
-# 			td_nod_templeofnod: 5
-# 			td_nod_nuclearmissilesilo: 1
-# 			td_nod_templeprime: 1
-# 			td_nod_repairfacility: 1
-# 			td_nod_gunturret: 10
-# 			td_nod_laserturret: 10
-# 			td_nod_obeliskoflight: 10
-# 			td_nod_samsite: 10
-#
-# --- UnitLimits (3 entries for td_nod) ---
-# 			td_nod_tiberiumharvester: 20
-# 			td_nod_stealthharvester: 20
-# 			td_nod_chinooktransport: 5
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	SquadManagerBotModuleCA@rush:
+		AirSquadTargetTypes:
+			td_nod_apacheattackhelicopter: Aircraft, Ground, Naval
+			td_nod_venom: Aircraft, Ground, Naval
+			td_nod_chinooktransport: Ground
+	SquadManagerBotModuleCA@turtle:
+		AirSquadTargetTypes:
+			td_nod_apacheattackhelicopter: Aircraft, Ground, Naval
+			td_nod_venom: Aircraft, Ground, Naval
+			td_nod_chinooktransport: Ground
+	SquadManagerBotModuleCA@tech:
+		AirSquadTargetTypes:
+			td_nod_apacheattackhelicopter: Aircraft, Ground, Naval
+			td_nod_venom: Aircraft, Ground, Naval
+			td_nod_chinooktransport: Ground
+	SquadManagerBotModuleCA@expansion:
+		AirSquadTargetTypes:
+			td_nod_apacheattackhelicopter: Aircraft, Ground, Naval
+			td_nod_venom: Aircraft, Ground, Naval
+			td_nod_chinooktransport: Ground
+	SquadManagerBotModuleCA@steamroller:
+		AirSquadTargetTypes:
+			td_nod_apacheattackhelicopter: Aircraft, Ground, Naval
+			td_nod_venom: Aircraft, Ground, Naval
+			td_nod_chinooktransport: Ground
+	SendUnitToAttackBotModule:
+		ActorTypesAndAttackOptions:
+			td_nod_chinooktransport:
+				AttackDesireOfEach: 100
+				MoveToOrderName: Move
+				AttackOrderName: Unload
+				MoveBackOrderName: Move
+				AttackRequires: CargoLoaded
+	LoadCargoBotModule@Infantry:
+		TransportTypesAndLoadRequirement:
+			td_nod_chinooktransport: All
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			td_nod_tiberiumrefinery: 1500
+			td_nod_handofnod: 1500
+			td_nod_airstrip: 1500
+			td_nod_helipad: 1500
+		BuildingDelays:
+			td_nod_repairfacility: 4500
+			td_nod_communicationscenter: 3000
+			td_nod_templeofnod: 6000
+			td_nod_nuclearmissilesilo: 9000
+		BuildingLimits:
+			td_nod_tiberiumrefinery: 10
+			td_nod_handofnod: 10
+			td_nod_airstrip: 10
+			td_nod_helipad: 10
+			td_nod_communicationscenter: 1
+			td_nod_templeofnod: 2
+			td_nod_repairfacility: 1
+		BuildingFractions:
+			td_nod_constructionyard: 5
+			td_nod_tiberiumrefinery: 15
+			td_nod_handofnod: 15
+			td_nod_airstrip: 15
+			td_nod_helipad: 15
+			td_nod_communicationscenter: 1
+			td_nod_templeofnod: 5
+			td_nod_nuclearmissilesilo: 1
+			td_nod_templeprime: 1
+			td_nod_repairfacility: 1
+			td_nod_gunturret: 10
+			td_nod_laserturret: 10
+			td_nod_obeliskoflight: 10
+			td_nod_samsite: 10
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			td_nod_mobileconstructionvehicle: 5000
+		UnitIntervals:
+			td_nod_mobileconstructionvehicle: 2500
+			td_nod_chinooktransport: 1500
+		UnitsToBuild:
+			td_nod_attacksubmarine: 10
+			td_nod_ballisticmissilesubmarine: 10
+			td_nod_lasercorvette: 10
+			td_nod_tiberiumharvester: 10
+			td_nod_stealthharvester: 10
+			td_nod_minigunner: 3
+			td_nod_rocketsoldier: 5
+			td_nod_flamethrower: 3
+			td_nod_chemicalwarrior: 5
+			td_nod_commando: 1
+			td_nod_buggy: 3
+			td_nod_reconbike: 3
+			td_nod_lighttank: 5
+			td_nod_flametank: 5
+			td_nod_artillery: 3
+			td_nod_stealthtank: 5
+			td_nod_ssmlauncher: 3
+			td_nod_apacheattackhelicopter: 5
+			td_nod_chinooktransport: 1
+			td_nod_upgrade_elementalwarfare: 1
+			td_nod_upgrade_elitecapacitors: 1
+			td_nod_upgrade_improvedartilleries: 1
+			td_nod_upgrade_guerillatactics: 1
+			td_nod_upgrade_blackmarketupgrades: 1
+			td_nod_upgrade_tiberiuminfusion: 1
+			td_nod_upgrade_cyberneticmodifications: 1
+			td_nod_upgrade_cyberneticarmor: 1
+			td_nod_upgrade_advancedguerillatactics: 1
+			td_nod_promotion_chemicalrocketsoldier: 1
+			td_nod_promotion_chemicalattackbike: 1
+			td_nod_promotion_chemicalstealthtank: 1
+			td_nod_promotion_chemicalssmlauncher: 1
+			td_nod_promotion_buggymkii: 1
+			td_nod_promotion_lighttankmkii: 1
+			td_nod_promotion_flametankmkii: 1
+			td_nod_promotion_lasertrooper: 1
+			td_nod_promotion_upgradeupnodstealthname: 1
+			td_nod_promotion_blackhandflamer: 1
+			td_nod_promotion_specter: 1
+			td_nod_promotion_upgradeupnodvenomname: 1
+			td_nod_chemicalrocketsoldier: 5
+			td_nod_chemicalattackbike: 3
+			td_nod_chemicalstealthtank: 5
+			td_nod_chemicalssmlauncher: 3
+			td_nod_buggymkii: 3
+			td_nod_lighttankmkii: 5
+			td_nod_flametankmkii: 5
+			td_nod_lasertrooper: 5
+			td_nod_stealthsoldier: 3
+			td_nod_blackhandflamer: 3
+			td_nod_specterartillery: 3
+			td_nod_venom: 5
+			td_nod_lasercommando: 1
+		UnitLimits:
+			td_nod_attacksubmarine: 10
+			td_nod_ballisticmissilesubmarine: 10
+			td_nod_lasercorvette: 10
+			td_nod_tiberiumharvester: 20
+			td_nod_stealthharvester: 20
+			td_nod_chinooktransport: 5
+	SquadManagerBotModuleCA@classic:
+		AirSquadTargetTypes:
+			td_nod_apacheattackhelicopter: Aircraft, Ground, Naval
+			td_nod_venom: Aircraft, Ground, Naval
+			td_nod_chinooktransport: Ground

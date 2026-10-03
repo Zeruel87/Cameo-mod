@@ -1,97 +1,105 @@
-# ai.yaml — TKM faction AI configuration
+# AI configuration owned by this ContentPack (RedAlert2Mod/TKM).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (6 entries for tkm) ---
-# 			tkm_orerefinery: 10
-# 			tkm_barracks: 10
-# 			tkm_warfactory: 10
-# 			tkm_airpad: 10
-# 			tkm_observationvan: 1
-# 			tkm_techcenter: 2
-#
-# --- BuildingFractions (13 entries for tkm) ---
-# 			tkm_constructionyard: 5
-# 			tkm_orerefinery: 15
-# 			tkm_barracks: 15
-# 			tkm_supportlabor: 1
-# 			tkm_warfactory: 15
-# 			tkm_airpad: 15
-# 			tkm_observationvan: 1
-# 			tkm_techcenter: 1
-# 			tkm_bunker: 15
-# 			tkm_quadturretbunker: 15
-# 			tkm_tankturretbunker: 15
-# 			tkm_mobileconstructionvehicletkm: 5000
-# 			tkm_mobileconstructionvehicletkm: 2500
-#
-# --- UnitsToBuild (45 entries for tkm) ---
-# 			tkm_templateharvesterraname: 10
-# 			tkm_rifleman: 7
-# 			tkm_juggernaut: 7
-# 			tkm_trooper: 7
-# 			tkm_spetsnaz: 7
-# 			tkm_rocketeer: 5
-# 			tkm_engineer: 1
-# 			tkm_as42: 10
-# 			tkm_technical: 10
-# 			tkm_quadtruck: 5
-# 			tkm_stryker: 5
-# 			tkm_zaza: 5
-# 			tkm_technicaltank: 5
-# 			tkm_abrams: 5
-# 			tkmabramspoint: 5
-# 			tkm_thermonaut: 5
-# 			tkm_t72m: 5
-# 			tkm_tornadoglauncher: 3
-# 			tkm_iroquois: 5
-# 			tkm_viper: 5
-# 			tkm_von: 1
-# 			tkm_flakbus: 2
-# 			tkm_radartruck: 1
-# 			tkm_repairtruck: 1
-# 			tkm_medictruck: 1
-# 			tkm_dronepodtruck: 3
-# 			tkm_battlebus: 3
-# 			tkm_sandmarine: 1
-# 			tkm_bigshiee: 1
-# 			tkm_trenchtank: 3
-# 			tkm_trenchtruck: 3
-# 			tkm_t30: 1
-# 			tkm_upgrade_berezkaarsenalupgrade: 1
-# 			tkm_upgrade_titanarsenalupgrade: 1
-# 			tkm_upgrade_natoarsenalupgrade: 1
-# 			tkm_upgrade_m203upgrade: 1
-# 			tkm_upgrade_semiautoriflesupgrade: 1
-# 			tkm_upgrade_titanarmorpiercingbulletsupgrade: 1
-# 			tkm_upgrade_twinrocketsupgrade: 1
-# 			tkm_upgrade_incendiaryrocketsupgrade: 1
-# 			tkm_upgrade_cryorocketsupgrade: 1
-# 			tkm_upgrade_technicaltankrocketaddon: 1
-# 			tkm_upgrade_pointdefensesystem: 1
-# 			tkm_upgrade_heavytitanplating: 1
-# 			tkm_upgrade_infantryupgrade: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	LoadCargoBotModule@Infantry:
+		TransportTypesAndLoadRequirement:
+			tkm_bunker: All
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			tkm_orerefinery: 1500
+			tkm_barracks: 1500
+		BuildingDelays:
+			tkm_observationvan: 2000
+			tkm_techcenter: 4000
+		BuildingLimits:
+			tkm_orerefinery: 10
+			tkm_barracks: 10
+			tkm_warfactory: 10
+			tkm_airpad: 10
+			tkm_observationvan: 1
+			tkm_techcenter: 2
+		BuildingFractions:
+			tkm_constructionyard: 5
+			tkm_orerefinery: 15
+			tkm_barracks: 15
+			tkm_supportlabor: 1
+			tkm_warfactory: 15
+			tkm_airpad: 15
+			tkm_observationvan: 1
+			tkm_techcenter: 1
+			tkm_bunker: 15
+			tkm_quadturretbunker: 15
+			tkm_tankturretbunker: 15
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			tkm_mobileconstructionvehicletkm: 5000
+		UnitIntervals:
+			tkm_mobileconstructionvehicletkm: 2500
+		UnitsToBuild:
+			tkm_promotion_medictruck: 1
+			tkm_promotion_juggernaut: 1
+			tkm_promotion_battlebus: 1
+			tkm_promotion_thesandmarine: 1
+			tkm_promotion_repairtruck: 1
+			tkm_promotion_thebigshiee: 1
+			tkm_promotion_radartruck: 1
+			tkm_promotion_viper: 1
+			tkm_promotion_dronepodtruck: 1
+			tkm_promotion_trenchtank: 1
+			tkm_promotion_t30: 1
+			tkm_promotion_flakbus: 1
+			tkm_templateharvesterraname: 10
+			tkm_rifleman: 7
+			tkm_juggernaut: 7
+			tkm_trooper: 7
+			tkm_spetsnaz: 7
+			tkm_rocketeer: 5
+			tkm_marine: 5
+			tkm_sniper: 1
+			tkm_engineer: 1
+			tkm_as42: 10
+			tkm_technical: 10
+			tkm_quadtruck: 5
+			tkm_stryker: 5
+			tkm_zaza: 5
+			tkm_technicaltank: 5
+			tkm_abrams: 5
+			tkm_thermonaut: 5
+			tkm_t72m: 5
+			tkm_tornadoglauncher: 3
+			tkm_iroquois: 5
+			tkm_viper: 5
+			tkm_von: 1
+			tkm_flakbus: 2
+			tkm_radartruck: 1
+			tkm_repairtruck: 1
+			tkm_medictruck: 1
+			tkm_dronepodtruck: 3
+			tkm_battlebus: 3
+			tkm_sandmarine: 1
+			tkm_bigshiee: 1
+			tkm_trenchtank: 3
+			tkm_trenchtruck: 3
+			tkm_t30: 1
+			tkm_upgrade_berezkaarsenalupgrade: 1
+			tkm_upgrade_titanarsenalupgrade: 1
+			tkm_upgrade_natoarsenalupgrade: 1
+			tkm_upgrade_gp25upgrade: 1
+			tkm_upgrade_semiautoriflesupgrade: 1
+			tkm_upgrade_titanarmorpiercingbulletsupgrade: 1
+			tkm_upgrade_twinrocketsupgrade: 1
+			tkm_upgrade_incendiaryrocketsupgrade: 1
+			tkm_upgrade_cryorocketsupgrade: 1
+			tkm_upgrade_technicaltankrocketaddon: 1
+			tkm_upgrade_pointdefensesystem: 1
+			tkm_upgrade_heavytitanplating: 1
+			tkm_upgrade_infantryupgrade: 1

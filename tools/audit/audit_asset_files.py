@@ -114,7 +114,30 @@ def main() -> int:
     print(table(["location", "referenced"], a3))
 
     defined = set()
-    for pa in (MOD / "audio").rglob("*.yaml"):
+    def voices_files(manifest_path: pathlib.Path) -> list[pathlib.Path]:
+        # A manifest's Voices: section lists yaml files; content.yaml packs are
+        # inline Includes so their relative paths sit under ContentPacks/.
+        out, in_voices = [], False
+        for ln in manifest_path.read_text(encoding="utf-8-sig", errors="replace").split("\n"):
+            if ln and ln[0] not in "\t #":
+                in_voices = ln.split(":")[0].strip() == "Voices"
+                continue
+            if in_voices:
+                mo = re.match(r"\s*(?:~)?(\w+)\|(.+?)\s*$", ln)
+                if mo:
+                    pkg, rel = mo.group(1), mo.group(2)
+                    if pkg == "cameo":
+                        out.append(MOD / rel)
+                    elif pkg == "ContentPacks":
+                        out.append(MOD / "ContentPacks" / rel)
+        return out
+
+    voice_yamls = voices_files(MOD / "mod.yaml")
+    for cy in MOD.glob("ContentPacks/**/content.yaml"):
+        voice_yamls.extend(voices_files(cy))
+    for pa in voice_yamls:
+        if not pa.exists():
+            continue
         for ln in pa.read_text(encoding="utf-8-sig", errors="replace").split("\n"):
             if ln and ln[0] not in "\t #" and ":" in ln:
                 defined.add(ln.split(":")[0].strip().lower())

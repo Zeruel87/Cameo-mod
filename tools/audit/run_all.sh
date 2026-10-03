@@ -52,25 +52,28 @@ export PYTHONIOENCODING=utf-8
 # NOTE: "elite_naming" is intentionally excluded — audit_elite_naming.py is
 # deprecated, fully superseded by audit_weapon_suffixes.py X1 section
 # (same check: rank-elite gated armaments not ending _elite).
-# NOTE: "damage_grid" is intentionally excluded — audit_damage_grid.py still
-# encodes the RETIRED 2000-step grid and the `main // 2000` percentage twin.
-# The live law is formula.DAMAGE_STEP (= 100) + formula.percentage_twin().
-# Re-derive it from `formula` before wiring it in; see docs/HANDOFF.md.
+# NOTE: "damage_grid" is intentionally excluded — audit_damage_grid.py WAS
+# re-derived 2026-08-25 from the live law (formula.DAMAGE_STEP = 100 +
+# formula.percentage_twin); it is excluded not because it is stale but because
+# its counts are moving targets while W24 collapses and the fold are in flight.
+# Wire it in once that work settles; see docs/HANDOFF.md and the audit header.
 for a in inherits duplicate_inherits faction_leaks upgrades upgrade_coverage ai ai_personalities sequences \
-         metadata outliers orphans assets fluent power_budget stat_formulas \
+         metadata outliers orphans orphan_cancels local_effect_fields assets fluent power_budget stat_formulas \
          weapon_uniqueness garrison_weapons asset_files promotion_gating min_range \
-         basebuilder_crates buildable_order display_text rename_safety \
+         basebuilder_crates buildable_order display_text rename_safety naming_damage \
+         map_actors \
          missing_elite elite_gating rank_decoration \
-         dune_rank_decoration effect_warhead_names weapon_suffixes \
+         dune_rank_decoration effect_warhead_names effect_pairings weapon_suffixes \
          balance_sheet consistency_report packs balance_drift \
-         duplicate_keys \
+         duplicate_keys split_definitions weapon_shape shrapnel_chains missile_role_family release_drift turn_speed original_coverage stat_uniqueness \
          template_conformance multiplier_modifiers nuclear_flash_bindings \
          ts_death_palette warhead_split physical_state_warheads \
          unique_traits armor_upgrade_harm plating_exclusivity k_linearity percentage_runtime \
-         survivability_pricing doc_claims doc_health hex_shield_routing \
+         survivability_pricing doc_claims doc_health task_index hex_shield_routing \
          impact_glow_preservation dead_warhead_fields family_uniqueness \
-         three_way_split tier_weapon_class heaviness_bell versus_profile \
-         meter_dilution ca_drift upstream_adoption engine_freshness; do
+         three_way_split tier_weapon_class heaviness_bell versus_profile derived_armor_columns \
+         meter_dilution ca_drift ca_unused ai_frankenstein fransbot_lists fransbot_drift guerrilla_roles central_ids upstream_adoption engine_freshness ammo_cadence fog_honesty merged_bot_modules bot_direct_mutation fransbot_orders elite_range \
+         ai_arch_freshness; do
   echo "== audit_$a"
   "$PYTHON" "tools/audit/audit_$a.py" "$@" > "$OUT/$a.md" 2> "$OUT/$a.err" \
     || failed=1
@@ -92,7 +95,7 @@ done
 # ⚠ Each script still exits 1 on its own findings, so CI may gate on one deliberately.
 # ⚠ tools/audit/run_all.py parses BOTH loops out of this file — keep the `for a in ...; do`
 #   shape so the two runners cannot drift apart.
-for a in code_duplication test_coverage recent_changes error_handling security; do
+for a in code_duplication test_coverage recent_changes error_handling security drain_status; do
   echo "== audit_$a (advisory)"
   "$PYTHON" "tools/audit/audit_$a.py" "$@" > "$OUT/$a.md" 2> "$OUT/$a.err" || true
   [ -s "$OUT/$a.err" ] || rm -f "$OUT/$a.err"
@@ -138,6 +141,29 @@ echo "== gen_faction_matrix"
 MATRIX="docs/factions/MATRIX.md"
 [ "$OUT" = "docs/audit/latest" ] || MATRIX="$OUT/MATRIX.md"
 "$PYTHON" tools/audit/gen_faction_matrix.py > "$MATRIX" || failed=1
+
+# ⛔ REPORT-INTEGRITY GATE (2026-09-06). An INTERRUPTED run leaves reports at ZERO BYTES,
+# and a zero-byte report reads as a perfectly clean board: on 2026-09-06 eight of them sat
+# in the working tree as an ordinary `git status` modification, `-52,063` lines, with a
+# truncated weapon_suffixes.md reporting X1-X5 all zero when the real numbers were 10 and 10.
+# `environment.py` cannot catch this — the tree was COMPLETE; the RUN died, not the corpus.
+#
+# Two different causes produce the same empty file, and the .err sidecar tells them apart:
+#   .err present -> the audit ran and REFUSED (a real finding; read it)
+#   .err absent  -> the run was interrupted (regenerate)
+empty=$(find "$OUT" -name "*.md" -size 0 | sort)
+if [ -n "$empty" ]; then
+  echo
+  echo "⛔ ZERO-BYTE REPORTS — do NOT commit $OUT/; a zero-byte report is a false green board:"
+  for f in $empty; do
+    if [ -f "${f%.md}.err" ]; then
+      echo "   $f  — HARD FAILURE, read ${f%.md}.err"
+    else
+      echo "   $f  — interrupted run, regenerate"
+    fi
+  done
+  failed=1
+fi
 
 echo "reports in $OUT/ ; matrix in $MATRIX"
 exit $failed

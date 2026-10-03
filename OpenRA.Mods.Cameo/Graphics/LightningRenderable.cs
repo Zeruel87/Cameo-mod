@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
@@ -135,15 +136,15 @@ namespace OpenRA.Mods.Cameo.Graphics
 				{
 					const int MaxGlowSegments = 8;
 					var stepN = Math.Max(1, (main.Count - 1) / MaxGlowSegments);
-					var prev = wr.ProjectedPosition(main[0].XY.ToInt2());
+					var prev = wr.ProjectedPosition(int2.FromVector(main[0]));
 					for (var i = stepN; i < main.Count; i += stepN)
 					{
-						var cur = wr.ProjectedPosition(main[i].XY.ToInt2());
+						var cur = wr.ProjectedPosition(int2.FromVector(main[i]));
 						glow.RegisterGlow(prev, cur, glowColor, glowScale, intensity: glowIntensity);
 						prev = cur;
 					}
 
-					var end = wr.ProjectedPosition(main[^1].XY.ToInt2());
+					var end = wr.ProjectedPosition(int2.FromVector(main[^1]));
 					if (end != prev)
 						glow.RegisterGlow(prev, end, glowColor, glowScale, intensity: glowIntensity);
 				}
@@ -191,7 +192,7 @@ namespace OpenRA.Mods.Cameo.Graphics
 			}
 		}
 
-		static List<float3> BuildBranch(in float3 root, float ang, float length, float devScreen, MersenneTwister rnd)
+		static List<Vector3> BuildBranch(in Vector3 root, float ang, float length, float devScreen, MersenneTwister rnd)
 		{
 			var dirX = (float)Math.Cos(ang);
 			var dirY = (float)Math.Sin(ang);
@@ -199,12 +200,12 @@ namespace OpenRA.Mods.Cameo.Graphics
 			var perpY = dirX;
 			const int n = 4;
 
-			var pts = new List<float3>();
+			var pts = new List<Vector3>();
 			for (var i = 0; i <= n; i++)
 			{
 				var t = i / (float)n;
 				var dev = (i == 0 || i == n ? 0f : 1f) * (rnd.NextFloat() * 2f - 1f) * devScreen * (1f - t);
-				pts.Add(new float3(
+				pts.Add(new Vector3(
 					root.X + dirX * length * t + perpX * dev,
 					root.Y + dirY * length * t + perpY * dev,
 					root.Z));
@@ -217,13 +218,13 @@ namespace OpenRA.Mods.Cameo.Graphics
 		// (so it looks like real forked lightning, not a smooth whisker), drawn from `root` along `ang`.
 		// It may recursively spawn a shorter, thinner sub-fork from a point on its first half, depth-capped
 		// and probability-gated so the per-frame segment count stays bounded.
-		void DrawFractalBranch(RgbaColorRenderer cr, in float3 root, float ang, float length,
+		void DrawFractalBranch(RgbaColorRenderer cr, in Vector3 root, float ang, float length,
 			int depth, float coreScreen, float glowScreen, MersenneTwister rnd)
 		{
 			const int MaxDepth = 2;
 			const float MinSubLengthScreen = 6f;
 
-			var tip = new float3(
+			var tip = new Vector3(
 				root.X + (float)Math.Cos(ang) * length,
 				root.Y + (float)Math.Sin(ang) * length,
 				root.Z);
@@ -246,7 +247,7 @@ namespace OpenRA.Mods.Cameo.Graphics
 			}
 		}
 
-		void DrawBranch(RgbaColorRenderer cr, List<float3> pts, float coreScreen, float glowScreen)
+		void DrawBranch(RgbaColorRenderer cr, List<Vector3> pts, float coreScreen, float glowScreen)
 		{
 			var count = pts.Count - 1;
 			for (var i = 0; i < count; i++)
@@ -261,7 +262,7 @@ namespace OpenRA.Mods.Cameo.Graphics
 			}
 		}
 
-		void DrawNode(RgbaColorRenderer cr, in float3 c, float radius, float hairLen, float hairDev,
+		void DrawNode(RgbaColorRenderer cr, in Vector3 c, float radius, float hairLen, float hairDev,
 			float coreScreen, float glowScreen, MersenneTwister rnd)
 		{
 			// Soft additive orb: a faint wide halo, a brighter mid, then a hot near-white centre.
@@ -278,14 +279,14 @@ namespace OpenRA.Mods.Cameo.Graphics
 			}
 		}
 
-		static void DrawDisc(RgbaColorRenderer cr, in float3 c, float radius, Color color)
+		static void DrawDisc(RgbaColorRenderer cr, in Vector3 c, float radius, Color color)
 		{
 			if (radius < 0.5f)
 				return;
 
 			cr.FillEllipse(
-				new float3(c.X - radius, c.Y - radius, c.Z),
-				new float3(c.X + radius, c.Y + radius, c.Z),
+				new Vector3(c.X - radius, c.Y - radius, c.Z),
+				new Vector3(c.X + radius, c.Y + radius, c.Z),
 				color, BlendMode.Additive);
 		}
 	}

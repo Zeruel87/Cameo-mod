@@ -1,79 +1,109 @@
-# ai.yaml — TS Nod faction AI configuration
+# AI configuration owned by this ContentPack (TiberianSun/Nod).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (9 entries for ts_nod) ---
-# 			ts_nod_tiberiumrefinery: 10
-# 			ts_nod_handof: 10
-# 			ts_nod_warfactory: 10
-# 			ts_nod_helipad: 10
-# 			ts_nod_radar: 1
-# 			ts_nod_techcenter: 2
-# 			ts_nod_missilesilo: 1
-# 			ts_nod_stealthgenerator: 1
-# 			ts_nod_silo: 1
-#
-# --- BuildingFractions (13 entries for ts_nod) ---
-# 			ts_nod_tiberiumrefinery: 15
-# 			ts_nod_handof: 15
-# 			ts_nod_warfactory: 15
-# 			ts_nod_helipad: 15
-# 			ts_nod_radar: 1
-# 			ts_nod_techcenter: 5
-# 			ts_nod_servicedepot: 1
-# 			ts_nod_laserturret: 15
-# 			ts_nod_obeliskoflight: 15
-# 			ts_nod_samsite: 10
-# 			ts_nod_tiberiumwastefacility: 1
-# 			ts_nod_missilesilo: 1
-# 			ts_nod_stealthgenerator: 1
-#
-# --- UnitsToBuild (24 entries for ts_nod) ---
-# 			ts_nod_subterraneanapc: 1
-# 			ts_nod_mobileconstructionvehicle: 1
-# 			ts_nod_lightinfantry: 7
-# 			ts_nod_attackbuggy: 3
-# 			ts_nod_attackcycle: 5
-# 			ts_nod_ticktank: 3
-# 			ts_nod_devilstongue: 5
-# 			ts_nod_artillery: 10
-# 			ts_nod_stealthtank: 7
-# 			ts_nod_mobilerepairvehicle: 1
-# 			ts_nod_harpy: 3
-# 			ts_nod_bansheefighter: 3
-# 			ts_nod_mobilestealthgenerator: 1
-# 			ts_nod_elitecadre: 10
-# 			ts_nod_toxintrooper: 1
-# 			ts_nod_shotguncommando: 1
-# 			ts_nod_upgrade_infiltrationkit: 1
-# 			ts_nod_upgrade_mobilityspecialization: 1
-# 			ts_nod_upgrade_auxiliaryweapon: 1
-# 			ts_nod_upgrade_stealthfieldsimprovements: 1
-# 			ts_nod_upgrade_tiberiumlenses: 1
-# 			ts_nod_upgrade_tiberiumcoremissiles: 1
-# 			ts_nod_upgrade_advancedtiberiumrefinement: 1
-# 			ts_nod_upgrade_willofkane: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	SquadManagerBotModuleCA@rush:
+		AirSquadTargetTypes:
+			ts_nod_bansheefighter: Aircraft, Ground, Naval
+	SquadManagerBotModuleCA@turtle:
+		AirSquadTargetTypes:
+			ts_nod_bansheefighter: Aircraft, Ground, Naval
+	SquadManagerBotModuleCA@tech:
+		AirSquadTargetTypes:
+			ts_nod_bansheefighter: Aircraft, Ground, Naval
+	SquadManagerBotModuleCA@expansion:
+		AirSquadTargetTypes:
+			ts_nod_bansheefighter: Aircraft, Ground, Naval
+	SquadManagerBotModuleCA@steamroller:
+		AirSquadTargetTypes:
+			ts_nod_bansheefighter: Aircraft, Ground, Naval
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			ts_nod_tiberiumrefinery: 1500
+			ts_nod_handof: 1500
+			ts_nod_warfactory: 1500
+			ts_nod_helipad: 1500
+		BuildingDelays:
+			ts_nod_servicedepot: 4500
+			ts_nod_radar: 3000
+			ts_nod_techcenter: 6000
+			ts_nod_missilesilo: 9000
+		BuildingLimits:
+			ts_nod_tiberiumwastefacility: 1
+			ts_nod_tiberiumrefinery: 10
+			ts_nod_handof: 10
+			ts_nod_warfactory: 10
+			ts_nod_helipad: 10
+			ts_nod_radar: 1
+			ts_nod_techcenter: 2
+			ts_nod_missilesilo: 1
+			ts_nod_stealthgenerator: 1
+			ts_nod_silo: 1
+			ts_nod_navalyard: 1
+		BuildingFractions:
+			ts_nod_tiberiumrefinery: 15
+			ts_nod_handof: 15
+			ts_nod_warfactory: 15
+			ts_nod_helipad: 15
+			ts_nod_radar: 1
+			ts_nod_techcenter: 5
+			ts_nod_servicedepot: 1
+			ts_nod_laserturret: 15
+			ts_nod_obeliskoflight: 15
+			ts_nod_samsite: 10
+			ts_nod_tiberiumwastefacility: 1
+			ts_nod_missilesilo: 1
+			ts_nod_stealthgenerator: 1
+			ts_nod_navalyard: 1
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			ts_nod_mobileconstructionvehicle: 5000
+		UnitIntervals:
+			ts_nod_mobileconstructionvehicle: 2500
+		UnitsToBuild:
+			# Engineers (maintainer 2026-09-30: bots must build them again). Share 1, as the RA2 and D2k packs do; the
+			# engineer owner (CaptureManagerBotModuleCA / EngineerBotModule) sends them to capture and to repair bridge huts.
+			ts_nod_engineer: 1
+			ts_nod_subterraneanapc: 1
+			ts_nod_mobileconstructionvehicle: 1
+			ts_nod_lightinfantry: 7
+			ts_nod_rocketinfantry: 5
+			ts_nod_chameleonspy: 1
+			ts_nod_shadowteam: 1
+			ts_nod_attackbuggy: 3
+			ts_nod_attackcycle: 5
+			ts_nod_ticktank: 3
+			ts_nod_devilstongue: 5
+			ts_nod_artillery: 10
+			ts_nod_stealthtank: 7
+			ts_nod_mobilerepairvehicle: 1
+			ts_nod_harpy: 3
+			ts_nod_bansheefighter: 3
+			ts_nod_mobilestealthgenerator: 1
+			ts_nod_elitecadre: 10
+			ts_nod_toxintrooper: 1
+			ts_nod_shotguncommando: 1
+			ts_nod_upgrade_infiltrationkit: 1
+			ts_nod_upgrade_mobilityspecialization: 1
+			ts_nod_upgrade_auxiliaryweapon: 1
+			ts_nod_upgrade_stealthfieldsimprovements: 1
+			ts_nod_upgrade_tiberiumlenses: 1
+			ts_nod_upgrade_tiberiumcoremissiles: 1
+			ts_nod_upgrade_advancedtiberiumrefinement: 1
+			ts_nod_upgrade_willofkane: 1
+			ts_nod_cruiser: 1
+			ts_nod_rayboat: 2
+			ts_nod_submarine: 1
+		UnitLimits:
+			ts_nod_mobilestealthgenerator: 1
+	SquadManagerBotModuleCA@classic:
+		AirSquadTargetTypes:
+			ts_nod_bansheefighter: Aircraft, Ground, Naval

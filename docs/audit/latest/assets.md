@@ -1,40 +1,19 @@
 # audit_assets — asset format norms (B11, RAMpage)
 
-PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-conforming: **3634**)
+PNGs scanned: **1791** (over budget: **127**), WAVs scanned: **8540** (non-conforming: **3628**)
 
 
 ## P1 — PNGs over budget (> 8 MiB or > 8192px)
 
 | file | size | dimensions |
 |---|---|---|
-| mods/cameo/bits/d2k/ixian_mongoose_atrmongoosespritesheet_256.png | 401 KiB | 13824x84 |
-| mods/cameo/bits/d2k/ixian_promotion_ixrailgundrone_ixrailgun.png | 237 KiB | 9360x130 |
-| mods/cameo/bits/d2k/ixian_promotion_neocymek_ixcymekspritesheet.png | 584 KiB | 16048x126 |
-| mods/cameo/bits/d2k/ixian_promotion_rashidan_ixheavytrooper.png | 192 KiB | 16512x64 |
-| mods/cameo/bits/d2k/ix_raider.png | 355 KiB | 9856x62 |
-| mods/cameo/bits/d2k/ordos_advancedcarryall.png | 399 KiB | 12800x150 |
-| mods/cameo/bits/d2k/ordos_apc.png | 472 KiB | 9216x72 |
-| mods/cameo/bits/d2k/ordos_cobratank.png | 589 KiB | 18200x138 |
-| mods/cameo/bits/d2k/ordos_eyeinthesky.png | 327 KiB | 12800x150 |
-| mods/cameo/bits/d2k/ordos_promotion_banshees.png | 520 KiB | 18560x97 |
-| mods/cameo/bits/d2k/ordos_promotion_contaminator_tleilax_contaminator.png | 408 KiB | 35631x77 |
-| mods/cameo/bits/d2k/ordos_promotion_deviatortank_deviatormk2.png | 508 KiB | 11520x70 |
-| mods/cameo/bits/d2k/ordos_promotion_dustdrone_scoutdrone.png | 392 KiB | 9472x69 |
-| mods/cameo/bits/d2k/ordos_promotion_lasertank.png | 449 KiB | 10240x86 |
-| mods/cameo/bits/d2k/ordos_promotion_leecher_tleilax_leech.png | 557 KiB | 14800x64 |
-| mods/cameo/bits/d2k/ordos_promotion_mortartroopers.png | 338 KiB | 27306x55 |
-| mods/cameo/bits/d2k/ordos_promotion_python.png | 911 KiB | 18480x142 |
-| mods/cameo/bits/d2k/ordos_promotion_wraith.png | 635 KiB | 17856x187 |
-| mods/cameo/bits/d2k/ordos_spiceharvester.png | 982 KiB | 15744x80 |
-| mods/cameo/bits/d2k/ordos_swarmerdrone.png | 184 KiB | 11520x135 |
-| mods/cameo/bits/d2k/ordos_upgrade_antiairtrooper_aatrooper.png | 304 KiB | 20646x44 |
 | mods/cameo/bits/protoss/protoss_adept_adeptspritesheet.png | 466 KiB | 8880x48 |
 | mods/cameo/bits/protoss/protoss_promotion_atreus_scatreuswalk.png | 266 KiB | 9216x68 |
 | mods/cameo/bits/ra/AlliedTankDestroyerH.png | 1326 KiB | 16512x258 |
 | mods/cameo/bits/ra/ra1_soviets_ak47conscript.png | 251 KiB | 25641x52 |
 | mods/cameo/bits/ra/ra1_soviets_dragunovantimaterialsniper.png | 229 KiB | 22311x45 |
 | mods/cameo/bits/ra/ra1_soviets_gorynychtank.png | 1008 KiB | 32897x258 |
-| mods/cameo/bits/ra/ra1_soviets_heavyindustrialminer_sovietheavyoretruckspritesheet.png | 369 KiB | 23670x80 |
+| mods/cameo/bits/ra/ra1_soviets_heavyindustrialminer_heavyoretruckspritesheet.png | 369 KiB | 23670x80 |
 | mods/cameo/bits/ra/ra1_soviets_hiptransport.png | 242 KiB | 13952x200 |
 | mods/cameo/bits/ra/ra1_soviets_kamovattackhelicopter.png | 290 KiB | 13952x200 |
 | mods/cameo/bits/ra/ra1_soviets_stalinfist.png | 2116 KiB | 16449x258 |
@@ -67,10 +46,10 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | mods/cameo/bits/terran/terran_promotion_warhound_tyrwalk.png | 808 KiB | 12992x128 |
 | mods/cameo/bits/terran/terran_reaper.png | 174 KiB | 9024x64 |
 | mods/cameo/bits/tkm/tkmflakbusdeploy.png | 3454 KiB | 45582x482 |
-| mods/cameo/bits/tkm/tkmflakbusdeployed.png | 319 KiB | 9216x97 |
-| mods/cameo/bits/tkm/tkm_promotion_thebigshiee_tkmbigshiee.png | 1151 KiB | 10784x193 |
-| mods/cameo/bits/tkm/tkm_promotion_thesandmarine_tkmsandmarine.png | 815 KiB | 10272x187 |
-| mods/cameo/bits/tkm/tkm_supportlabor_supplycenter.png | 698 KiB | 23130x131 |
+| mods/cameo/bits/tkm/tkmflakbusdeployed.png | 310 KiB | 9216x97 |
+| mods/cameo/bits/tkm/tkm_promotion_thebigshiee_tkmbigshiee.png | 1122 KiB | 10784x193 |
+| mods/cameo/bits/tkm/tkm_promotion_thesandmarine_tkmsandmarine.png | 763 KiB | 10272x187 |
+| mods/cameo/bits/tkm/tkm_supportlabor_supplycenter.png | 694 KiB | 23130x131 |
 | mods/cameo/bits/ts/cabal_artilleryspider.png | 776 KiB | 18048x150 |
 | mods/cameo/bits/ts/cabal_arty_spider.png | 776 KiB | 18048x150 |
 | mods/cameo/bits/ts/cabal_hk1_gunship.png | 325 KiB | 9088x141 |
@@ -162,18 +141,18 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | directory | non-conforming WAVs |
 |---|---|
 | mods/cameo/bits/darkreign | 1726 |
-| mods/cameo/bits/ra2 | 774 |
+| mods/cameo/bits/ra2 | 806 |
 | mods/cameo/bits/generals | 360 |
 | mods/cameo/bits/z | 100 |
 | mods/cameo/bits/classicdoom | 88 |
 | mods/cameo/bits/outpost2 | 84 |
 | mods/cameo/bits/ra | 78 |
-| mods/cameo/bits/d2k | 72 |
 | mods/cameo/bits/shockwave | 64 |
 | mods/cameo/bits/ep315 | 54 |
 | mods/cameo/bits/worms | 52 |
 | mods/cameo/bits/2100 | 42 |
 | mods/cameo/bits/scavenger | 36 |
+| mods/cameo/bits/d2k | 34 |
 | mods/cameo/bits/aw | 32 |
 | mods/cameo/bits/misc | 30 |
 | mods/cameo/bits/sc2k | 22 |
@@ -216,5 +195,5 @@ PNGs scanned: **2006** (over budget: **148**), WAVs scanned: **8780** (non-confo
 | mods/cameo/bits/aw/AWBazooka3.wav | 1ch/16bit/16364Hz | ffmpeg -i "AWBazooka3.wav" -ac 1 -ar 22050 -acodec pcm_s16le "AWBazooka3.wav" |
 
 
-_Total non-conforming: 3634. A count this large means the RAMpage WAV norm has not yet been applied tree-wide; treat as one batch-conversion task per directory, not per-file bugs._
+_Total non-conforming: 3628. A count this large means the RAMpage WAV norm has not yet been applied tree-wide; treat as one batch-conversion task per directory, not per-file bugs._
 

@@ -1,13 +1,11 @@
 # audit_fluent — localization drift (B12)
 
-Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orphaned actor-* messages: **526**
+Fluent messages loaded: **5768** — unresolved fluent refs in rules: **0**, orphaned actor-* messages: **534**
 
 
 ## F1 — rules reference fluent keys that don't exist (shows raw key in-game)
 
-| actor | field | missing key |
-|---|---|---|
-| td_nod_upgrade_burninglasers | Buildable.Description | upgrade_burninglasers.description |
+_none found_
 
 
 ## F2 — fluent actor-* messages for actors that no longer exist
@@ -66,10 +64,12 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_cheme3 |
 | actor_cleg |
 | actor_cmin |
+| actor_combat_tank_harkonnen |
 | actor_ctnk |
 | actor_d2k_munitions |
 | actor_deso |
 | actor_dest |
+| actor_devastator_husk |
 | actor_disk |
 | actor_dlph |
 | actor_dog |
@@ -77,6 +77,7 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_dron |
 | actor_dtrk |
 | actor_duelist_tank |
+| actor_duelist_tank_ixian |
 | actor_e2 |
 | actor_e4 |
 | actor_e5 |
@@ -142,6 +143,8 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_hakurei |
 | actor_havoc |
 | actor_hbox |
+| actor_heavy_inf_ixian |
+| actor_heavy_rocket_raider_ixian |
 | actor_heavyaatank |
 | actor_heli |
 | actor_high_tech_factory |
@@ -181,6 +184,7 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_latin_sml |
 | actor_latin_topol |
 | actor_latin_yakovlev |
+| actor_lst |
 | actor_ltnk |
 | actor_ltnk2 |
 | actor_mech |
@@ -236,6 +240,7 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_nax_slavemaster |
 | actor_nax_sturmtiger |
 | actor_nax_wirbelwind |
+| actor_nodlasercorvette |
 | actor_obli |
 | actor_oitank |
 | actor_orca |
@@ -259,6 +264,7 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | actor_rasniper |
 | actor_robo |
 | actor_rocket_raider |
+| actor_rocket_raider_ixian |
 | actor_rocketangel |
 | actor_sam |
 | actor_sapc |
@@ -547,16 +553,18 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | faction | fluent/total tooltips | coverage |
 |---|---|---|
 | asianalliance | 0/78 | 0% |
+| atreides | 18/49 | 36% |
 | cabal | 0/84 | 0% |
+| corrino | 19/46 | 41% |
 | eden | 0/45 | 0% |
 | forgotten | 78/81 | 96% |
 | futuretech | 0/59 | 0% |
-| harkonnen | 0/41 | 0% |
-| ixian | 0/82 | 0% |
+| harkonnen | 19/67 | 28% |
+| ixian | 26/82 | 31% |
 | japan | 1/76 | 1% |
 | latinsyndicate | 0/71 | 0% |
 | naxis | 0/78 | 0% |
-| ordos | 0/92 | 0% |
+| ordos | 34/90 | 37% |
 | plymouth | 0/46 | 0% |
 | protoss | 0/74 | 0% |
 | ra1_allies | 1/74 | 1% |
@@ -564,15 +572,16 @@ Fluent messages loaded: **5235** — unresolved fluent refs in rules: **1**, orp
 | ra2_allies | 7/70 | 10% |
 | ra2_soviets | 1/60 | 1% |
 | schwarzermond | 0/62 | 0% |
+| scrin | 48/51 | 94% |
 | steelconsortium | 0/63 | 0% |
 | td_gdi | 1/69 | 1% |
-| td_nod | 3/74 | 4% |
+| td_nod | 3/75 | 4% |
 | terran | 0/79 | 0% |
 | tkm | 1/75 | 1% |
-| ts_gdi | 0/70 | 0% |
+| ts_gdi | 0/69 | 0% |
 | ts_nod | 1/50 | 2% |
-| wc2_humans | 0/71 | 0% |
-| wc2_orcs | 0/62 | 0% |
+| wc2_humans | 0/75 | 0% |
+| wc2_orcs | 0/66 | 0% |
 | yuri | 2/67 | 2% |
 | zerg | 0/77 | 0% |
 

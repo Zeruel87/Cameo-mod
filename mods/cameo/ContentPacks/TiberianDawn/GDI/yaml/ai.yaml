@@ -1,54 +1,146 @@
-# ai.yaml — CNC faction AI configuration
+# AI configuration owned by this ContentPack (TiberianDawn/GDI).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (7 entries for td_gdi) ---
-# 			td_gdi_tiberiumrefinery: 10
-# 			td_gdi_barracks: 10
-# 			td_gdi_weaponsfactory: 10
-# 			td_gdi_helipad: 10
-# 			td_gdi_communicationscenter: 1
-# 			td_gdi_advancedcommunicationscenter: 2
-# 			td_gdi_repairfacility: 1
-#
-# --- BuildingFractions (12 entries for td_gdi) ---
-# 			td_gdi_constructionyard: 5
-# 			td_gdi_tiberiumrefinery: 15
-# 			td_gdi_barracks: 15
-# 			td_gdi_weaponsfactory: 15
-# 			td_gdi_helipad: 15
-# 			td_gdi_communicationscenter: 1
-# 			td_gdi_advancedcommunicationscenter: 5
-# 			td_gdi_ioncannonuplink: 1
-# 			td_gdi_repairfacility: 1
-# 			td_gdi_guardtower: 20
-# 			td_gdi_skyshield: 10
-# 			td_gdi_advancedguardtower: 20
-#
-# --- UnitLimits (2 entries for td_gdi) ---
-# 			td_gdi_tiberiumharvester: 20
-# 			td_gdi_chinooktransport: 5
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	SquadManagerBotModuleCA@rush:
+		AirSquadTargetTypes:
+			td_gdi_orca: Aircraft, Ground, Naval
+			td_gdi_firehawk: Aircraft, Building, Epic, Naval
+			td_gdi_chinooktransport: Ground
+	SquadManagerBotModuleCA@turtle:
+		AirSquadTargetTypes:
+			td_gdi_orca: Aircraft, Ground, Naval
+			td_gdi_firehawk: Aircraft, Building, Epic, Naval
+			td_gdi_chinooktransport: Ground
+	SquadManagerBotModuleCA@tech:
+		AirSquadTargetTypes:
+			td_gdi_orca: Aircraft, Ground, Naval
+			td_gdi_firehawk: Aircraft, Building, Epic, Naval
+			td_gdi_chinooktransport: Ground
+	SquadManagerBotModuleCA@expansion:
+		AirSquadTargetTypes:
+			td_gdi_orca: Aircraft, Ground, Naval
+			td_gdi_firehawk: Aircraft, Building, Epic, Naval
+			td_gdi_chinooktransport: Ground
+	SquadManagerBotModuleCA@steamroller:
+		AirSquadTargetTypes:
+			td_gdi_orca: Aircraft, Ground, Naval
+			td_gdi_firehawk: Aircraft, Building, Epic, Naval
+			td_gdi_chinooktransport: Ground
+	SendUnitToAttackBotModule:
+		ActorTypesAndAttackOptions:
+			td_gdi_chinooktransport:
+				AttackDesireOfEach: 100
+				MoveToOrderName: Move
+				AttackOrderName: Unload
+				MoveBackOrderName: Move
+				AttackRequires: CargoLoaded
+	LoadCargoBotModule@Infantry:
+		TransportTypesAndLoadRequirement:
+			td_gdi_chinooktransport: All
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			td_gdi_tiberiumrefinery: 1500
+			td_gdi_barracks: 1500
+			td_gdi_weaponsfactory: 1500
+			td_gdi_helipad: 1500
+		BuildingDelays:
+			td_gdi_repairfacility: 4500
+			td_gdi_communicationscenter: 3000
+			td_gdi_advancedcommunicationscenter: 6000
+			td_gdi_ioncannonuplink: 9000
+		BuildingLimits:
+			td_gdi_tiberiumrefinery: 10
+			td_gdi_barracks: 10
+			td_gdi_weaponsfactory: 10
+			td_gdi_helipad: 10
+			td_gdi_communicationscenter: 1
+			td_gdi_advancedcommunicationscenter: 2
+			td_gdi_repairfacility: 1
+		BuildingFractions:
+			td_gdi_constructionyard: 5
+			td_gdi_tiberiumrefinery: 15
+			td_gdi_barracks: 15
+			td_gdi_weaponsfactory: 15
+			td_gdi_helipad: 15
+			td_gdi_communicationscenter: 1
+			td_gdi_advancedcommunicationscenter: 5
+			td_gdi_ioncannonuplink: 1
+			td_gdi_repairfacility: 1
+			td_gdi_guardtower: 20
+			td_gdi_skyshield: 10
+			td_gdi_advancedguardtower: 20
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			td_gdi_mobileconstructionvehicle: 5000
+		UnitIntervals:
+			td_gdi_mobileconstructionvehicle: 2500
+			td_gdi_chinooktransport: 1500
+		UnitsToBuild:
+			td_gdi_missileboat: 10
+			td_gdi_railgunbattleship: 10
+			td_gdi_tiberiumharvester: 10
+			td_gdi_minigunner: 1
+			td_gdi_grenadier: 1
+			td_gdi_rocketsoldier: 5
+			td_gdi_commando: 1
+			td_gdi_humvee: 1
+			td_gdi_apc: 1
+			td_gdi_battletank: 5
+			td_gdi_mlrs: 5
+			td_gdi_boxer: 5
+			td_gdi_archerartillery: 5
+			td_gdi_mammothtank: 5
+			td_gdi_orca: 5
+			td_gdi_chinooktransport: 1
+			td_gdi_upgrade_a10airstrike: 1
+			td_gdi_upgrade_longrangesensors: 1
+			td_gdi_upgrade_lightweightarmorplating: 1
+			td_gdi_upgrade_heavyaircraftarmorplating: 1
+			td_gdi_upgrade_advancedmissiletargeting: 1
+			td_gdi_upgrade_armorpiercingbullets: 1
+			td_gdi_upgrade_highvelocitycannons: 1
+			td_gdi_upgrade_cuttingedgeequipment: 1
+			td_gdi_promotion_missilesoldier: 1
+			td_gdi_promotion_empgrenadier: 1
+			td_gdi_promotion_sniper: 1
+			td_gdi_promotion_assaultapc: 1
+			td_gdi_promotion_humveemkii: 1
+			td_gdi_promotion_predatortank: 1
+			td_gdi_promotion_mammothtankmk3: 1
+			td_gdi_promotion_gdidefenserig: 1
+			td_gdi_promotion_shotgunner: 1
+			td_gdi_promotion_gdiofficer: 1
+			td_gdi_promotion_havocandexosuit: 1
+			td_gdi_promotion_firehawk: 1
+			td_gdi_sonicmissilesoldier: 5
+			td_gdi_empgrenadier: 3
+			td_gdi_heavysniper: 5
+			td_gdi_assaultapc: 3
+			td_gdi_humveemkii: 1
+			td_gdi_predatortank: 3
+			td_gdi_mammothtankmkiii: 5
+			td_gdi_defenserig: 1
+			td_gdi_shotgunner: 1
+			td_gdi_officer: 3
+			td_gdi_havoc: 1
+			td_gdi_exosuit: 1
+			td_gdi_firehawk: 3
+		UnitLimits:
+			td_gdi_missileboat: 10
+			td_gdi_railgunbattleship: 10
+			td_gdi_tiberiumharvester: 20
+			td_gdi_chinooktransport: 5
+	SquadManagerBotModuleCA@classic:
+		AirSquadTargetTypes:
+			td_gdi_orca: Aircraft, Ground, Naval
+			td_gdi_firehawk: Aircraft, Building, Epic, Naval
+			td_gdi_chinooktransport: Ground

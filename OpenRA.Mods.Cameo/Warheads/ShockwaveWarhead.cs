@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using OpenRA.GameRules;
 using OpenRA.Mods.Cameo.Traits;
 using OpenRA.Mods.Common.Warheads;
@@ -21,6 +22,18 @@ namespace OpenRA.Mods.Cameo.Warheads
 	{
 		[Desc("Scale multiplier on the renderer's MaxRadius and Strength.")]
 		public readonly float Scale = 1f;
+
+		[Desc("Additional scale multiplier on the renderer's MaxRadius only.")]
+		public readonly float RadiusScale = 1f;
+
+		[Desc("Additional scale multiplier on the renderer's Strength only.")]
+		public readonly float StrengthScale = 1f;
+
+		[Desc("Contract the shockwave from its maximum radius instead of expanding from zero.")]
+		public readonly bool Reverse = false;
+
+		[Desc("Final radius as a fraction of the maximum when Reverse is enabled. Range: 0 to 1.")]
+		public readonly float ReverseEndRadiusFraction = 0f;
 
 		[Desc("Number of render frames the ring expands and fades over. Sub-second expand-and-vanish.")]
 		public readonly int FadeFrames = 24;
@@ -39,7 +52,14 @@ namespace OpenRA.Mods.Cameo.Warheads
 			// projectiles. Superweapons detonate via the projectile-less WeaponInfo.Impact(target, firedBy)
 			// overload, which leaves ImpactPosition at (0,0,0). CreateEffectWarhead uses CenterPosition too.
 			args.SourceActor.World.WorldActor.TraitOrDefault<ShockwaveDistortionRenderer>()
-				?.RegisterShockwave(target.CenterPosition, Scale, FadeFrames, FadeInFrames);
+				?.RegisterShockwave(
+					target.CenterPosition,
+					Scale * RadiusScale,
+					Scale * StrengthScale,
+					FadeFrames,
+					FadeInFrames,
+					Reverse,
+					Math.Clamp(ReverseEndRadiusFraction, 0f, 1f));
 		}
 	}
 }

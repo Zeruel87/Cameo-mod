@@ -8,15 +8,16 @@ description: Mandatory start protocol, boot-gate, and engine update pipeline for
 Before starting ANY task, load these documents into context IN THIS ORDER. Never skip this, even for "small" tasks:
 
 1. `CLAUDE.md` (repo root) — project instructions, loaded every session.
-2. `docs/LESSONS_LEARNED.md` — safe defaults, pitfalls, latest incident findings.
-3. `docs/AGENT_WORKSPACE.md` — source-of-truth map, operating sequence, git/commit rules.
-4. `docs/HANDOFF.md` — **the entry point**: verified current state and the priority-ordered
+2. `docs/TASK_INDEX.md` — the task router: find your task's row before anything else.
+3. `docs/LESSONS_LEARNED.md` — safe defaults, pitfalls, latest incident findings.
+4. `docs/AGENT_WORKSPACE.md` — source-of-truth map, operating sequence, git/commit rules.
+5. `docs/HANDOFF.md` — **the entry point**: verified current state and the priority-ordered
    queue. It supersedes every dated handoff; those live in `docs/history/handoffs/` and must
    NOT be resumed from.
-5. `docs/DESIGN.md` — binding rules (relevant sections) before touching YAML/assets/naming/balance.
-6. `docs/design/ROADMAP.md` — the granular work queue; P0 crashes jump it.
-7. `docs/audit/SUMMARY.md` — known issue classes and current counts.
-8. `docs/Cameo_Knowledge_Base_Manual.md` — engine/trait reference as needed.
+6. `docs/DESIGN.md` — binding rules (relevant sections) before touching YAML/assets/naming/balance.
+7. `docs/design/ROADMAP.md` — the granular work queue; P0 crashes jump it.
+8. `docs/audit/SUMMARY.md` — known issue classes and current counts.
+9. `docs/Cameo_Knowledge_Base_Manual.md` — engine/trait reference as needed.
 
 `docs/README.md` is the CANONICAL definition of this order; if this copy disagrees with it,
 README wins and this copy gets fixed.

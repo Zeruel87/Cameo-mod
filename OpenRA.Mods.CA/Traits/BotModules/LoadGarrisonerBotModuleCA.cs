@@ -18,7 +18,6 @@ using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
-using TagLib.Id3v2;
 
 namespace OpenRA.Mods.CA.Traits
 {
@@ -56,7 +55,11 @@ namespace OpenRA.Mods.CA.Traits
 		readonly Predicate<Actor> invalidTransport;
 
 		readonly List<UnitWposWrapper> activeGarrisoner = new();
-		readonly List<Actor> stuckGarrisoner = new();
+
+		// Stuck units are ignored only for a while — a unit blocked by traffic should
+		// get another attempt instead of being blacklisted until it dies.
+		readonly Dictionary<Actor, int> stuckGarrisoner = new();
+		const int StuckExpiryTicks = 9144;
 		int minAssignRoleDelayTicks;
 
 		public LoadGarrisonerBotModuleCA(Actor self, LoadGarrisonerBotModuleCAInfo info)
@@ -83,7 +86,8 @@ namespace OpenRA.Mods.CA.Traits
 				minAssignRoleDelayTicks = Info.ScanTick;
 
 				activeGarrisoner.RemoveAll(u => unitCannotBeOrderedOrIsIdle(u.Actor));
-				stuckGarrisoner.RemoveAll(a => unitCannotBeOrdered(a));
+				foreach (var a in stuckGarrisoner.Keys.Where(a => unitCannotBeOrdered(a) || stuckGarrisoner[a] <= world.WorldTick).ToList())
+					stuckGarrisoner.Remove(a);
 				for (var i = 0; i < activeGarrisoner.Count; i++)
 				{
 					var p = activeGarrisoner[i];
@@ -91,7 +95,7 @@ namespace OpenRA.Mods.CA.Traits
 						&& p.Actor.CurrentActivity.ChildActivity.ActivityType == ActivityType.Move
 						&& p.Actor.CenterPosition == p.WPos)
 					{
-						stuckGarrisoner.Add(p.Actor);
+						stuckGarrisoner[p.Actor] = world.WorldTick + StuckExpiryTicks;
 						bot.QueueOrder(new Order("Stop", p.Actor, false));
 						activeGarrisoner.RemoveAt(i);
 						i--;
@@ -118,7 +122,7 @@ namespace OpenRA.Mods.CA.Traits
 
 				var garrisoner = world.ActorsWithTrait<Garrisoner>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor)
 					&& (Info.GarrisonerUnit == null || Info.GarrisonerUnit.Contains(at.Actor.Info.Name))
-					&& !stuckGarrisoner.Contains(at.Actor)
+					&& !stuckGarrisoner.ContainsKey(at.Actor)
 					&& garrisonable.HasSpace(at.Trait.Info.Weight))
 						.OrderBy(at => (at.Actor.CenterPosition - transport.CenterPosition).HorizontalLengthSquared);
 

@@ -22,9 +22,27 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 	{
 		protected static void GoToRandomOwnBuilding(SquadCA squad)
 		{
-			var loc = RandomBuildingLocation(squad);
+			var loc = HomeLocation(squad);
+			// CA F2p2 (2bad89a77): AttackMove instead of Move, so the squad fights on the way home.
+			var orderName = squad.SquadManager.Info.UseUpstreamStateTweaks ? "AttackMove" : "Move";
 			foreach (var a in squad.Units)
-				squad.Bot.QueueOrder(new Order("Move", a.Actor, Target.FromCell(squad.World, loc), false));
+				squad.Bot.QueueOrder(new Order(orderName, a.Actor, Target.FromCell(squad.World, loc), false));
+		}
+
+		// DESIGN 19.12: a ground squad that falls back or goes idle returns to the staging point nearest to it (the front, with the
+		// defences) when a staging provider is enabled. Air and naval squads, and every squad without a provider, keep the random
+		// own building (the provider branch draws no random number).
+		protected static CPos HomeLocation(SquadCA squad)
+		{
+			if (squad.Type != SquadCAType.Air && squad.Type != SquadCAType.Naval && squad.Units.Count > 0)
+			{
+				var from = squad.Units[0].Actor.Location;
+				var cell = squad.SquadManager.ArmyStaging?.StagingCellNear(from);
+				if (cell != null)
+					return cell.Value;
+			}
+
+			return RandomBuildingLocation(squad);
 		}
 
 		protected static CPos RandomBuildingLocation(SquadCA squad)
@@ -141,7 +159,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				if ((u.Owner == squad.Bot.Player && u.Info.HasTraitInfo<BuildingInfo>()))
 					return false;
 
-			var enemyAroundUnit = units.Where(unit => squad.SquadManager.IsPreferredEnemyUnit(unit) && unit.Info.HasTraitInfo<AttackBaseInfo>());
+			var enemyAroundUnit = units.Where(unit => squad.SquadManager.IsPreferredObservedEnemyUnit(unit) && unit.Info.HasTraitInfo<AttackBaseInfo>());
 			if (!enemyAroundUnit.Any())
 				return false;
 
@@ -157,7 +175,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			var dangerRadius = squad.SquadManager.Info.DangerScanRadius;
 			var units = squad.World.FindActorsInCircle(squadUnit.CenterPosition, WDist.FromCells(dangerRadius)).ToList();
 
-			var enemyAroundUnit = units.Where(unit => squad.SquadManager.IsPreferredEnemyUnit(unit) && unit.Info.HasTraitInfo<AttackBaseInfo>()).ToList();
+			var enemyAroundUnit = units.Where(unit => squad.SquadManager.IsPreferredObservedEnemyUnit(unit) && unit.Info.HasTraitInfo<AttackBaseInfo>()).ToList();
 			if (enemyAroundUnit.Count == 0)
 				return false;
 
@@ -173,6 +191,17 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				return true;
 
 			return false;
+		}
+
+		// CA F2p2 (b831676de): behind UseUpstreamStateTweaks the whole activity chain is searched for Resupply/ReturnToBase
+		// (not just the current and next activity). Deeper detection classes more units as rearming, so it is switched.
+		protected static bool IsRearming(Actor a, SquadCA squad)
+		{
+			if (!squad.SquadManager.Info.UseUpstreamStateTweaks)
+				return IsRearming(a);
+
+			return !a.IsIdle && (a.CurrentActivity.ActivitiesImplementing<Resupply>().Any()
+				|| a.CurrentActivity.ActivitiesImplementing<ReturnToBase>().Any());
 		}
 
 		protected static bool IsRearming(Actor a)
@@ -239,7 +268,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 			foreach (var u in squad.Units)
 			{
-				if (IsRearming(u.Actor) || IsAttackingAndTryAttack(u.Actor).IsFiring)
+				if (IsRearming(u.Actor, squad) || IsAttackingAndTryAttack(u.Actor).IsFiring)
 					continue;
 
 				var orderQueued = false;
@@ -296,7 +325,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				squad.Bot.QueueOrder(new Order("ReturnToBase", null, true, groupedActors: rearmingUnits.ToArray()));
 
 			if (fleeingUnits.Count > 0)
-				squad.Bot.QueueOrder(new Order("Move", null, Target.FromCell(squad.World, RandomBuildingLocation(squad)), false, groupedActors: fleeingUnits.ToArray()));
+				squad.Bot.QueueOrder(new Order("Move", null, Target.FromCell(squad.World, HomeLocation(squad)), false, groupedActors: fleeingUnits.ToArray()));
 		}
 
 		protected static UnitWposWrapper GetPathfindLeader(SquadCA squad, HashSet<string> locomotorTypes)
@@ -333,13 +362,18 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 		protected static bool CheckReachability(Actor sourceActor, Actor targetActor)
 		{
+			return CheckReachability(sourceActor, targetActor.Location);
+		}
+
+		protected static bool CheckReachability(Actor sourceActor, CPos targetCell)
+		{
 			var mobile = sourceActor.TraitOrDefault<Mobile>();
 			if (mobile == null)
 				return false;
 			else
 			{
 				var locomotor = mobile.Locomotor;
-				return mobile.PathFinder.PathExistsForLocomotor(locomotor, sourceActor.Location, targetActor.Location);
+				return mobile.PathFinder.PathExistsForLocomotor(locomotor, sourceActor.Location, targetCell);
 			}
 		}
 

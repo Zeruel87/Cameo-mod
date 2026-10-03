@@ -32,8 +32,12 @@ so step 5 of §9.6 lands against a test that already exists:
      performs the rank restore that law prescribes. An earlier version checked only the endpoints
      and skipped the restore, and so missed 127 internal reorderings while reporting two endpoint
      flips as permanent exceptions.
-  2. THE WEIGHTED MEAN IS INVARIANT. Renormalisation must hold, or heaviness silently becomes a
-     magnitude knob and re-prices every weapon — the exact coupling §12.0i ruled out.
+  2. THE (ARITHMETIC) MEAN IS INVARIANT. Renormalisation must hold, or heaviness silently becomes
+      a magnitude knob. ⚠ TERMINOLOGY (Aedis, 2026-09-10 01:19): the mean this audit measures is
+      the plain ARITHMETIC mean of the profile values, not the engagement-weighted mean, and the
+      old "weighted-mean / price invariance" framing is RETIRED — K is NOT assumed invariant in
+      h; pricing is expected to read the ACTUAL effects (profile movement, radius scaling). What
+      is still checked: the bell keeps redistributing rather than inflating (drift ⇒ bug).
 
 ⚠ It does NOT re-check the 2x-8x spread band. `audit_versus_profile.py` owns that
 (`SPREAD_OFFENDERS_BASELINE = 0`, cleared 2026-08-22, 46 families in band); duplicating a clean
@@ -147,26 +151,63 @@ BUCKET = {a: round(i * 2.0 / (len(AXIS_ORDER) - 1), 4)
 LADDERS_OF = {a: name for name, rungs in LADDERS.items() for a in rungs}
 
 
-def profiles() -> dict[str, dict[str, float]]:
-    """{family: {armor: versus}} from one `^Warhead_<Family>_<Level>` MAIN warhead per family."""
+def split_name(tail):
+    """(^Warhead_ stripped) -> (family, level) legacy, (family, None) for a level-less
+    base, None for a variant — the same census the old rpartition parse produced."""
+    family, sep, level = tail.rpartition("_")
+    if not sep:
+        return (level, None)
+    return (family, level) if level in LEVELS else None
+
+
+def heaviness_of(wh) -> int | None:
+    """Absent is None; malformed authored values fail like the runtime model."""
+    from effective_heaviness import heaviness_of as validated_heaviness
+    return None if wh.child("Heaviness") is None else validated_heaviness(wh)
+
+
+def profiles() -> dict[str, tuple[dict[str, float], str, str, float | None]]:
+    """{family: (profile, source tag, template name, heaviness)} — ONE family entry.
+
+    A family with an ACTIVE level-less base is measured from the ACTUAL base (h is then
+    the authored Heaviness scalar in thousandths). Otherwise it falls back to the legacy
+    first level template, and the entry is tagged `legacy` so the output can label it an
+    explicit legacy-first-level DIAGNOSTIC, not an actual continuous verdict.
+    """
     rs = Ruleset(ROOT)
-    out: dict[str, dict[str, float]] = {}
+    out: dict[str, tuple[dict[str, float], str, str, float | None]] = {}
     for name in sorted(rs.weapons):
         if not name.startswith("^Warhead_"):
             continue
-        family, _, level = name[len("^Warhead_"):].rpartition("_")
-        if level not in LEVELS or not family or family in out:
+        kind = split_name(name[len("^Warhead_"):])
+        if kind is None:
             continue
+        family, level = kind
+        if family in out and (out[family][1] == "base" or level is not None):
+            continue                        # a base wins; otherwise keep the first legacy
         resolved = rs.resolve_weapon(name)
         if resolved is None:
             continue
-        for wh in resolved.children:
-            if not wh.key.startswith("Warhead@") or any(c in wh.key for c in COMPANION):
+        wh = None
+        for ch in resolved.children:
+            if not ch.key.startswith("Warhead@") or any(c in ch.key for c in COMPANION):
                 continue
-            versus = we.versus_of(wh)      # the project's reader, never a hand parser
-            if versus:
-                out[family] = {a: float(v) for a, v in versus.items() if a not in OFF_AXIS}
+            wh = ch
             break
+        if wh is None:
+            continue
+        versus = we.versus_of(wh)      # the project's reader, never a hand parser
+        if not versus:
+            continue
+        profile = {a: float(v) for a, v in versus.items() if a not in OFF_AXIS}
+        if level is None:
+            h = heaviness_of(wh)
+            if h is None or h < 0:              # a disabled sentinel is not an active base
+                continue
+            out[family] = (profile, "base", name, h)
+        else:
+            if family not in out:
+                out[family] = (profile, "legacy", name, None)
     return out
 
 
@@ -202,8 +243,9 @@ def belled(profile: dict[str, float], mu: float) -> dict[str, float]:
     reported two endpoint flips as permanent exceptions. With the restore there are **zero**
     reorderings anywhere, and the two "known inversions" disappear with them.
 
-    The restore permutes values WITHIN a ladder, so the multiset is unchanged and the weighted
-    mean is untouched — §12.0i's price invariance survives it.
+    The restore permutes values WITHIN a ladder, so the multiset is unchanged and the arithmetic
+    mean is untouched. ⚠ (Aedis 2026-09-10 01:19) that is mean-INVARIANCE of the profile, NOT
+    price invariance — K is not assumed invariant in h anymore; pricing reads the actual effects.
     """
     out = {}
     for a, v in profile.items():
@@ -247,12 +289,23 @@ def main() -> int:
         return 0
 
     print("# audit_heaviness_bell — would the continuous-heaviness bell invert any family?\n")
+    print("Idealized floating-point simulation of authored profiles. This does not verify "
+          "runtime integer rounding, derived armor reconstruction, splash geometry, or "
+          "roster-weighted pricing. Arithmetic-mean preservation is not price invariance.\n")
     print(f"DESIGN §12.0i: `LO` {LO} (swing {(1 / LO):.2f}x), `sigma` {SIGMA}, "
           f"mu = (h + centre_of_mass) / 2, x-axis = one global 13-slot scale 0..2. "
           f"Simulated at h = {', '.join(str(h) for h in HEAVINESS)}.\n")
 
     inverted, flat_families, mean_drift = [], [], []
-    for family, base in sorted(data.items()):
+    base_sources, legacy_sources = [], []
+    for family, (base, tag, name, h) in sorted(data.items()):
+        if tag == "base":
+            base_sources.append(f"{family}  <- {name}  (Heaviness {h:.0f} = h {h / 1000:.1f}, "
+                                "authored continuous-base input; not the final runtime table)")
+        else:
+            legacy_sources.append(f"{family}  <- {name}  (LEGACY-FIRST-LEVEL DIAGNOSTIC: "
+                                  "no active level-less base exists for this family, so the "
+                                  "bell verdict is simulated from the legacy level template)")
         com = centre_of_mass(base)
         if com is None:
             continue
@@ -280,9 +333,18 @@ def main() -> int:
 
     print(f"| | |\n|---|--:|")
     print(f"| families measured | {len(data)} |")
+    print(f"| measured from the ACTUAL level-less base | {len(base_sources)} |")
+    print(f"| legacy-first-level DIAGNOSTIC only | {len(legacy_sources)} |")
     print(f"| with NO gradient the bell could preserve | {len(flat_families)} |")
     print(f"| ladder ORDERINGS changed by the bell | {len(inverted)} |")
-    print(f"| weighted-mean drift beyond 1e-6 | {len(mean_drift)} |")
+    print(f"| mean drift (arithmetic) beyond 1e-6 | {len(mean_drift)} |")
+
+    if base_sources or legacy_sources:
+        print("\n## Profile sources\n")
+        for line in base_sources:
+            print(f"  {line}")
+        for line in legacy_sources:
+            print(f"  {line}")
 
     if flat_families:
         print("\n## Flat families — no gradient to preserve\n")
@@ -304,8 +366,10 @@ def main() -> int:
 
     if mean_drift:
         print("\n## ⛔ Renormalisation failed — heaviness would become a magnitude knob\n")
-        print("§12.0i rules that `K` stays invariant in `h`. A drifting mean re-prices every "
-              "weapon that sets a heaviness.\n")
+        print("The bell must redistribute, not inflate: drifting arithmetic mean means the "
+              "renormalisation is broken. ⚠ This is a SHAPE check, not a price claim — "
+              "K is not assumed invariant in h (Aedis 2026-09-10 01:19); pricing reads the "
+              "actual effects. A drifting mean is a bug in the bell itself.\n")
         for family, h, drift in mean_drift[:20]:
             print(f"  {family:14s} h={h:.0f}  drift {drift:.2%}")
 

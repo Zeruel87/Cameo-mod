@@ -13,6 +13,7 @@ using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Mods.CA.Traits;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
@@ -41,6 +42,14 @@ namespace OpenRA.Mods.Cameo.Traits
 		[Desc("Should visibility (Shroud, Fog, Cloak, etc) be considered when searching for Crates?")]
 		public readonly bool CheckTargetsForVisibility = true;
 
+		[Desc("LC2 (AI_REVIEW_FRANSOTTO P1b): a crate stays reserved for its collector at most this many ticks.",
+			"-1 = never released (the old behaviour: a crate whose collector died or gave up stayed reserved forever).")]
+		public readonly int ReservationTimeoutTicks = 1500;
+
+		[Desc("LC2: the reservation is released when its collector has been idle this long after the order",
+			"(the Move lost to another module, or the collector gave up).")]
+		public readonly int CollectorIdleGraceTicks = 100;
+
 		public override object Create(ActorInitializer init) { return new CratePickupBotModule(init.Self, this); }
 	}
 
@@ -54,7 +63,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		int scanForCratesTicks;
 
-		readonly List<Actor> alreadyPursuitCrates = [];
+		// LC2: crate -> (collector, tick ordered). Released by ReservationStale; the old List<Actor> was never cleared.
+		readonly Dictionary<Actor, (Actor Collector, int Tick)> reservations = [];
 
 		public CratePickupBotModule(Actor self, CratePickupBotModuleInfo info)
 			: base(info)
@@ -85,6 +95,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			scanForCratesTicks = Info.ScanForCratesInterval;
 
+			ReleaseStaleReservations();
+
 			var crates = world.ActorsHavingTrait<Crate>().ToList();
 			if (crates.Count < 1)
 				return;
@@ -92,15 +104,18 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (Info.CheckTargetsForVisibility)
 				crates.RemoveAll(c => !c.CanBeViewedByPlayer(player));
 
-			var idleUnits = world.ActorsHavingTrait<Mobile>().Where(a => a.Owner == player && a.IsIdle
-				&& (Info.IncludedUnitTypes.Contains(a.Info.Name) || (Info.IncludedUnitTypes.Count < 1 && !Info.ExcludedUnitTypes.Contains(a.Info.Name)))).ToList();
+			// LC1: an idle unit may still belong to a scout, a beacon response or a capture — never take a claimed one.
+			var leases = BotUnitLeases.Of(player);
+			var idleUnits = world.ActorsHavingTrait<Mobile>().Where(a => a.Owner == player && a.IsInWorld && a.IsIdle
+				&& (Info.IncludedUnitTypes.Contains(a.Info.Name) || (Info.IncludedUnitTypes.Count < 1 && !Info.ExcludedUnitTypes.Contains(a.Info.Name)))
+				&& !BotUnitLeases.IsClaimedByOther(leases, a, LeaseOwner)).ToList();
 
 			if (idleUnits.Count < 1)
 				return;
 
 			foreach (var crate in crates)
 			{
-				if (alreadyPursuitCrates.Contains(crate))
+				if (reservations.ContainsKey(crate))
 					continue;
 
 				if (!crate.IsAtGroundLevel())
@@ -119,10 +134,49 @@ namespace OpenRA.Mods.Cameo.Traits
 				if (target.Type == TargetType.Invalid)
 					continue;
 
+				if (!BotUnitLeases.TryClaim(leases, crateCollector, LeaseOwner, BotLeasePurpose.Crate,
+					Math.Max(0, Info.ReservationTimeoutTicks)))
+					continue;
+
 				var cell = world.Map.CellContaining(target.CenterPosition);
 				AIUtils.BotDebug($"{bot.Player}: Ordering {crateCollector} to {cell} for Crate pick up.");
 				bot.QueueOrder(new Order("Move", crateCollector, target, true));
-				alreadyPursuitCrates.Add(crate);
+				reservations[crate] = (crateCollector, world.WorldTick);
+			}
+		}
+
+		const string LeaseOwner = nameof(CratePickupBotModule);
+
+		/// <summary>LC2: whether a crate reservation must be released. Pure, so tests can drive every case.</summary>
+		public static bool ReservationStale(bool crateGone, bool collectorGone, bool collectorIdle, int ageTicks,
+			int idleGraceTicks, int timeoutTicks)
+		{
+			if (crateGone || collectorGone)
+				return true;
+
+			if (collectorIdle && ageTicks > idleGraceTicks)
+				return true;
+
+			return timeoutTicks >= 0 && ageTicks > timeoutTicks;
+		}
+
+		void ReleaseStaleReservations()
+		{
+			if (reservations.Count == 0)
+				return;
+
+			var tick = world.WorldTick;
+			var leases = BotUnitLeases.Of(player);
+			foreach (var crate in reservations.Keys.ToList())
+			{
+				var (collector, ordered) = reservations[crate];
+				var collectorGone = collector.IsDead || !collector.IsInWorld || collector.Owner != player;
+				if (ReservationStale(crate.IsDead || !crate.IsInWorld, collectorGone, !collectorGone && collector.IsIdle,
+					tick - ordered, Info.CollectorIdleGraceTicks, Info.ReservationTimeoutTicks))
+				{
+					reservations.Remove(crate);
+					leases?.Release(collector, LeaseOwner);
+				}
 			}
 		}
 
@@ -132,7 +186,8 @@ namespace OpenRA.Mods.Cameo.Traits
 			var path = mobile.PathFinder.FindPathToTargetCell(
 				collector, [collector.Location], crate.Location, BlockedByActor.Stationary,
 				location => world.FindActorsInCircle(world.Map.CenterOfCell(location), Info.EnemyAvoidanceRadius)
-					.Where(u => !u.IsDead && collector.Owner.RelationshipWith(u.Owner) == PlayerRelationship.Enemy)
+					.Where(u => !u.IsDead && u.CanBeViewedByPlayer(collector.Owner)
+						&& collector.Owner.RelationshipWith(u.Owner) == PlayerRelationship.Enemy)
 					.Sum(u => Math.Max(WDist.Zero.Length, Info.EnemyAvoidanceRadius.Length - (world.Map.CenterOfCell(location) - u.CenterPosition).Length)));
 
 			if (path.Count == 0)

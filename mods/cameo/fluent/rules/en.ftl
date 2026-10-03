@@ -18,6 +18,10 @@ power_chemicalmissile =
    .description = Tactical cluster missile with additional Tiberium-based warheads.
    Deals heavy damage in an area and leaves harmful corrosive clouds.
 
+power_empulse =
+   .name = E. M. Pulse
+   .description = Fires a pulse blast which disables all mechanical units in the area.
+
 power_nuke =
    .tdname = Nuclear Strike
    .raname = Atomic Bomb
@@ -79,10 +83,10 @@ actor_2tnk =
    .name = Allied Medium Tank
 
 actor_heavyaatank =
-   .description = Allied heavy anti air tank.
+   .description = Mobile twin-cannon anti-aircraft vehicle.
       Strong vs Aircraft
       Weak vs Tanks
-   .name = Allied Heavy AA Tank
+   .name = Flakpanzer Gepard
 
 actor_3tnk =
    .description = Soviet main battle tank armed with dual cannons.
@@ -360,7 +364,7 @@ actor_tsla =
 
 actor_bastion =
    .description = Bunker with a cannon and fireports
-      for 3 garrisoned soldiers.
+      for 5 garrisoned soldiers.
    .name = Bastion Artillery Bunker
 
 actor_mgnest =
@@ -1867,7 +1871,7 @@ ra1_soviets_doctrine_heavyarmor =
       Focuses on Heavy Armor and Powerful Tanks
       All Vehicles and Aircraft have 10% additional Damage Resistance
       Replaces Mammoth Tanks with Siege Mammoth Tanks
-      Replaces V1 Rocket Trucks with Grads
+      Replaces Katyushas with Grads
       Replaces Replaces Migs with Su-57s
       Unlocks Shtora Defense System Upgrade
       Unlocks Auto Loaders, Thermobaric Rockets and Stalinium Upgrades
@@ -1924,7 +1928,7 @@ ra1_soviets_upgrade_incendiarybullets =
 ra1_soviets_upgrade_scorchedearth =
    .description = Team Upgrade (Also affects units of your teammates)
       Increases Firepower of all Grenadiers, Mortars, Flame Weapons and Artilleries by 25%.
-      Equips the V1 Rocket Truck and the Grad with Fire Rockets.
+      Equips the Katyusha and the Grad with Fire Rockets.
 
 ra1_soviets_upgrade_teslaarcing =
    .description = Tech Upgrade (Only affects units of own faction)
@@ -2676,104 +2680,59 @@ faction_ra2_yuri =
       - Virus: sniper that causes enemies to explode on death
 
 faction_d2k_random =
-   .name = Any
-   .description = Random faction
+   .name = Random Dune
+   .description = Random Dune faction
       A random faction from the Dune Universe will be chosen when the game starts.
 
-faction_d2k_ixian =
-   .name = Ixians
-   .description = Ixians from the Dune Universe
-      The enigmatic Ixians of the industrial world Ix are known for their
-      innovation, cold logic, and mastery of the machine. Bending the rules
-      of the Great Convention, they often deploy experimental weaponry and
-      mechanical monstrosities that others fear to touch. In the Dune
-      universe, House Ix is the premier technological power, operating in
-      secret to develop machines that skirt the edge of the Butlerian Jihad's
-      prohibition on thinking machines.
+faction_d2k_atreides =
+   .name = Atreides
+   .description = House Atreides
+      A mobile combined-arms faction built around air power, precise fire support,
+      and Fremen allies.
+      Playstyle: Mobility / Air Superiority / Combined Arms
+      Strengths: Aircraft, reconnaissance, long-range firepower
+      Weaknesses: Sustained frontal attrition
+      Signature units: Fremen, Sonic Tank, Minotaurus, Ornithopter
 
-      In Cameo, the Ixians are a turtle-focused faction with 37 units, 19
-      buildings, and 25 upgrades. Their signature unit is the Farasha — an
-      epic carrier airship that deploys drone swarms and fires a devastating
-      charge laser. The Ixian Projector creates holographic decoy units to
-      confuse enemies. Their tech tree is deep and expensive, rewarding
-      players who survive to the late game with overwhelming technological
-      superiority.
-
-      Difficulty: ©©©©
-      Early Game: ©©©
-      Mid Game: ©©©©
-      Late Game: ©©©©©
-      Playstyle: Turtle / Tech Rush / Late Game Powerhouse
-      Strength: Late Game Units, Drone Swarms, Experimental Weapons
-      Weakness: Mobility, Early Game, Expensive Tech
-      Countered by: Early Game Pressure, Fast Rushes
-      Special Units: Farasha (epic carrier with drones), Ixian Projector (holographic decoys),
-        Koda Tank, Hover Drive units
-      Special Buildings: Starport, Spice Sifter, Ixian Research Facility
-      Team Upgrades: Advanced Ixian Technology (25 upgrades)
-      Support powers: Pulse Missile
-      Superweapons: Pulse Missile
-
-      Features:
-      - Farasha: epic carrier that deploys combat drones and fires charge lasers
-      - Ixian Projector: creates holographic decoy units to mislead enemies
-      - Deep tech tree with 25 upgrades
-      - Strong static defenses and turtle gameplay
-      - Starport for purchasing units with spice instead of production queues
-      - Spice Sifter for enhanced resource processing
-      - Hover Drive technology for all-terrain mobility
-      - General-purpose armor system
-      - Late-game units are among the most powerful in the game
-      - Drone swarm mechanics (Farasha drones)
-      - 31/37 units AI-wired
+faction_d2k_harkonnen =
+   .name = Harkonnen
+   .description = House Harkonnen
+      An aggressive heavy-warfare faction that relies on armored assaults,
+      destructive siege weapons, and overwhelming force.
+      Playstyle: Heavy Assault / Siege / Attrition
+      Strengths: Heavy armor, direct firepower, area denial
+      Weaknesses: Speed, flexibility, unit cost
+      Signature units: Assault Tank, Flame Tank, Devastator, Inkvine Catapult
 
 faction_d2k_ordos =
-   .name = House Ordos
-   .description = House Ordos from the Dune Universe
-      The insidious Ordos of the icy planet Sigma Draconis IV are known for
-      their wealth, greed, and treachery. Relying heavily on mercenaries,
-      they often resort to sabotage and forbidden Ixian technologies. Their
-      strength lies in stealth and quick hit-and-run tactics. In the Dune
-      universe, House Ordos is a mysterious cartel led by the Executrix —
-      four beings sharing a single mind — who communicate only through a
-      creature known as the Speaker. Their military is largely mercenary,
-      and their troops tend to desert under heavy casualties.
+   .name = Ordos
+   .description = House Ordos
+      A mobile specialist faction that combines stealth, deception, toxic weapons,
+      and advanced mercenary technology.
+      Playstyle: Mobility / Stealth / Disruption
+      Strengths: Fast vehicles, specialist tools, regeneration
+      Weaknesses: Direct armored engagements, detection
+      Signature units: Laser Tank, Deviator, Wraith, Face Dancer
 
-      In Cameo, House Ordos has the largest Dune roster (48 units, 15 buildings,
-      29 upgrades). Their playstyle centers on stealth, mobility, and late-game
-      steamrolling. The Wraith provides cloaked strike capability, while the
-      Face Dancer can impersonate and mind-control enemy units. Their Saboteur
-      can infiltrate and disable enemy structures, and Chaos Lightning disrupts
-      enemy formations. Ordos units benefit from self-repairing regeneration
-      technology, making them efficient to maintain.
+faction_d2k_corrino =
+   .name = Corrino
+   .description = House Corrino
+      An elite imperial faction fielding Sardaukar infantry and durable military
+      vehicles from Salusa Secundus.
+      Playstyle: Elite Combined Arms / Defensive Pressure
+      Strengths: Sardaukar infantry, durability, disciplined firepower
+      Weaknesses: Cost, roster breadth, replacement speed
+      Signature units: Sardaukar, Imperial Combat Tank, Siege Tank
 
-      Difficulty: ©©©
-      Early Game: ©©
-      Mid Game: ©©©
-      Late Game: ©©©©©
-      Playstyle: Mobility / Stealth / Steamrolling / Late Game Powerhouse
-      Strength: Late Game Units, Stealth, Self-Repair, Mercenary Diversity
-      Weakness: Early Game Tanks, Mercenary Reliability, Unit Cost
-      Countered by: Artillery, Early Aggression, Detection
-      Special Units: Wraith (cloaked fighter), Face Dancer (mind control commando),
-        Saboteur, Deviator, Pop-up Turret
-      Special Buildings: Starport, Spice Sifter, Ordos Palace
-      Team Upgrades: 29 upgrades (WIP — expanding)
-      Support powers: Saboteur, Chaos Lightning
-      Superweapons: Chaos Lightning
-
-      Features:
-      - Largest Dune roster (48 units, 15 buildings, 29 upgrades)
-      - Stealth-focused playstyle with cloaked units (Wraith)
-      - Face Dancer: mind-control commando that impersonates enemies
-      - Saboteur: infiltrator that disables enemy structures
-      - Deviator: temporarily takes control of enemy vehicles
-      - Self-repairing units (regeneration technology)
-      - Pop-up Turret: burrowing defense that's hard to destroy when idle
-      - Mercenary units (can desert under heavy casualties)
-      - Starport for purchasing units with spice
-      - Chaos Lightning: disruptive area superweapon
-      - 42/48 units AI-wired
+faction_d2k_ixian =
+   .name = Ixian
+   .description = Ixian Technocracy
+      A technology-focused faction built around experimental weapons, drones,
+      shields, and a deep upgrade tree.
+      Playstyle: Technology / Drones / Defensive Scaling
+      Strengths: Advanced weapons, shields, late-game specialization
+      Weaknesses: Expensive technology, slow development
+      Signature units: Koda Tank, Farasha, Ixian Projector, Railgun Drone
 
 consumer_items_impulse =
    .description = Impulse Items
@@ -2820,8 +2779,8 @@ ra_upgrade_autoloaders =
 ra_upgrade_hazmatsuits =
    .description = Hazmat Suits
 
-ra_upgrade_highexplosiverockets =
-   .description = High Explosive Rockets
+ra_upgrade_thermobaricrockets =
+   .description = Thermobaric Rockets
 
 ra_upgrade_incendiarybullets =
    .description = Incendiary Bullets
@@ -2864,3 +2823,6 @@ ra_upgrade_vengeance =
 
 ra_upgrade_wareconomy =
    .description = War Economy
+
+upgrade_burninglasers =
+   .description = Replaces Nod laser weapons with burning inferno variants, increasing damage and igniting targets.

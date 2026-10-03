@@ -1,280 +1,563 @@
-# audit_ca_drift — vendored OpenRA.Mods.CA vs upstream Combined Arms
+# audit_ca_drift: vendored OpenRA.Mods.CA vs upstream Combined Arms
 
-Upstream: `C:\Users\AedisToru\Documents\GitHub\CAmod\OpenRA.Mods.CA`
+_Engine uses System.Numerics vectors: upstream text is compared after the float2/float3 -> Vector2/Vector3 conversion (tools/audit/vector_codemod.py)._
 
-| | files |
+Upstream: `C:\Users\AedisToru\Documents\GitHub\CAmod` at `b67e28746` (`origin/HEAD`; `git fetch` the clone first)
+
+| status | files |
 |---|--:|
-| vendored here | 181 |
-| upstream | 471 |
-| identical | 41 |
-| drifted | 108 |
-| ours only (not upstream) | 32 |
-| upstream only (NOT adopted) | 322 |
+| IDENTICAL | 80 |
+| STALE | 0 |
+| MODIFIED | 27 |
+| MODIFIED+STALE | 45 |
+| MOVED/REMOVED | 13 |
+| CAMEO_ONLY | 68 |
+| MISSING (upstream files never copied) | 313 |
 
-**9781 differing lines** across 108 files — 30 of them <= 6 lines (usually a refactor to adopt), 31 over 50 (a different implementation; port by hand or not at all).
+## MODIFIED+STALE: port the upstream diff by hand (45)
 
-## Upstream files never adopted (322), by area
+- `OpenRA.Mods.CA/Traits/MindController.cs`: base 2023-09-01, 17 upstream commits since, Cameo diff 91 lines
+    - 2026-01-10 Mind control trait improvements.
+    - 2025-12-07 Clean up trait lookups.
+    - 2025-07-02 Engine update part 7.
+    - 2025-05-19 - Fixed crash when manually releasing mind controlled slaves. - Added target painter ability to Pitbull. - Added minimum range to Aurora so it will circle back instead of missing. - Increased Killzone duration from 16s to 30s. - FlashTarget warhead. - WithFlashEffect trait. - Tooltip tweaks.
+    - 2025-05-15 - Reduced speed of Tiger Guard IFV. - Fixed Hacker IFV permanently controlling targets. - Tooltip tweaks. - Removed debugging.
+- `OpenRA.Mods.CA/Traits/MindControllable.cs`: base 2023-05-27, 10 upstream commits since, Cameo diff 28 lines
+    - 2026-05-10 Mind controlled MGG original owner defeated crash workaround fix.
+    - 2026-01-10 Mind control trait improvements.
+    - 2025-12-07 Clean up trait lookups.
+    - 2025-07-02 Scale point defense laser in the same way as point defense shield.
+    - 2025-05-15 - Reduced speed of Tiger Guard IFV. - Fixed Hacker IFV permanently controlling targets. - Tooltip tweaks. - Removed debugging.
+- `OpenRA.Mods.CA/Traits/TargetedAttackAbility.cs`: base 2023-06-05, 10 upstream commits since, Cameo diff 11 lines
+    - 2025-08-13 - Updated targetable ability logic (multiple abilities per activation). - Mantis guards selection. - Fix Conduit crash. - Default dogs to Defend stance.
+    - 2025-05-25 - Make Anathema affect MAD tank thump interval. - Improve Mothership crash explosion. - Increase Basilisk range from 5 to 8. - After 4 pulses Desolator eruption radius increases by 1 cell. - Fixed Decoy Projectors crash. - Fixed actor spawning abilities ordering by distance. - Fixed targeted weapon abilities no longer being targetable on ground. - Changed bulk transport loading cursor to yellow to make it easier to distinguish.
+    - 2025-05-23 - Mind Sparks and Decoy Projectors are now targeted abilities, where the target is where the sparks/decoys will move to after spawning. - Reduced Mind Spark suppression duration, rate of fire, and increased cooldown by 5s. Increase hitbox size for easier selection. - Pitbull target painter can target buildings under fog. - Heroes of the Union applies to Grenadiers and Flamethrowers.
+    - 2025-05-19 - Fixed crash when manually releasing mind controlled slaves. - Added target painter ability to Pitbull. - Added minimum range to Aurora so it will circle back instead of missing. - Increased Killzone duration from 16s to 30s. - FlashTarget warhead. - WithFlashEffect trait. - Tooltip tweaks.
+    - 2025-05-18 - Loyalist growth bonus applies to full build radius. - Enforcer deals damage in a line. - Enforcer IFV gains 50% damage reduction (up from 30%). Fires double shot. - Increased Hoplite IFV rate of fire, splash radius and damage. - Simplified Hoplite recharge yaml. - Floating Disc drain targeted via ability.
+- `OpenRA.Mods.CA/TraitsInterfaces.cs`: base 2023-06-07, 9 upstream commits since, Cameo diff 19 lines
+    - 2026-09-07 Drain resources power updates.
+    - 2026-07-08 Ion Cannon & Lightning Storm always strikes center with first shot.
+    - 2025-12-02 Encyclopedia updates.
+    - 2025-10-29 - Mini Drones inherit cloak from parent. - Corrected TD Harvester palette. - Fixed Mini Drone attach sound.
+    - 2025-07-02 Scale point defense laser in the same way as point defense shield.
+- `OpenRA.Mods.CA/Activities/TeleportCA.cs`: base 2023-08-05, 7 upstream commits since, Cameo diff 2 lines
+    - 2025-07-02 Engine update fixes part 3.
+    - 2025-01-20 Fixed queued Chrono Tank telports incorrectly calculating the pre-charge time.
+    - 2024-11-29 Removed Temporal Flux range boost.
+    - 2024-11-20 - Allow Chrono Tank to teleport 48 cells, but longer distances require scaling charge up time. Increased cost to 1500. - Cryostorm has EVA warning and takes 5 seconds to appear. - Removed X external link from menu screen. - Hornet/Invader tooltip clarification. - Mission 22 difficulty tweaks.
+    - 2024-02-07 Added Fleet Recall power on Scrin Signal Transmitter. Added target highlighting to Chronoshift. Minor yaml fixes.
+- `OpenRA.Mods.CA/Traits/Mirage.cs`: base 2021-02-04, 7 upstream commits since, Cameo diff 67 lines
+    - 2023-08-05 2307 engine fixes.
+    - 2023-05-27 Updated copyright notice. Removed unused imports. Namespace corrections.
+    - 2022-06-23 Use .Count/.Length where possible instead of .Count()/.Any().
+    - 2022-03-25 C# fixes.
+    - 2022-01-01 Happy lint
+- `OpenRA.Mods.CA/Traits/PortableChronoCA.cs`: base 2023-07-07, 7 upstream commits since, Cameo diff 16 lines
+    - 2025-07-02 Engine update part 7.
+    - 2025-01-20 Fixed queued Chrono Tank telports incorrectly calculating the pre-charge time.
+    - 2024-12-18 - Increased Grand Cannon damage vs heavy armor. Increased range by from 9 to 10. First shot is accurate. - Replaced Patriot Strike with Black Sky Strike. Hits up to 6 ground targets, prioritizing the most valuable. - Reduced Troop Crawler cost from 1600 to 1500. - Hoplite range reduced by 1. Added empowered shots which blind enemies (9s cooldown). - Increased Black Eagle splash damage. - Avatar shadow. - Stealth Harvester research icon. - Fix Teleport/Leap abilities being permanently disabled if unit is warped while recharging. - Fix Chrono Tank moving to destination if long distance teleport is temporarily interrupted by being warped.
+    - 2024-11-20 - Allow Chrono Tank to teleport 48 cells, but longer distances require scaling charge up time. Increased cost to 1500. - Cryostorm has EVA warning and takes 5 seconds to appear. - Removed X external link from menu screen. - Hornet/Invader tooltip clarification. - Mission 22 difficulty tweaks.
+    - 2024-01-12 Updates. - Added Hypercharge upgrade for Scrin Seeker & Lacerator. - Chem Warrior gains Tiberium Surge ability. - Yuri/Mastermind ability no longer kills slaves. Slaves are killed either manually by deploying them, or when exceeding capacity. - Minor mission 9 fix - prevent MAD Tank deploying when player does a sat hack on it. - Minor mission 15 fix - prevent player's units auto attacking disabled defenses. - Reduce Kirov separation distance to make them less prone to blocking each other from dropping bombs. - Improvements to targeted ability traits. - Battle Drone self-repairs to 50% instead of 100%.
+- `OpenRA.Mods.CA/Traits/SupportPowers/GrantExternalConditionPowerCA.cs`: base 2024-06-23, 7 upstream commits since, Cameo diff 15 lines
+    - 2026-06-04 Warning fix.
+    - 2026-06-04 - The full XP of any destroyed ARC drones will now be added to a singular reclaimable XP pool. On production of new drones, this XP will be drawn from up to veterancy level 2. - Mini Drones will transfer their XP to the parent unit on attaching. They will then inherit the veterancy level of the parent unit, and any damage dealt will be given to the parent unit. - Suppression Field can be applied as long as one valid unit is visible within the target circle (non-visible units within the circle will then be affected upon activation). - Made Templar laser with Quantum Capacitors more visually distinct. - Red skull icon for Assassins. - Fixed triple SSM with Black Napalm burst count. Adjusted reload to bring DPS into line. - Removed duplicate lasher warhead.
+    - 2025-12-07 Clean up trait lookups.
+    - 2025-07-02 Engine update part 7.
+    - 2025-07-02 Engine update fixes.
+- `OpenRA.Mods.CA/Widgets/ProductionTabsCAWidget.cs`: base 2023-06-16, 7 upstream commits since, Cameo diff 35 lines
+    - 2025-07-31 Mission updates & bugfixes.
+    - 2025-07-26 Fix production tabs crash.
+    - 2025-07-25 Mission fixes.
+    - 2025-07-17 - Updated ScrollableLineGraphWidget. - Updated ProductionTabsCAWidget. - Reverted utility.cmd. - Added Thrasher Tank to Reactive Armor tooltip.
+    - 2025-07-05 Update UI classes to match engine changes.
+- `OpenRA.Mods.CA/Projectiles/PlasmaBeam.cs`: base 2024-03-01, 6 upstream commits since, Cameo diff 6 lines
+    - 2026-07-03 Default glow colors of projectiles.
+    - 2026-06-05 Fixed some glow colours.
+    - 2026-06-05 Add Glow Effect to CA Projectiles
+    - 2025-07-02 Engine update part 10 (projectiles).
+    - 2025-07-02 Engine update fixes part 3.
+- `OpenRA.Mods.CA/Traits/BotModules/SquadManagerBotModuleCA.cs`: base 2025-07-02, 6 upstream commits since, Cameo diff 2695 lines
+    - 2026-02-12 - Increased IFV HP from 30k to 32k. - Tiger Guard IFV prioritizes vehicle targets. - Increased Peacemaker damage vs defenses. - Clean up V3 upgrade remnants. - AI tweaks.
+    - 2026-02-09 Compositions.
+    - 2026-02-08 Updated AI routing.
+    - 2026-02-08 AI harasser squads.
+    - 2026-02-08 Skirmish AI indirect routes of attack.
+- `OpenRA.Mods.CA/Traits/BotModules/Squads/States/GroundStatesCA.cs`: base 2023-12-22, 6 upstream commits since, Cameo diff 1361 lines
+    - 2026-02-09 Compositions.
+    - 2026-02-08 Updated AI routing.
+    - 2026-02-08 - V3 now Ukraine unique unit. - Siege Tank now replaces V2 for Ukraine. - Yaml fixes.
+    - 2026-02-08 AI harasser squads.
+    - 2026-02-08 Skirmish AI indirect routes of attack.
+- `OpenRA.Mods.CA/Traits/BotModules/Squads/States/ProtectionStatesCA.cs`: base 2021-02-04, 6 upstream commits since, Cameo diff 304 lines
+    - 2026-02-08 Skirmish AI indirect routes of attack.
+    - 2025-08-10 AI updates.
+    - 2023-05-27 Updated copyright notice. Removed unused imports. Namespace corrections.
+    - 2021-04-08 Change CA AI Back for further Development
+    - 2021-02-14 AI-cs-fix
+- `OpenRA.Mods.CA/Traits/MadTankCA.cs`: base 2023-05-27, 6 upstream commits since, Cameo diff 35 lines
+    - 2025-10-09 - Mission adjustments. - Simplified MAD Tank code (fixes reload time buffs). - Enmity fix.
+    - 2025-10-05 MAD Tank bug fix.
+    - 2025-07-02 Engine update part 7.
+    - 2025-07-02 Engine update fixes.
+    - 2025-05-25 - Make Anathema affect MAD tank thump interval. - Improve Mothership crash explosion. - Increase Basilisk range from 5 to 8. - After 4 pulses Desolator eruption radius increases by 1 cell. - Fixed Decoy Projectors crash. - Fixed actor spawning abilities ordering by distance. - Fixed targeted weapon abilities no longer being targetable on ground. - Changed bulk transport loading cursor to yellow to make it easier to distinguish.
+- `OpenRA.Mods.CA/Traits/ChronoshiftableCA.cs`: base 2024-02-09, 5 upstream commits since, Cameo diff 11 lines
+    - 2025-12-07 Clean up trait lookups.
+    - 2025-10-19 Speculative fix for interrupted Chronoshift.
+    - 2025-10-14 - Fixed Dissection bombing runs continuing after secondary objective completed. - Oil Derrick just gives $125 per 15s with no bonus. - Reverted Venom random shot delay as it prevented returning to base when ammo depleted. - Added 5 second delay before initial Medic/Mechanic produced from Hospital/Machine Shop. - Speculative fix for failed Chronoshifting of enemy units.
+    - 2024-12-29 - Increased Tank Destroyer range by 1. Reduced HP from 44k to 42k. - Fixed allied passenger ownership when chronoshifted transport is killed. - Conditional CloneProducer (for missions). - Show "watched" icon on units with a shadow beacon attached. - Attached Shadow Beacons and Watcher parasites detect cloak. - Minor campaign AI code fix. - Allow 10 hotkeys for support powers. - Reckoning tweaks.
+    - 2024-05-27 Allow missile strike power to use ballistic/cruise missiles. Prevent gateway being spawned on top of actors.
+- `OpenRA.Mods.CA/Traits/GivesExperienceToMaster.cs`: base 2023-05-27, 5 upstream commits since, Cameo diff 3 lines
+    - 2026-06-05 Attached Mini Drone XP fixes & Kirov tooltip correction.
+    - 2026-06-04 - The full XP of any destroyed ARC drones will now be added to a singular reclaimable XP pool. On production of new drones, this XP will be drawn from up to veterancy level 2. - Mini Drones will transfer their XP to the parent unit on attaching. They will then inherit the veterancy level of the parent unit, and any damage dealt will be given to the parent unit. - Suppression Field can be applied as long as one valid unit is visible within the target circle (non-visible units within the circle will then be affected upon activation). - Made Templar laser with Quantum Capacitors more visually distinct. - Red skull icon for Assassins. - Fixed triple SSM with Black Napalm burst count. Adjusted reload to bring DPS into line. - Removed duplicate lasher warhead.
+    - 2025-05-13 - Allow multiple types of mind control on a single unit. - Yuri/Mastermind/Hacker IFV reworked to allow control which passes to/from the passenger on exit/entry. - Re-remove Jackknife air to ground modifier.
+    - 2023-12-17 Cruise missile.
+    - 2023-09-01 Mastermind/Yuri gain XP for each unique unit mind controlled. PAC/Drone Carrier gain XP from fighters dealing damage.
+- `OpenRA.Mods.CA/Projectiles/LaserZapCA.cs`: base 2023-05-27, 4 upstream commits since, Cameo diff 6 lines
+    - 2025-07-02 Engine update part 10 (projectiles).
+    - 2025-07-02 Engine update part 7.
+    - 2025-07-02 Engine update fixes part 3.
+    - 2024-12-07 - Added voice announcement for when Covenants become available. - Added tracers effects to Wolverine & updated firing sound. - Increased Chrono Tank rate of fire, damage vs light/buildings, range (+1) and turn speed. Reduced HP from 45k to 32k. - Increased JumpJet/Bombardier speed. - Ships targetable by Anathema. - Tripled PAC damage vs buildings. - Reduced duration of Cyborg Reaper snare from 8s to 6s. - Zone Defender shield stacks up to 6 times providing between 25% and 50% damage reduction. - Updated Stromberg maps.
+- `OpenRA.Mods.CA/Traits/BotModules/Squads/SquadCA.cs`: base 2023-05-27, 4 upstream commits since, Cameo diff 104 lines
+    - 2026-02-08 Updated AI routing.
+    - 2026-02-08 AI harasser squads.
+    - 2026-02-08 Skirmish AI indirect routes of attack.
+    - 2025-08-10 AI updates.
+- `OpenRA.Mods.CA/Traits/BotModules/Squads/States/AirStatesCA.cs`: base 2023-05-27, 4 upstream commits since, Cameo diff 344 lines
+    - 2026-01-09 Fix AI aircraft limits.
+    - 2025-08-10 AI updates.
+    - 2025-06-08 AI crash fix.
+    - 2025-05-26 Skirmish AI aircraft target based on armor type instead of target type.
+- `OpenRA.Mods.CA/Traits/ReloadAmmoPoolCA.cs`: base 2023-05-27, 4 upstream commits since, Cameo diff 2 lines
+    - 2025-12-17 Reload bar for Nuke Cannon.
+    - 2025-05-24 ReloadAmmoPoolCA refactoring.
+    - 2025-05-24 - Obliterator charge drains gradually instead of immediately if targeting is interrupted. Added minimum range to prevent direction bug. - EMP Grenadiers don't get range bonus from Heroes of the Union. - Fixed Voidspike visual glitch if hit by weapons which flash the target. - Added Health to Mind Spark so its death animation plays.
+    - 2023-12-29 Buggy decoy upgrade.
+- `OpenRA.Mods.CA/Traits/BotModules/Squads/States/StateBaseCA.cs`: base 2023-05-27, 3 upstream commits since, Cameo diff 216 lines
+    - 2026-02-08 Updated AI routing.
+    - 2026-02-08 Skirmish AI indirect routes of attack.
+    - 2025-08-10 AI updates.
+- `OpenRA.Mods.CA/Traits/MissileSpawnerMaster.cs`: base 2022-06-23, 3 upstream commits since, Cameo diff 108 lines
+    - 2024-01-07 Missile fix.
+    - 2023-12-17 Cruise missile.
+    - 2023-05-27 Updated copyright notice. Removed unused imports. Namespace corrections.
+- `OpenRA.Mods.CA/Traits/ProductionAirdropCA.cs`: base 2023-05-27, 3 upstream commits since, Cameo diff 2 lines
+    - 2026-07-04 - ProductionAirdropCA refactor. - Reaper snare fixes.
+    - 2026-01-10 Co-op improvements.
+    - 2025-07-02 Engine update part 7.
+- `OpenRA.Mods.CA/Projectiles/LinearPulse.cs`: base 2026-01-11, 2 upstream commits since, Cameo diff 207 lines
+    - 2026-06-06 - Updated Obliterator/Cryo Trooper to use new LinearPulse. - Increased Cryo Trooper/Launcher damage vs buildings. - Fixed Mini Drone XP level inheritance crash.
+    - 2026-06-02 Removed unused Cone impact type (can be achieved with Trapezoid). Corrected flamer friendly fire range.
+- `OpenRA.Mods.CA/Traits/BotModules/BuildingRepairBotModuleCA.cs`: base 2023-08-06, 2 upstream commits since, Cameo diff 5 lines
+    - 2026-07-26 Fix AI not repairing buildings.
+    - 2025-12-07 Clean up trait lookups.
+- `OpenRA.Mods.CA/Traits/DeployOnAttack.cs`: base 2024-12-16, 2 upstream commits since, Cameo diff 19 lines
+    - 2026-07-19 - Fixed Nuke Cannon bug allowing deployment on building bibs. - Allow Floating Disc ability to target buildings under fog.
+    - 2024-12-18 - Black Sky Strike fires 4 missiles, down from 6. Reduced base damage to 70k, added TankBuster modifier. - Corrected Black Sky announcement filenames. - Stealth Harvester upgrade moved to radar. Will upgrade existing harvesters. - Increase Mantis speed, reduce HP from 30k to 28k. - Fixed minor issue with Nuke Cannon auto deployment. - Tooltip corrections.
+- `OpenRA.Mods.CA/Traits/HarvesterBalancer.cs`: base 2023-05-27, 2 upstream commits since, Cameo diff 2 lines
+    - 2025-07-02 Engine update fixes.
+    - 2025-05-06 Scrin allegiance bonuses. - Loyalist: Resources near Colony Platforms regrow faster. - Rebel: Colony Ship can produces structures while moving. - Malefic: Colony Platforms are cloaked.
+- `OpenRA.Mods.CA/Traits/PeriodicProducerCA.cs`: base 2023-05-27, 2 upstream commits since, Cameo diff 2 lines
+    - 2025-10-14 - Fixed Dissection bombing runs continuing after secondary objective completed. - Oil Derrick just gives $125 per 15s with no bonus. - Reverted Venom random shot delay as it prevented returning to base when ammo depleted. - Added 5 second delay before initial Medic/Mechanic produced from Hospital/Machine Shop. - Speculative fix for failed Chronoshifting of enemy units.
+    - 2024-02-03 Updates. - Decoy Projectors creates 2 decoy Flame Tanks (or Heavy Flame Tanks) instead of a Buggy. - Added Peacemaker to AI. - Increased Engineer mine detection range. - Advanced Optics available on radar. Increased vision extension by 1. Increased price from 750 to 1000. - Made Commissar range indicator more visible. Increased range to 6c0. - Fixed Cyberdog not showing in MQ. Reduced delay between attacks. - Updated IFV mortar turret sprite. - Reduced Flame Tank splash damage.
+- `OpenRA.Mods.CA/Traits/Player/GrantConditionOnPrerequisiteManagerCA.cs`: base 2023-05-27, 2 upstream commits since, Cameo diff 3 lines
+    - 2025-07-11 - Reworked CountManager and related traits. - Removed unused/redundant traits. - Yaml fixes.
+    - 2025-07-02 Engine update part 7.
+- `OpenRA.Mods.CA/Traits/Render/WithNameTagDecorationCA.cs`: base 2023-06-18, 2 upstream commits since, Cameo diff 4 lines
+    - 2025-07-02 Engine update part 7.
+    - 2023-08-19 Improved targeting for GrantExternalConditionPowerCA and ChronoshiftPowerCA.
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/ProductionTabsLogicCA.cs`: base 2023-05-27, 2 upstream commits since, Cameo diff 2 lines
+    - 2025-07-26 Fix production tabs crash.
+    - 2024-05-18 Scrin allegiances, Eviscerator, Obliterator, Nullifier, Overlord's Wrath, Gateway & Watcher.
+- `OpenRA.Mods.CA/Traits/Attack/AttackFrontalCharged.cs`: base 2025-10-06, 1 upstream commits since, Cameo diff 3 lines
+    - 2025-12-07 Clean up trait lookups.
+- `OpenRA.Mods.CA/Traits/BotModules/BaseBuilderBotModuleCA.cs`: base 2025-07-02, 1 upstream commits since, Cameo diff 913 lines
+    - 2025-08-10 AI updates.
+- `OpenRA.Mods.CA/Traits/BotModules/BotModuleLogic/BaseBuilderQueueManagerCA.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 977 lines
+    - 2025-08-10 AI updates.
+- `OpenRA.Mods.CA/Traits/BotModules/Squads/States/NavyStatesCA.cs`: base 2025-07-02, 1 upstream commits since, Cameo diff 437 lines
+    - 2025-08-10 AI updates.
+- `OpenRA.Mods.CA/Traits/Conditions/GrantChargingCondition.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 2 lines
+    - 2026-09-06 Chapter 9 WIP.
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnPrerequisiteCA.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 2 lines
+    - 2025-11-02 Fixed Rebel MCV production while moving speed penalty.
+- `OpenRA.Mods.CA/Traits/DetonateWeaponOnDeploy.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 4 lines
+    - 2023-08-05 2307 engine fixes.
+- `OpenRA.Mods.CA/Traits/MassEntersCargo.cs`: base 2025-03-15, 1 upstream commits since, Cameo diff 18 lines
+    - 2026-05-30 Improved responsiveness of mass transport loading.
+- `OpenRA.Mods.CA/Traits/MindControllableProgressBar.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 2 lines
+    - 2024-03-13 Updates. - Updated MindController trait to allow TicksToControl to vary based on target type. - Reduced time taken for Hacker to hack drones. - Powered down defenses have reduced vision.
+- `OpenRA.Mods.CA/Traits/MindControllerCapacityModifier.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 6 lines
+    - 2025-05-13 - Allow multiple types of mind control on a single unit. - Yuri/Mastermind/Hacker IFV reworked to allow control which passes to/from the passenger on exit/entry. - Re-remove Jackknife air to ground modifier.
+- `OpenRA.Mods.CA/Traits/Palettes/OverlayPlayerColorPalette.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 2 lines
+    - 2026-01-19 Lock player colors in co-op missions.
+- `OpenRA.Mods.CA/Traits/Player/ProvidesPrerequisiteValidatedFaction.cs`: base 2025-11-24, 1 upstream commits since, Cameo diff 2 lines
+    - 2026-09-19 Campaign tweaks/fixes.
+- `OpenRA.Mods.CA/Traits/Sound/AmbientSoundCA.cs`: base 2023-05-29, 1 upstream commits since, Cameo diff 5 lines
+    - 2024-08-23 Stop looping ambient sounds when game is paused. Don't include Troop Crawler in statistics.
+- `OpenRA.Mods.CA/Traits/Warpable.cs`: base 2023-05-27, 1 upstream commits since, Cameo diff 4 lines
+    - 2023-12-22 Fixed empty warp damage bar appearing when units have very low health. Minor spelling/yaml corrections.
 
-- `Traits/SupportPowers` — **26**
-- `Widgets/Logic` — **24**
-- `Traits/Conditions` — **22**
-- `Traits/Player` — **19**
-- `Traits/Render` — **17**
-- `Traits/Multipliers` — **5**
-- `Traits/Attack` — **4**
-- `Traits/Air` — **3**
-- `Traits/World` — **3**
-- `Traits/Infiltration` — **2**
-- `Traits/Palettes` — **2**
-- `Traits/Sound` — **2**
-- `Activities/Attach.cs` — **1**
-- `Activities/AttackFrontalFollowActivity.cs` — **1**
-- `Activities/BallisticMissileFly.cs` — **1**
-- `Activities/ChronoResourceTeleport.cs` — **1**
-- `Activities/ConvertActor.cs` — **1**
-- `Activities/DeployForGrantedConditionTurreted.cs` — **1**
-- `Activities/DiveApproach.cs` — **1**
-- `Activities/EnterAirstrikeMaster.cs` — **1**
-- `Activities/EnterCarrierMaster.cs` — **1**
-- `Activities/EnterTeleportNetwork.cs` — **1**
-- `Activities/FallDown.cs` — **1**
-- `Activities/MassRideTransport.cs` — **1**
-- `Activities/ParadropCargo.cs` — **1**
-- `Activities/ProductionAirdropDeliver.cs` — **1**
-- `Activities/SpawnActor.cs` — **1**
-- `Activities/TargetedLeap.cs` — **1**
-- `Activities/Upgrade.cs` — **1**
-- `Effects/Countdown.cs` — **1**
-- `Effects/DistortionHaloEffect.cs` — **1**
-- `Effects/FlashTargetCA.cs` — **1**
-- `Effects/GPSRadarDotEffect.cs` — **1**
-- `Effects/GpsSatelliteCA.cs` — **1**
-- `Effects/LinkedProducerIndicator.cs` — **1**
-- `Effects/MultiWeaponImpactEffect.cs` — **1**
-- `Effects/SatelliteLaunchCA.cs` — **1**
-- `Effects/SmokeParticle.cs` — **1**
-- `Graphics/ArcRenderable.cs` — **1**
-- `Graphics/CapsuleAnnotationRenderable.cs` — **1**
-- `Graphics/DistortionHaloRenderable.cs` — **1**
-- `Graphics/ElectricBoltRenderable.cs` — **1**
-- `Graphics/KKNDLaserRenderable.cs` — **1**
-- `Graphics/RadBeamRenderable.cs` — **1**
-- `Graphics/RailgunHelixRenderableCA.cs` — **1**
-- `Graphics/TeslaZapRenderableCA.cs` — **1**
-- `Graphics/TintedCell.cs` — **1**
-- `Graphics/UIModifyableSpriteRenderable.cs` — **1**
-- `LoadScreens/ImageLoadScreen.cs` — **1**
-- `Orders/ConvertibleOrderTargeter.cs` — **1**
-- `Orders/MassEnterCargoOrderTargeter.cs` — **1**
-- `Orders/ShootableBallisticMissileMoveOrderTargeter.cs` — **1**
-- `Orders/UpgradeOrderGenerator.cs` — **1**
-- `Projectiles/ArcLaserZap.cs` — **1**
-- `Projectiles/AreaBeamCA.cs` — **1**
-- `Projectiles/AthenaProjectile.cs` — **1**
-- `Projectiles/BulletCA.cs` — **1**
-- `Projectiles/ElectricBolt.cs` — **1**
-- `Projectiles/InstantExplode.cs` — **1**
-- `Projectiles/KKNDLaser.cs` — **1**
-- `Projectiles/MeteorStrike.cs` — **1**
-- `Projectiles/MissileCA.cs` — **1**
-- `Projectiles/ProjectileHusk.cs` — **1**
-- `Projectiles/RadBeam.cs` — **1**
-- `Projectiles/RailgunCA.cs` — **1**
-- `Projectiles/TeslaZapCA.cs` — **1**
-- `Scripting/ActorCAGlobal.cs` — **1**
-- `Scripting/AirstrikeCAProperties.cs` — **1**
-- `Scripting/BuildingProperties.cs` — **1**
-- `Scripting/CombatCAProperties.cs` — **1**
-- `Scripting/MediaCAGlobal.cs` — **1**
-- `Scripting/PlayerCAProperties.cs` — **1**
-- `Scripting/PortableChronoCAGlobal.cs` — **1**
-- `Scripting/ScriptTriggersCA.cs` — **1**
-- `Scripting/TargetableCAProperties.cs` — **1**
-- `Scripting/TargetedLeapAbilityGlobal.cs` — **1**
-- `Scripting/TriggerCAGlobal.cs` — **1**
-- `Scripting/UtilsCAGlobal.cs` — **1**
-- `SpriteLoaders/R8Loader.cs` — **1**
-- `Traits/AddsToReclaimableValue.cs` — **1**
-- `Traits/AdvancesTimeline.cs` — **1**
-- `Traits/AirstrikeMaster.cs` — **1**
-- `Traits/AirstrikeSlave.cs` — **1**
-- `Traits/ArmamentBurstCounter.cs` — **1**
-- `Traits/AutoDeployer.cs` — **1**
-- `Traits/AutoGuard.cs` — **1**
-- `Traits/BallisticMissile.cs` — **1**
-- `Traits/Berserkable.cs` — **1**
-- `Traits/CancelActivityOnPickup.cs` — **1**
-- `Traits/CargoBlocked.cs` — **1**
-- `Traits/CargoCloner.cs` — **1**
-- `Traits/CarrierMaster.cs` — **1**
-- `Traits/CarrierSlave.cs` — **1**
-- `Traits/ChronoResourceDelivery.cs` — **1**
-- `Traits/Convertible.cs` — **1**
-- `Traits/ConvertsResources.cs` — **1**
-- `Traits/CrateCA.cs` — **1**
-- `Traits/CreateProxyActorForAllies.cs` — **1**
-- `Traits/DamagedByTerrainCA.cs` — **1**
-- `Traits/DamagedByTintedCells.cs` — **1**
-- `Traits/DelayedWeaponAttachable.cs` — **1**
-- `Traits/DelayedWeaponDetector.cs` — **1**
-- `Traits/DelayedWeaponTrigger.cs` — **1**
-- `Traits/EjectOnTransform.cs` — **1**
-- `Traits/EncyclopediaExtras.cs` — **1**
-- `Traits/FreeActorCA.cs` — **1**
-- `Traits/FrozenUnderFogUpdatedByGpsRadar.cs` — **1**
-- `Traits/GPSRadarDot.cs` — **1**
-- `Traits/GiveCashOnCaptureCA.cs` — **1**
-- `Traits/GivesBountyCA.cs` — **1**
-- `Traits/GivesExperienceCA.cs` — **1**
-- `Traits/GivesPlayerExperienceOnCapture.cs` — **1**
-- `Traits/GpsRadarWatcher.cs` — **1**
-- `Traits/ImmobileMultiCell.cs` — **1**
-- `Traits/ImmobilePositionable.cs` — **1**
-- `Traits/InheritsExperienceLevelOfMaster.cs` — **1**
-- `Traits/InitiallyHunts.cs` — **1**
-- `Traits/LaysMinefield.cs` — **1**
-- `Traits/LinkedProducerSource.cs` — **1**
-- `Traits/LinkedProducerTarget.cs` — **1**
-- `Traits/MissileSpawnerSlave.cs` — **1**
-- `Traits/Modifiers` — **1**
-- `Traits/NotificationOnDamage.cs` — **1**
-- `Traits/PaletteEffects` — **1**
-- `Traits/PassengerBlocked.cs` — **1**
-- `Traits/PeriodicExplosion.cs` — **1**
-- `Traits/PeriodicExplosionOnSlaves.cs` — **1**
-- `Traits/PointDefense.cs` — **1**
-- `Traits/ProvidesUpgrade.cs` — **1**
-- `Traits/RangedGpsRadarProvider.cs` — **1**
-- `Traits/RearmsToUpgrade.cs` — **1**
-- `Traits/ReclaimsExperience.cs` — **1**
-- `Traits/ReturnsToBaseOnAmmoDepleted.cs` — **1**
-- `Traits/ScatterOnExitCargo.cs` — **1**
-- `Traits/SeedsResourceCA.cs` — **1**
-- `Traits/Shielded.cs` — **1**
-- `Traits/SpawnActorAbility.cs` — **1**
-- `Traits/SpawnActorOnDeathCA.cs` — **1**
-- `Traits/SpawnActorOnMindControlled.cs` — **1**
-- `Traits/SpawnActorsOnSellCA.cs` — **1**
-- `Traits/SpawnHuskEffectOnDeath.cs` — **1**
-- `Traits/SpawnerMasterBase.cs` — **1**
-- `Traits/SpawnerSlaveBase.cs` — **1**
-- `Traits/SquadPathOverlay.cs` — **1**
-- `Traits/StoresPlayerResourcesCA.cs` — **1**
-- `Traits/TargetSpecificOrderVoice.cs` — **1**
-- `Traits/TargetedDiveAbility.cs` — **1**
-- `Traits/TargetedLeapAbility.cs` — **1**
-- `Traits/TargetedMovementAbility.cs` — **1**
-- `Traits/TeleportNetwork.cs` — **1**
-- `Traits/TeleportNetworkPrimaryExit.cs` — **1**
-- `Traits/TeleportNetworkTransportable.cs` — **1**
-- `Traits/TransferResourcesOnTransform.cs` — **1**
-- `Traits/TurretedFloating.cs` — **1**
-- `Traits/UndeployOnStop.cs` — **1**
-- `Traits/UnitConverter.cs` — **1**
-- `Traits/UpdatesBuildOrder.cs` — **1**
-- `Traits/UpdatesCount.cs` — **1**
-- `Traits/UpdatesSupportPowerTimer.cs` — **1**
-- `Traits/UpdatesUnitsProduced.cs` — **1**
-- `Traits/Upgradeable.cs` — **1**
-- `Traits/WaitsForTurretAlignmentOnUndeploy.cs` — **1**
-- `Traits/WarheadDebugOverlayCA.cs` — **1**
-- `Traits/WithEjectedCasings.cs` — **1**
-- `Traits/WithReloadBar.cs` — **1**
-- `Warheads/AttachActorWarhead.cs` — **1**
-- `Warheads/AttachDelayedWeaponWarhead.cs` — **1**
-- `Warheads/ChangeOwnerToNeutralWarhead.cs` — **1**
-- `Warheads/ChronoFlashEffectWarhead .cs` — **1**
-- `Warheads/CreateDistortionHaloWarhead.cs` — **1**
-- `Warheads/CreateFacingEffectWarhead.cs` — **1**
-- `Warheads/CreateTintedCellsWarhead.cs` — **1**
-- `Warheads/DetatchDelayedWeaponWarhead.cs` — **1**
-- `Warheads/FireClusterCAWarhead.cs` — **1**
-- `Warheads/FireFragmentWarhead.cs` — **1**
-- `Warheads/FireRadiusWarhead.cs` — **1**
-- `Warheads/FireShrapnelWarhead.cs` — **1**
-- `Warheads/FlashTargetWarhead.cs` — **1**
-- `Warheads/GlowImpactWarhead.cs` — **1**
-- `Warheads/GrantExternalConditionCAWarhead.cs` — **1**
-- `Warheads/HealthPercentageSpreadDamageWarhead.cs` — **1**
-- `Warheads/HeatDistortionWarhead.cs` — **1**
-- `Warheads/InfiltrateWarhead.cs` — **1**
-- `Warheads/RevealShroudWarhead.cs` — **1**
-- `Warheads/SendAirstrikeWarhead.cs` — **1**
-- `Warheads/ShockwaveWarhead.cs` — **1**
-- `Warheads/SpawnActorWarhead.cs` — **1**
-- `Warheads/SpawnBuildingWarhead.cs` — **1**
-- `Warheads/SpawnMultiWeaponImpactWarhead.cs` — **1**
-- `Warheads/SpawnRandomActorWarhead.cs` — **1**
-- `Warheads/WarheadAS.cs` — **1**
-- `Warheads/WarpPercentDamageWarhead.cs` — **1**
-- `Widgets/ActorPreviewCAWidget.cs` — **1**
-- `Widgets/ColoredRectangleWidget.cs` — **1**
-- `Widgets/CroppableImageWidget.cs` — **1**
-- `Widgets/ImageWithAlphaWidget.cs` — **1**
-- `Widgets/LinkableLabelWidget.cs` — **1**
-- `Widgets/ObserverArmyValuesWidget.cs` — **1**
-- `Widgets/ObserverBuildOrderIconsWidget.cs` — **1**
-- `Widgets/ObserverSupportPowerIconsCAWidget.cs` — **1**
-- `Widgets/ObserverUnitsProducedIconsWidget.cs` — **1**
-- `Widgets/ObserverUpgradeIconsWidget.cs` — **1**
-- `Widgets/ScrollableLineGraphWidget.cs` — **1**
-- `Widgets/SupportPowersScrollableWidget.cs` — **1**
-- `Widgets/WidgetUtilsCA.cs` — **1**
+## MOVED/REMOVED upstream (13)
 
-## Cheapest to re-sync — drifted by <= 6 lines (30)
+- `OpenRA.Mods.CA/Traits/Attack/AttackBomberCA.cs`: base ?, 1 upstream commits since
+    - now at OpenRA.Mods.CA/Traits/Air/AttackBomberCA.cs
+- `OpenRA.Mods.CA/Widgets/Logic/LobbyOptionsLogicCA.cs`: base ?, 1 upstream commits since
+    - now at OpenRA.Mods.CA/Widgets/Logic/Lobby/LobbyOptionsLogicCA.cs
+- `OpenRA.Mods.CA/Graphics/MindControlArc.cs`: base ?, 0 upstream commits since
+- `OpenRA.Mods.CA/Scripting/MadTankCAGlobal.cs`: base 2023-05-27, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/AttachedAircraft.cs`: base 2023-05-27, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/BotModules/CaptureManagerBotModuleCA.cs`: base ?, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnBotOwnerCA.cs`: base 2023-05-27, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnFogEnabled.cs`: base 2023-05-27, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/GuardsSelection.cs`: base ?, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/Infiltration/InfiltrateForSupportPowerCA.cs`: base 2023-05-27, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/Player/ProvidesDelayedPrerequisite.cs`: base ?, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/TransferStanceToDeathActor.cs`: base 2023-05-27, 0 upstream commits since
+- `OpenRA.Mods.CA/Traits/World/RevealedPlayersManager.cs`: base 2023-07-02, 0 upstream commits since
 
--  1  `Traits/Conditions/GrantConditionOnHealingReceived.cs`
--  1  `Traits/Player/CapturedFactionsManager.cs`
--  2  `Activities/CruiseMissileFly.cs`
--  2  `Orders/ReleaseSlaveOrderTargeter.cs`
--  2  `Traits/BotModules/PowerDownBotModuleCA.cs`
--  2  `Traits/BotModules/UnitCompositionsBotModule.cs`
--  2  `Traits/Conditions/GrantChargingCondition.cs`
--  2  `Traits/Conditions/GrantThermalCondition.cs`
--  2  `Traits/KeepsDistance.cs`
--  2  `Traits/Multipliers/LayeredDamageMultiplier.cs`
--  2  `Traits/Player/ProvidesPrerequisiteValidatedFaction.cs`
--  2  `Traits/Render/WithEnabledAnimation.cs`
--  2  `Traits/Render/WithRangeCircleCA.cs`
--  2  `Traits/ResourcePurifierCA.cs`
--  2  `Traits/SpawnRandomActorOnDeath.cs`
--  3  `Traits/Conditions/GrantDelayedCondition.cs`
--  3  `Traits/Player/LobbyPrerequisiteDropdown.cs`
--  3  `Traits/Render/WithDisguiseTargetPalette.cs`
--  3  `Traits/Sound/AttackSoundsCA.cs`
--  3  `Widgets/Logic/AddFactionSuffixLogicCA.cs`
--  4  `Traits/ChangesHealthVersus.cs`
--  4  `Traits/ChargingSelfDestruct.cs`
--  4  `Traits/Conditions/GrantTimedConditionOnCargoAction.cs`
--  4  `Traits/PaletteEffects/CloakPaletteEffectCA.cs`
--  5  `Traits/Air/DiveOnAttack.cs`
--  5  `Traits/InstantTransforms.cs`
--  5  `Traits/SpawnedExplodes.cs`
--  5  `Widgets/Logic/Ingame/ProductionTabsLogicCA.cs`
--  6  `Traits/DetonateWeaponOnDeploy.cs`
--  6  `Widgets/Logic/SimpleTooltipWithDescLogic.cs`
+## MISSING: upstream files never adopted (313), by area
 
-## Diverged the most (31) — do NOT bulk-copy these
+- `Traits`: **80**
+- `Traits/SupportPowers`: **26**
+- `Traits/Conditions`: **25**
+- `Warheads`: **23**
+- `Widgets/Logic`: **22**
+- `Traits/Render`: **18**
+- `Traits/Player`: **17**
+- `Activities`: **16**
+- `Scripting`: **16**
+- `Projectiles`: **13**
+- `Graphics`: **10**
+- `Widgets`: **9**
+- `Effects`: **8**
+- `Traits/Multipliers`: **5**
+- `Orders`: **4**
+- `Traits/Attack`: **4**
+- `Traits/World`: **3**
+- `Traits/Air`: **2**
+- `Traits/BotModules`: **2**
+- `Traits/Infiltration`: **2**
+- `Traits/Palettes`: **2**
+- `Traits/Sound`: **2**
+- `LoadScreens`: **1**
+- `SpriteLoaders`: **1**
+- `Traits/Modifiers`: **1**
+- `Traits/PaletteEffects`: **1**
 
--  851  `Traits/BotModules/Squads/States/GroundStatesCA.cs`
--  807  `Traits/BotModules/BaseBuilderBotModuleCA.cs`
--  611  `Traits/BotModules/SquadManagerBotModuleCA.cs`
--  582  `Traits/BotModules/UnitBuilderBotModuleCA.cs`
--  574  `Traits/BotModules/BotModuleLogic/BaseBuilderQueueManagerCA.cs`
--  516  `Projectiles/LinearPulse.cs`
--  484  `Traits/MindController.cs`
--  451  `Traits/BotModules/Squads/States/NavyStatesCA.cs`
--  436  `Traits/Attachable.cs`
--  340  `Traits/BotModules/HarvesterBotModuleCA.cs`
--  258  `Traits/BotModules/Squads/States/AirStatesCA.cs`
--  256  `Traits/PortableChronoCA.cs`
--  226  `Traits/BotModules/Squads/States/StateBaseCA.cs`
--  219  `Traits/TargetedAttackAbility.cs`
--  212  `Traits/AttachableTo.cs`
--  204  `Traits/BotModules/Squads/SquadCA.cs`
--  199  `Traits/MindControllable.cs`
--  179  `Widgets/ProductionTabsCAWidget.cs`
--  168  `Traits/MadTankCA.cs`
--  144  `AIUtils.cs`
+### Every missing file
 
-_Informational: this audit never fails. Adopting upstream CA code is a maintainer decision — see `docs/design/UPSTREAM_MODS.md`._
+- `OpenRA.Mods.CA/Activities/AttackFrontalFollowActivity.cs`
+- `OpenRA.Mods.CA/Activities/BallisticMissileFly.cs`
+- `OpenRA.Mods.CA/Activities/ChronoResourceTeleport.cs`
+- `OpenRA.Mods.CA/Activities/ConvertActor.cs`
+- `OpenRA.Mods.CA/Activities/DeployForGrantedConditionTurreted.cs`
+- `OpenRA.Mods.CA/Activities/DiveApproach.cs`
+- `OpenRA.Mods.CA/Activities/EnterAirstrikeMaster.cs`
+- `OpenRA.Mods.CA/Activities/EnterCarrierMaster.cs`
+- `OpenRA.Mods.CA/Activities/EnterTeleportNetwork.cs`
+- `OpenRA.Mods.CA/Activities/FallDown.cs`
+- `OpenRA.Mods.CA/Activities/MassRideTransport.cs`
+- `OpenRA.Mods.CA/Activities/ParadropCargo.cs`
+- `OpenRA.Mods.CA/Activities/ProductionAirdropDeliver.cs`
+- `OpenRA.Mods.CA/Activities/SpawnActor.cs`
+- `OpenRA.Mods.CA/Activities/TargetedLeap.cs`
+- `OpenRA.Mods.CA/Activities/Upgrade.cs`
+- `OpenRA.Mods.CA/Effects/Countdown.cs`
+- `OpenRA.Mods.CA/Effects/DistortionHaloEffect.cs`
+- `OpenRA.Mods.CA/Effects/FlashTargetCA.cs`
+- `OpenRA.Mods.CA/Effects/GPSRadarDotEffect.cs`
+- `OpenRA.Mods.CA/Effects/GpsSatelliteCA.cs`
+- `OpenRA.Mods.CA/Effects/MultiWeaponImpactEffect.cs`
+- `OpenRA.Mods.CA/Effects/SatelliteLaunchCA.cs`
+- `OpenRA.Mods.CA/Effects/SmokeParticle.cs`
+- `OpenRA.Mods.CA/Graphics/ArcRenderable.cs`
+- `OpenRA.Mods.CA/Graphics/CapsuleAnnotationRenderable.cs`
+- `OpenRA.Mods.CA/Graphics/DistortionHaloRenderable.cs`
+- `OpenRA.Mods.CA/Graphics/ElectricBoltRenderable.cs`
+- `OpenRA.Mods.CA/Graphics/KKNDLaserRenderable.cs`
+- `OpenRA.Mods.CA/Graphics/RadBeamRenderable.cs`
+- `OpenRA.Mods.CA/Graphics/RailgunHelixRenderableCA.cs`
+- `OpenRA.Mods.CA/Graphics/TeslaZapRenderableCA.cs`
+- `OpenRA.Mods.CA/Graphics/TintedCell.cs`
+- `OpenRA.Mods.CA/Graphics/UIModifyableSpriteRenderable.cs`
+- `OpenRA.Mods.CA/LoadScreens/ImageLoadScreen.cs`
+- `OpenRA.Mods.CA/Orders/ConvertibleOrderTargeter.cs`
+- `OpenRA.Mods.CA/Orders/MassEnterCargoOrderTargeter.cs`
+- `OpenRA.Mods.CA/Orders/ShootableBallisticMissileMoveOrderTargeter.cs`
+- `OpenRA.Mods.CA/Orders/UpgradeOrderGenerator.cs`
+- `OpenRA.Mods.CA/Projectiles/ArcLaserZap.cs`
+- `OpenRA.Mods.CA/Projectiles/AreaBeamCA.cs`
+- `OpenRA.Mods.CA/Projectiles/AthenaProjectile.cs`
+- `OpenRA.Mods.CA/Projectiles/BulletCA.cs`
+- `OpenRA.Mods.CA/Projectiles/ElectricBolt.cs`
+- `OpenRA.Mods.CA/Projectiles/InstantExplode.cs`
+- `OpenRA.Mods.CA/Projectiles/KKNDLaser.cs`
+- `OpenRA.Mods.CA/Projectiles/MeteorStrike.cs`
+- `OpenRA.Mods.CA/Projectiles/MissileCA.cs`
+- `OpenRA.Mods.CA/Projectiles/ProjectileHusk.cs`
+- `OpenRA.Mods.CA/Projectiles/RadBeam.cs`
+- `OpenRA.Mods.CA/Projectiles/RailgunCA.cs`
+- `OpenRA.Mods.CA/Projectiles/TeslaZapCA.cs`
+- `OpenRA.Mods.CA/Scripting/ActorCAGlobal.cs`
+- `OpenRA.Mods.CA/Scripting/AirstrikeCAProperties.cs`
+- `OpenRA.Mods.CA/Scripting/BuildingProperties.cs`
+- `OpenRA.Mods.CA/Scripting/GrantChargingConditionProperties.cs`
+- `OpenRA.Mods.CA/Scripting/GrantConditionOnDeployProperties.cs`
+- `OpenRA.Mods.CA/Scripting/MadTankCAProperties.cs`
+- `OpenRA.Mods.CA/Scripting/MediaCAGlobal.cs`
+- `OpenRA.Mods.CA/Scripting/MobileCAProperties.cs`
+- `OpenRA.Mods.CA/Scripting/PlayerCAProperties.cs`
+- `OpenRA.Mods.CA/Scripting/PortableChronoCAProperties.cs`
+- `OpenRA.Mods.CA/Scripting/ScriptTriggersCA.cs`
+- `OpenRA.Mods.CA/Scripting/ShieldedProperties.cs`
+- `OpenRA.Mods.CA/Scripting/TargetableCAProperties.cs`
+- `OpenRA.Mods.CA/Scripting/TargetedLeapAbilityProperties.cs`
+- `OpenRA.Mods.CA/Scripting/TriggerCAGlobal.cs`
+- `OpenRA.Mods.CA/Scripting/UtilsCAGlobal.cs`
+- `OpenRA.Mods.CA/SpriteLoaders/R8Loader.cs`
+- `OpenRA.Mods.CA/Traits/AddsToReclaimableValue.cs`
+- `OpenRA.Mods.CA/Traits/AdvancesTimeline.cs`
+- `OpenRA.Mods.CA/Traits/Air/FallsDownAndTransforms.cs`
+- `OpenRA.Mods.CA/Traits/Air/Interceptor.cs`
+- `OpenRA.Mods.CA/Traits/AirstrikeMaster.cs`
+- `OpenRA.Mods.CA/Traits/AirstrikeSlave.cs`
+- `OpenRA.Mods.CA/Traits/ArmamentBurstCounter.cs`
+- `OpenRA.Mods.CA/Traits/Attack/AttackFollowFrontal.cs`
+- `OpenRA.Mods.CA/Traits/Attack/AttackOpenTopped.cs`
+- `OpenRA.Mods.CA/Traits/Attack/AttackPrism.cs`
+- `OpenRA.Mods.CA/Traits/Attack/IgnoreOutOfRangeAttackOrders.cs`
+- `OpenRA.Mods.CA/Traits/AutoDeployer.cs`
+- `OpenRA.Mods.CA/Traits/AutoGuard.cs`
+- `OpenRA.Mods.CA/Traits/BallisticMissile.cs`
+- `OpenRA.Mods.CA/Traits/Berserkable.cs`
+- `OpenRA.Mods.CA/Traits/BotModules/MCVManagerBotModuleCA.cs`
+- `OpenRA.Mods.CA/Traits/BotModules/PowerDownBotModuleCA.cs`
+- `OpenRA.Mods.CA/Traits/CancelActivityOnPickup.cs`
+- `OpenRA.Mods.CA/Traits/CargoBlocked.cs`
+- `OpenRA.Mods.CA/Traits/CargoCloner.cs`
+- `OpenRA.Mods.CA/Traits/CarrierMaster.cs`
+- `OpenRA.Mods.CA/Traits/CarrierSlave.cs`
+- `OpenRA.Mods.CA/Traits/ChronoResourceDelivery.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/DummyConditionConsumer.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/DummyConditionGranter.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionIfOwnerIsNeutral.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnActivity.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnActorTypes.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnCapture.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnDamageStateCA.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnDeployTurreted.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnEnemiesNearby.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnLobbyOption.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnNonPlayableOwner.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnPlayerFunds.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnResupply.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionOnResupplying.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionToAttached.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionToSpawnerSlaves.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantConditionWhileProducing.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantExternalConditionToOwner.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantPeriodicCondition.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantTimedCondition.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantTimedConditionOnDeploy.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/GrantTimedConditionOnPointDefenseHit.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/ParachuteCargoOnCondition.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/ProximityExternalConditionCA.cs`
+- `OpenRA.Mods.CA/Traits/Conditions/TransformOnCondition.cs`
+- `OpenRA.Mods.CA/Traits/Convertible.cs`
+- `OpenRA.Mods.CA/Traits/ConvertsResources.cs`
+- `OpenRA.Mods.CA/Traits/CrateCA.cs`
+- `OpenRA.Mods.CA/Traits/CreateProxyActorForAllies.cs`
+- `OpenRA.Mods.CA/Traits/DamagedByTerrainCA.cs`
+- `OpenRA.Mods.CA/Traits/DamagedByTintedCells.cs`
+- `OpenRA.Mods.CA/Traits/DelayedWeaponAttachable.cs`
+- `OpenRA.Mods.CA/Traits/DelayedWeaponDetector.cs`
+- `OpenRA.Mods.CA/Traits/DelayedWeaponTrigger.cs`
+- `OpenRA.Mods.CA/Traits/EjectOnTransform.cs`
+- `OpenRA.Mods.CA/Traits/EncyclopediaExtras.cs`
+- `OpenRA.Mods.CA/Traits/FreeActorCA.cs`
+- `OpenRA.Mods.CA/Traits/FrozenUnderFogUpdatedByGpsRadar.cs`
+- `OpenRA.Mods.CA/Traits/GPSRadarDot.cs`
+- `OpenRA.Mods.CA/Traits/GiveCashOnCaptureCA.cs`
+- `OpenRA.Mods.CA/Traits/GivesBountyCA.cs`
+- `OpenRA.Mods.CA/Traits/GivesExperienceCA.cs`
+- `OpenRA.Mods.CA/Traits/GivesPlayerExperienceOnCapture.cs`
+- `OpenRA.Mods.CA/Traits/GpsRadarWatcher.cs`
+- `OpenRA.Mods.CA/Traits/ImmobileMultiCell.cs`
+- `OpenRA.Mods.CA/Traits/ImmobilePositionable.cs`
+- `OpenRA.Mods.CA/Traits/Infiltration/InfiltrateForTimedCondition.cs`
+- `OpenRA.Mods.CA/Traits/Infiltration/InfiltrateToCreateProxyActor.cs`
+- `OpenRA.Mods.CA/Traits/InheritsExperienceLevelOfMaster.cs`
+- `OpenRA.Mods.CA/Traits/InitiallyHunts.cs`
+- `OpenRA.Mods.CA/Traits/LaysMinefield.cs`
+- `OpenRA.Mods.CA/Traits/MissileSpawnerSlave.cs`
+- `OpenRA.Mods.CA/Traits/Modifiers/WithColoredOverlayCA.cs`
+- `OpenRA.Mods.CA/Traits/Multipliers/FlatHealthDamageMultiplier.cs`
+- `OpenRA.Mods.CA/Traits/Multipliers/HealthCapDamageMultiplier.cs`
+- `OpenRA.Mods.CA/Traits/Multipliers/SeedsResourceMultiplier.cs`
+- `OpenRA.Mods.CA/Traits/Multipliers/SpeedCapSpeedMultiplier.cs`
+- `OpenRA.Mods.CA/Traits/Multipliers/ValueScalingFirepowerMultiplier.cs`
+- `OpenRA.Mods.CA/Traits/NotificationOnDamage.cs`
+- `OpenRA.Mods.CA/Traits/PaletteEffects/WeatherPaletteEffect.cs`
+- `OpenRA.Mods.CA/Traits/Palettes/EncyclopediaColorPalette.cs`
+- `OpenRA.Mods.CA/Traits/Palettes/OverlayColorPickerPalette.cs`
+- `OpenRA.Mods.CA/Traits/PassengerBlocked.cs`
+- `OpenRA.Mods.CA/Traits/PeriodicExplosion.cs`
+- `OpenRA.Mods.CA/Traits/PeriodicExplosionOnSlaves.cs`
+- `OpenRA.Mods.CA/Traits/Player/AutoDeployManager.cs`
+- `OpenRA.Mods.CA/Traits/Player/CampaignProgressTracker.cs`
+- `OpenRA.Mods.CA/Traits/Player/ClassicProductionQueueCA.cs`
+- `OpenRA.Mods.CA/Traits/Player/NotificationManager.cs`
+- `OpenRA.Mods.CA/Traits/Player/PlayerBountyPool.cs`
+- `OpenRA.Mods.CA/Traits/Player/PlayerConnectionStatus.cs`
+- `OpenRA.Mods.CA/Traits/Player/PlayerExperienceLevels.cs`
+- `OpenRA.Mods.CA/Traits/Player/ProvidesPrerequisiteIfAlliesExist.cs`
+- `OpenRA.Mods.CA/Traits/Player/ProvidesPrerequisitesOnCount.cs`
+- `OpenRA.Mods.CA/Traits/Player/ProvidesPrerequisitesOnTimeline.cs`
+- `OpenRA.Mods.CA/Traits/Player/ReclaimableExperiencePool.cs`
+- `OpenRA.Mods.CA/Traits/Player/ReclaimableValueProducer.cs`
+- `OpenRA.Mods.CA/Traits/Player/RevealedFactionsManager.cs`
+- `OpenRA.Mods.CA/Traits/Player/StackableSupportPowerManager.cs`
+- `OpenRA.Mods.CA/Traits/Player/SupportPowerInstanceManager.cs`
+- `OpenRA.Mods.CA/Traits/Player/TeleportNetworkManager.cs`
+- `OpenRA.Mods.CA/Traits/Player/UpgradesManager.cs`
+- `OpenRA.Mods.CA/Traits/PointDefense.cs`
+- `OpenRA.Mods.CA/Traits/ProvidesUpgrade.cs`
+- `OpenRA.Mods.CA/Traits/RangedGpsRadarProvider.cs`
+- `OpenRA.Mods.CA/Traits/RearmsToUpgrade.cs`
+- `OpenRA.Mods.CA/Traits/ReclaimsExperience.cs`
+- `OpenRA.Mods.CA/Traits/Render/RenderLine.cs`
+- `OpenRA.Mods.CA/Traits/Render/TimedConditionBarCA.cs`
+- `OpenRA.Mods.CA/Traits/Render/TriggersProductionDoorOverlay.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithDistortionHalo.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithDockingAnimationCA.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithEnterExitWorldOverlay.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithFlashEffect.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithHarvestAnimationCA.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithLinkedRangeCirclePreview.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithMindControlArc.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithPreviewDecoration.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithPrismChargeAnimation.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithPrismLinkVisualization.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithRadiatingCircle.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithSpawnedActorIdentifier.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithSpawnerMasterPipsDecoration.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithTeleportNetworkLinkVisualization.cs`
+- `OpenRA.Mods.CA/Traits/Render/WithUnitConverterCountDecoration.cs`
+- `OpenRA.Mods.CA/Traits/ReturnsToBaseOnAmmoDepleted.cs`
+- `OpenRA.Mods.CA/Traits/RevealsFaction.cs`
+- `OpenRA.Mods.CA/Traits/ScatterOnExitCargo.cs`
+- `OpenRA.Mods.CA/Traits/SeedsResourceCA.cs`
+- `OpenRA.Mods.CA/Traits/Shielded.cs`
+- `OpenRA.Mods.CA/Traits/Sound/SoundOnDamageTransitionCA.cs`
+- `OpenRA.Mods.CA/Traits/Sound/WithCargoSounds.cs`
+- `OpenRA.Mods.CA/Traits/SpawnActorAbility.cs`
+- `OpenRA.Mods.CA/Traits/SpawnActorOnDeathCA.cs`
+- `OpenRA.Mods.CA/Traits/SpawnActorOnMindControlled.cs`
+- `OpenRA.Mods.CA/Traits/SpawnActorsOnSellCA.cs`
+- `OpenRA.Mods.CA/Traits/SpawnHuskEffectOnDeath.cs`
+- `OpenRA.Mods.CA/Traits/SpawnerMasterBase.cs`
+- `OpenRA.Mods.CA/Traits/SpawnerSlaveBase.cs`
+- `OpenRA.Mods.CA/Traits/SquadPathOverlay.cs`
+- `OpenRA.Mods.CA/Traits/StoresPlayerResourcesCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/AirReinforcementsPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/AirstrikePowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/AttackOrderPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/CashHackPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/ChronoshiftPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/ClassicAirstrikePower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/DetonateWeaponPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/DropPodsPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/DummyGpsPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/GpsRadarProvider.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/GrantPrerequisiteChargeDrainPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/GrantPrerequisiteResourceDrainPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/InfiltratePower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/InterceptorPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/MeteorPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/MissileStrikePower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/ParatroopersPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/ProduceActorPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/RemoveOnPowerActivation.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/RevealActorsPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/SelectDirectionalTargetWithCircle.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/SendCashPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/SpawnActorPowerCA.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/StackableDirectionalSupportPower.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/StackableSupportPowerInstance.cs`
+- `OpenRA.Mods.CA/Traits/SupportPowers/SupportPowerInstanceCA.cs`
+- `OpenRA.Mods.CA/Traits/TargetSpecificOrderVoice.cs`
+- `OpenRA.Mods.CA/Traits/TargetedDiveAbility.cs`
+- `OpenRA.Mods.CA/Traits/TargetedLeapAbility.cs`
+- `OpenRA.Mods.CA/Traits/TargetedMovementAbility.cs`
+- `OpenRA.Mods.CA/Traits/TeleportNetwork.cs`
+- `OpenRA.Mods.CA/Traits/TeleportNetworkPrimaryExit.cs`
+- `OpenRA.Mods.CA/Traits/TeleportNetworkTransportable.cs`
+- `OpenRA.Mods.CA/Traits/TransferResourcesOnTransform.cs`
+- `OpenRA.Mods.CA/Traits/TurretedFloating.cs`
+- `OpenRA.Mods.CA/Traits/UndeployOnStop.cs`
+- `OpenRA.Mods.CA/Traits/UnitConverter.cs`
+- `OpenRA.Mods.CA/Traits/UpdatesSupportPowerTimer.cs`
+- `OpenRA.Mods.CA/Traits/Upgradeable.cs`
+- `OpenRA.Mods.CA/Traits/WaitsForTurretAlignmentOnUndeploy.cs`
+- `OpenRA.Mods.CA/Traits/WarheadDebugOverlayCA.cs`
+- `OpenRA.Mods.CA/Traits/WithEjectedCasings.cs`
+- `OpenRA.Mods.CA/Traits/WithReloadBar.cs`
+- `OpenRA.Mods.CA/Traits/World/AllyProxyFromSelection.cs`
+- `OpenRA.Mods.CA/Traits/World/LobbyMissionInfo.cs`
+- `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`
+- `OpenRA.Mods.CA/Warheads/AttachActorWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/AttachDelayedWeaponWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/ChronoFlashEffectWarhead .cs`
+- `OpenRA.Mods.CA/Warheads/CreateDistortionHaloWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/CreateFacingEffectWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/CreateTintedCellsWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/DetatchDelayedWeaponWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/FireClusterCAWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/FireFragmentWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/FireRadiusWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/FireShrapnelWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/FlashTargetWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/GrantExternalConditionCAWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/HealthPercentageSpreadDamageWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/InfiltrateWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/RevealShroudWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/SendAirstrikeWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/SpawnActorWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/SpawnBuildingWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/SpawnMultiWeaponImpactWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/SpawnRandomActorWarhead.cs`
+- `OpenRA.Mods.CA/Warheads/WarheadAS.cs`
+- `OpenRA.Mods.CA/Warheads/WarpPercentDamageWarhead.cs`
+- `OpenRA.Mods.CA/Widgets/ActorPreviewCAWidget.cs`
+- `OpenRA.Mods.CA/Widgets/ColoredRectangleWidget.cs`
+- `OpenRA.Mods.CA/Widgets/CroppableImageWidget.cs`
+- `OpenRA.Mods.CA/Widgets/ImageWithAlphaWidget.cs`
+- `OpenRA.Mods.CA/Widgets/LinkableLabelWidget.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/EncyclopediaLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/AlliedInfluenceIndicatorLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/ArmyTooltipLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/GDIStrategyIndicatorLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/GameInfoLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/GameInfoStatsLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/IngameMenuLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/NextMissionInfoLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/NodCovenantIndicatorLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/ObserverStatsLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/PlayerExperienceLevelIndicatorLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/ProductionTooltipLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/ReplayControlBarLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/ScrinAllegianceIndicatorLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/SelectionTooltipLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/SupportPowerBinLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/SupportPowerTooltipLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Ingame/UpgradeOrderButtonLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/Lobby/LobbyMissionInfoLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/MainMenuLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/MenuNotificationsLogic.cs`
+- `OpenRA.Mods.CA/Widgets/Logic/MissionBrowserLogicCA.cs`
+- `OpenRA.Mods.CA/Widgets/ObserverSupportPowerIconsCAWidget.cs`
+- `OpenRA.Mods.CA/Widgets/ObserverUpgradeIconsWidget.cs`
+- `OpenRA.Mods.CA/Widgets/SupportPowersScrollableWidget.cs`
+- `OpenRA.Mods.CA/Widgets/WidgetUtilsCA.cs`
+
+_Informational: this audit never fails. Act on it with `tools/audit/ca_vendor_sync.py`; bot modules are protected by `tools/audit/audit_ai_frankenstein.py`. See `docs/design/UPSTREAM_MODS.md`._

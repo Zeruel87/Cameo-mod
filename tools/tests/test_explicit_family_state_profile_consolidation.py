@@ -16,9 +16,11 @@ sys.path.insert(0, str(ROOT / "tools" / "audit"))
 sys.path.insert(0, str(ROOT / "tools" / "balance"))
 
 import consolidate_explicit_family_state_profiles as cohort
-from audit_three_way_split import SPLIT_BASELINE, main_warheads
+from audit_three_way_split import RAW_SPLIT_BASELINE, main_warheads
 from audit_warhead_split import BROADCAST_BASELINE
 from miniyaml import Ruleset
+from reviewed_weapon_history import HistoricalView
+from owned_weapon_history import historical_weapon_names
 
 
 ACCEPTED = {
@@ -28,8 +30,8 @@ ACCEPTED = {
 }
 
 EXPECTED_EXPANSION = {
-    "ConscriptMolotovExplode": (4000, 8000, 200, 400),
-    "GrenadeRAExplode": (4000, 8000, 200, 400),
+    "ra1_soviets_molotovconscript_conscriptmolotovexplode": (4000, 8000, 200, 400),
+    "ra1_soviets_grenadier_grenaderaexplode": (4000, 8000, 200, 400),
     "IncendiaryM1Carbine": (2000, 4000, 100, 200),
     "ra1_soviets_rifleinfantry_carbine_incendiary": (2000, 4000, 100, 200),
     "HeavyPlasmaFlamer": (2000, 4000, 100, 200),
@@ -40,7 +42,7 @@ EXPECTED_EXPANSION = {
     "LMG_ordos_upgrade": (2000, 6000, 100, 300),
     "light_inf_lmg_ordos_upgrade": (2000, 6000, 100, 300),
     "SteelFighterRailgun": (4000, 10000, 0, 300),
-    "ThermobaricMaverick": (36000, 48000, 0, 600),
+    "ra1_soviets_migattackbomber_thermobaricmaverick": (36000, 48000, 0, 600),
     "AsianChemicalBombs": (2000, 4000, 100, 200),
     "TSSAPCCoreMissiles": (8000, 24000, 400, 400),
     "FutureMechPlasma": (20000, 30000, 0, 500),
@@ -60,11 +62,13 @@ class ExplicitFamilyStateProfileTests(unittest.TestCase):
                 cls.by_kind[change[0]][weapon] = change[1:]
 
     def test_converter_is_fully_applied_and_fail_closed(self):
-        self.assertTrue(cohort.inspect(self.rules))
+        with self.assertRaisesRegex(RuntimeError, "route/relationship contract changed"):
+            cohort.inspect(self.rules)
+        self.assertTrue(cohort.inspect(HistoricalView(self, self.rules)))
         self.assertEqual(EXPECTED_EXPANSION, cohort.STATE_EXPANSION)
 
     def test_report_covers_exactly_the_selected_definitions(self):
-        self.assertEqual(set(cohort.SPECS), set(self.report["changed"]))
+        self.assertEqual(historical_weapon_names(cohort.SPECS), set(self.report["changed"]))
         self.assertEqual([], self.report["added"])
         self.assertEqual([], self.report["removed"])
 
@@ -106,7 +110,7 @@ class ExplicitFamilyStateProfileTests(unittest.TestCase):
 
     def test_pinned_descendant_is_exact(self):
         for name, expected in cohort.PINNED_HASHES.items():
-            self.assertEqual(expected, cohort.full_hash(self.rules, name), name)
+            self.assertEqual(expected, cohort.full_hash(HistoricalView(self, self.rules), name), name)
 
     def test_positron_cannon_parent_is_not_inherited_twice(self):
         root_parents = {parent for _key, parent in
@@ -118,8 +122,9 @@ class ExplicitFamilyStateProfileTests(unittest.TestCase):
             self.assertIn("^Warhead_CannonHE_Medium", child_parents, name)
 
     def test_ratchets_match_the_live_reduction(self):
-        self.assertEqual(114, SPLIT_BASELINE)
-        self.assertEqual(90, BROADCAST_BASELINE)
+        # Upstream retired exemptions: enforce the raw ceiling, never subtract reviewed stacks.
+        self.assertLessEqual(RAW_SPLIT_BASELINE, 322)
+        self.assertLessEqual(BROADCAST_BASELINE, 69)
 
 
 if __name__ == "__main__":

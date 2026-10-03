@@ -26,6 +26,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools" / "audit"))
 import environment  # noqa: E402  (must follow the sys.path insert)
 
+# Every other argument is passed through to each audit, so `--help` used to START the whole suite and
+# rewrite docs/audit/latest/ (2026-09-30). Answer it before anything runs.
+if "-h" in sys.argv[1:] or "--help" in sys.argv[1:]:
+    print(__doc__)
+    sys.exit(0)
+
 # Same guard as run_all.sh: docs/audit/latest/ is TRACKED evidence and several audits
 # read engine/ C# or full git history. Without them those audits report LESS and still
 # say PASS, so regenerating from an incomplete tree silently deletes real findings.

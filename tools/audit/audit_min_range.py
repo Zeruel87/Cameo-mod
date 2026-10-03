@@ -44,6 +44,12 @@ def _is_exempt(name: str, range_val: int, min_val: int, weapons: set[str]) -> bo
         return True
     if range_val == 4444 and min_val == 888:
         return True
+    # Ruling 6 (Claude-Local, 2026-09-06): DebrisMissile is a death-throe
+    # weapon — its only consumer is harkonnen_missiletank's
+    # FireProjectilesOnDeath@missiles, so no actor ever aims it and a
+    # MinRange can never gate an attack order.
+    if "debrismissile" in lname:
+        return True
     # elite / energized / E-variant weapons inherit base MinRange
     if "_elite" in lname or ".elite" in lname or "_energized" in lname:
         return True

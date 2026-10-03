@@ -11,6 +11,12 @@ Generated per-faction RAW-STAT mirrors of the live rules
   exist only in the generated workbook's formula cells.
 - Every value carries provenance: `file#Trait.Field`, or `inherited`
   when a template supplies it.
+- `self_heal_step` is the canonical `ChangesHealth@SelfHealing.Step` value,
+  falling back to a bare `ChangesHealth.Step` for actors without a named
+  base-heal instance. If both instances exist, `self_heal_step_other` preserves
+  the bare layer; other named instances are ability/condition effects and stay
+  outside the base-heal pair. `repairable_hp_per_step` records
+  `Repairable.HpPerStep`, and `turn_speed_air` records `Aircraft.TurnSpeed`.
 - `design.*` fields (unit_class / special / tech_tier / class_anchor)
   are design judgments, not yaml facts — they are seeded from the
   legacy workbook in Phase 3 and live here afterwards.

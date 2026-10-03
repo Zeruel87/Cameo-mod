@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.Common.Traits;
@@ -16,20 +17,15 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Cameo.Traits
 {
 	[TraitLocation(SystemActors.Player)]
-	[Desc("Allows the AI to have a single plug type.", "Plugs are all spawned.", "Use multiple variants of this trait to support more kind.")]
+	[Desc("Allows the AI to spawn plugs on pluggable buildings.",
+		"Each entry maps one plug actor to the host actor names it may be spawned on.",
+		"One module covers every plug kind — the upstream AS module needed one variant per plug.")]
 	public class PlugSpawnerBotModuleCAInfo : ConditionalTraitInfo
 	{
-		[ActorReference(typeof(PlugInfo))]
-		[FieldLoader.Require]
-		[Desc("What plug the AI can spawn.")]
-		public readonly string Plug = null;
+		[Desc("Plug actor name -> comma-separated host actor names the AI may spawn it on.")]
+		public readonly Dictionary<string, string> Plugs = new();
 
-		[ActorReference(typeof(PluggableInfo))]
-		[FieldLoader.Require]
-		[Desc("What actors the AI can spawn this plug on.")]
-		public readonly HashSet<string> Pluggables = new() { };
-
-		[Desc("Plug spawning interval.")]
+		[Desc("Plug spawning interval per plug type.")]
 		public readonly int Interval = 50;
 
 		[Desc("Should costs of the plug be ignored?")]
@@ -44,7 +40,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		PlayerResources playerResources;
 		TechTree techTree;
 
-		string plugType;
+		// plugActor -> (plug type, host name set, prerequisites)
+		readonly Dictionary<string, (string Type, HashSet<string> Hosts, string[] Prerequisites)> plugs = new();
 		int ticks;
 
 		public PlugSpawnerBotModuleCA(Actor self, PlugSpawnerBotModuleCAInfo info)
@@ -56,11 +53,34 @@ namespace OpenRA.Mods.Cameo.Traits
 
 		protected override void Created(Actor self)
 		{
-			plugType = world.Map.Rules.Actors[Info.Plug].TraitInfo<PlugInfo>().Type;
 			playerResources = self.Owner.PlayerActor.Trait<PlayerResources>();
-			techTree = self.Owner.PlayerActor.Trait<TechTree>();
+			techTree = self.Owner.PlayerActor.TraitOrDefault<TechTree>();
+
+			foreach (var kv in Info.Plugs)
+			{
+				if (!world.Map.Rules.Actors.TryGetValue(kv.Key, out var actorInfo))
+					continue;
+
+				var plugInfo = actorInfo.TraitInfoOrDefault<PlugInfo>();
+				if (plugInfo == null)
+					continue;
+
+				var hosts = kv.Value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+					.ToHashSet();
+				var prereqs = actorInfo.TraitInfos<BuildableInfo>()
+					.SelectMany(b => b.Prerequisites)
+					.Distinct()
+					.ToArray();
+
+				plugs[kv.Key] = (plugInfo.Type, hosts, prereqs);
+			}
 
 			base.Created(self);
+		}
+
+		bool PrerequisitesMet(string[] prereqs)
+		{
+			return prereqs.Length == 0 || techTree == null || techTree.HasPrerequisites(prereqs);
 		}
 
 		void IBotTick.BotTick(IBot bot)
@@ -70,25 +90,32 @@ namespace OpenRA.Mods.Cameo.Traits
 
 			var player = bot.Player;
 
-			var targetActors = world.Actors.Where(x => x.IsInWorld && !x.IsDead && x.Owner == player && Info.Pluggables.Contains(x.Info.Name));
-
-			if (!targetActors.Any())
-				return;
-
-			var target = targetActors
-				.Select(x => (x, x.TraitsImplementing<Pluggable>().FirstOrDefault(p => p.AcceptsPlug(plugType))))
-				.FirstOrDefault(x => x.Item2 != null);
-
-			if (target.x != null)
+			foreach (var (plugActor, plug) in plugs)
 			{
-				var order = new Order("PlacePlugAI", player.PlayerActor, Target.FromActor(target.x), false)
-				{
-					TargetString = Info.Plug,
-					ExtraData = player.PlayerActor.ActorID,
-					SuppressVisualFeedback = true
-				};
+				// Never queue a plug the tech tree still gates off — plugs that bypass
+				// Buildable prerequisites would skip the faction's tech path entirely.
+				if (!PrerequisitesMet(plug.Prerequisites))
+					continue;
 
-				world.IssueOrder(order);
+				var targetActors = world.Actors.Where(x => x.IsInWorld && !x.IsDead && x.Owner == player && plug.Hosts.Contains(x.Info.Name));
+				if (!targetActors.Any())
+					continue;
+
+				var target = targetActors
+					.Select(x => (x, x.TraitsImplementing<Pluggable>().FirstOrDefault(p => p.AcceptsPlug(plug.Type))))
+					.FirstOrDefault(x => x.Item2 != null);
+
+				if (target.x != null)
+				{
+					var order = new Order("PlacePlugAI", player.PlayerActor, Target.FromActor(target.x), false)
+					{
+						TargetString = plugActor,
+						ExtraData = player.PlayerActor.ActorID,
+						SuppressVisualFeedback = true
+					};
+
+					bot.QueueOrder(order);
+				}
 			}
 
 			ticks = Info.Interval;
@@ -104,7 +131,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				return;
 
 			var ts = order.TargetString;
-			if (ts != Info.Plug)
+			if (!plugs.TryGetValue(ts, out var plug))
 				return;
 
 			self.World.AddFrameEndTask(w =>
@@ -115,7 +142,7 @@ namespace OpenRA.Mods.Cameo.Traits
 				if (playerActor == null || playerActor.IsDead || targetActor == null || targetActor.IsDead)
 					return;
 
-				var actorInfo = self.World.Map.Rules.Actors[order.TargetString];
+				var actorInfo = self.World.Map.Rules.Actors[ts];
 
 				var faction = self.Owner.Faction.InternalName;
 				var buildingInfo = actorInfo.TraitInfo<BuildingInfo>();
@@ -133,6 +160,11 @@ namespace OpenRA.Mods.Cameo.Traits
 					.FirstOrDefault(p => p.AcceptsPlug(plugInfo.Type));
 
 				if (pluggable == null)
+					return;
+
+				// Re-check at resolve time: the tech state or slot may have changed
+				// while the order sat in the queue.
+				if (!PrerequisitesMet(plug.Prerequisites))
 					return;
 
 				var valued = actorInfo.TraitInfoOrDefault<ValuedInfo>();

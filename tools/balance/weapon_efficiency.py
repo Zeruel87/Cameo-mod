@@ -63,7 +63,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/audit"))
 sys.path.insert(0, str(ROOT / "tools/balance"))
 from miniyaml import Ruleset  # noqa: E402
+from formula import parse_int32  # noqa: E402
 import effective_damage as ed  # noqa: E402
+import effective_heaviness as eh  # noqa: E402
 import percentage_damage as pd  # noqa: E402
 import target_model as tm  # noqa: E402
 
@@ -235,6 +237,25 @@ def area_geometry_terms(node, fo, radii, density: float, sigma: float,
 def warhead_terms(node, wtype: str, sigma: float, is_direct_actor: bool = False):
     """(versus_factor, reliability, secondary, footprint) for one warhead node."""
     vs = pd.versus_table(node)
+    if wtype == "AreaDamage":
+        # Heaviness exists only on AreaDamage; the bell moves the mean Versus
+        # (K is NOT assumed invariant in h — Aedis 2026-09-10), geometry moves
+        # via the radius scale inside ed.falloff_and_radii. SHARED mode: one
+        # post-bell table (with the Shield coefficient scaled once) for BOTH
+        # halves; Legacy keeps the half's own anchors.
+        heaviness = eh.heaviness_of(node)
+        mode = eh.heaviness_mode_of(node)  # unknown/undefined value: fail clear
+        # THE SHARED PROFILE: nonnegative Damage / Scale / Shield coefficient and
+        # the load-time combined-fraction Int32 bound, mirrored from the C#.
+        eh.validate_shared_numeric(
+            mode, heaviness, vs,
+            parse_int32(node.get("Damage"), "Warhead.Damage"),
+            parse_int32(node.get("PercentageScale"),
+                        "Warhead.PercentageScale", 0) or None)
+        if mode == eh.MODE_SHARED:
+            vs = eh.shared_versus_profile(vs, heaviness)
+        else:
+            vs = eh.versus_profile(vs, heaviness)
     versus = tm.weighted_versus(vs)
     density = tm.effective_density(vs)
     fo = radii = None
@@ -340,7 +361,12 @@ def analyse(resolved, damage_total: float | None = None):
             # The family table may ask for a nominal Damage different from the template's
             # placeholder. Recompute the engine's basis-point rounding at that magnitude.
             modeled_damage = int(round(app["damage"] * damage_total / share_total))
-            continuous_units, runtime_units = pd.folded_units(modeled_damage, app["scale"])
+            if app.get("mode") == eh.MODE_SHARED:
+                continuous_units, runtime_units = pd.shared_folded_units(
+                    modeled_damage, app["scale"], app["heaviness"])
+            else:
+                continuous_units, runtime_units = pd.folded_units(
+                    modeled_damage, app["scale"])
             denominator = app["denominator"]
             continuous_hp = ref_hp * continuous_units / denominator
             runtime_hp = pd.runtime_percentage_hp(ref_hp, runtime_units, denominator)

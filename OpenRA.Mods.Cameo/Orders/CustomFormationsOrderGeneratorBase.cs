@@ -12,6 +12,7 @@ using OpenRA.Primitives;
 using OpenRA.Traits;
 using OpenRA.Widgets;
 using System.Collections;
+using System.Numerics;
 
 namespace OpenRA.Mods.Cameo.Orders
 {
@@ -196,7 +197,7 @@ namespace OpenRA.Mods.Cameo.Orders
 					}
 					else
 					{
-						LineOrderTileMarkerRenderableArray.Add(new SpriteRenderable(LineOrderTileMarkerSprite, pos, WVec.Zero, 0, LineOrderTileMarkerPalette, 1.0f, 0.75f, new float3(1.0f, 1.0f, 1.0f), TintModifiers.None, true, WAngle.Zero));
+						LineOrderTileMarkerRenderableArray.Add(new SpriteRenderable(LineOrderTileMarkerSprite, pos, WVec.Zero, 0, LineOrderTileMarkerPalette, 1.0f, 0.75f, new Vector3(1.0f, 1.0f, 1.0f), TintModifiers.None, true, WAngle.Zero));
 					}
 				}
 
@@ -221,7 +222,7 @@ namespace OpenRA.Mods.Cameo.Orders
 					}
 					else
 					{
-						LineOrderMarkerRenderableArray.Add(new SpriteRenderable(LineOrderMarkerSprite, pos, WVec.Zero, 0, LineOrderMarkerPalette, 1.0f, 0.75f, new float3(1.0f, 1.0f, 1.0f), TintModifiers.None, true, WAngle.Zero));
+						LineOrderMarkerRenderableArray.Add(new SpriteRenderable(LineOrderMarkerSprite, pos, WVec.Zero, 0, LineOrderMarkerPalette, 1.0f, 0.75f, new Vector3(1.0f, 1.0f, 1.0f), TintModifiers.None, true, WAngle.Zero));
 					}
 				}
 

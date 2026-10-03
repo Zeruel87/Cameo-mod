@@ -62,6 +62,7 @@ options-observer-stats =
     .economy-damage = Economy Damage
     .earnings-graph = Earnings (graph)
     .army-graph = Army (graph)
+    .combat-effectiveness-graph = Combat Value (graph)
     .team-army-graph = Team Army (graph)
     .team-earnings-graph = Team Earnings (graph)
 
@@ -145,6 +146,46 @@ label-armor-class =
     .Heavy = Heavy
     .Superheavy = Superheavy
     .Shield = Shield
+
+## Production tooltip — damage vs armour, derived from the warheads (ProductionTooltipCameoLogic)
+label-versus-header = Damage vs
+label-versus-armor-piercing = Armor Piercing
+label-versus-cannot-attack = cannot attack
+label-versus-targets = Targets: { $targets }
+label-versus-group-strong = • Strong vs. { $groups }
+label-versus-group-medium = • Medium vs. { $groups }
+label-versus-group-weak = • Weak vs. { $groups }
+label-versus-group-percent = { $group } ({ $percent }%)
+label-versus-group-cannot = { $group } ({ $reason })
+label-versus-group-infantry = Infantry
+label-versus-group-heroes = Heroes
+label-versus-group-vehicles = Vehicles
+label-versus-group-tanks = Tanks
+label-versus-group-ships = Ships
+label-versus-group-submarines = Submarines
+label-versus-group-buildings = Buildings
+label-versus-group-defenses = Defenses
+label-versus-group-aircraft = Aircraft
+label-versus-cannot-air = cannot attack air
+label-versus-cannot-water = cannot attack water
+label-versus-cannot-underwater = cannot attack underwater
+label-versus-cannot-ground = cannot attack ground
+label-versus-cannot-infantry = cannot attack infantry
+label-versus-cannot-vehicles = cannot attack vehicles
+label-versus-cannot-buildings = cannot attack buildings
+label-versus-infantry = Infantry
+label-versus-vehicles = Vehicles
+label-versus-buildings = Buildings
+label-versus-aircraft = Aircraft
+label-target-ground = Ground
+label-target-water = Water
+label-target-underwater = Underwater
+label-target-air = Air
+label-attribute-detector = • Detects stealth
+label-attribute-stealth = • Stealthed
+label-attribute-transport = • Carries { $count } passengers
+label-attribute-harvester = • Harvests resources
+label-attribute-shielded = • Shielded
 
 loadscreen-loading = Drag to set a formation for units when attack-moving$
    Access your Promotions tab through the star button on the sidebar$
@@ -321,6 +362,11 @@ bot_ai =
    .unbeatable = Unbeatable AI
    .cameogod = Cameo God AI
    .campaign = Campaign AI
+   .fransbot = Fransbot (Experimental)
+   .classic = Classic AI (Omniscient Reference)
+   .exploit_rush = Rush Exploiter (League)
+   .exploit_turtle = Turtle Exploiter (League)
+   .exploit_guerrilla = Guerrilla Exploiter (League)
 
 support-power-timer = { $player }'s { $support-power }: { $time }
 
@@ -631,3 +677,7 @@ notification-bot-personality-turtle = { $bot } is playing Turtle: heavy defence,
 notification-bot-personality-tech = { $bot } is playing Tech: slow start, teching up before committing forces.
 notification-bot-personality-expansion = { $bot } is playing Expansion: spreads out early and fights over resources.
 notification-bot-personality-steamroller = { $bot } is playing Steamroller: masses one enormous army before attacking.
+notification-bot-personality-guerrilla = { $bot } is playing Guerrilla: many small squads harassing a spread-out enemy's economy.
+checkbox-remaster-art-container =
+    .label = C&C Remastered HD Art (requires restart)
+    .tooltip = Render Tiberian Dawn terrain with C&C Remastered Collection HD artwork. Requires the Collection installed via Steam. Toggle this, then restart the game for it to take effect.

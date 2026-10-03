@@ -24,6 +24,10 @@ R1 — a hand-edited balance number: a commit that changes a balance field
        * a field inside a non-damage warhead — ``Range`` on a
          ``GrantExternalCondition`` is a condition radius and ``Spread`` on a
          ``CreateEffect`` is an art radius; neither is priced.
+     And a third kind is a move, not an edit (2026-09-06): a ``+field: value``
+     whose exact ``(field, value)`` pair was also REMOVED in the same commit is
+     a verbatim migration / W24 collapse, not a rebalance — see
+     ``priced_balance_fields``.
 R2 — a new ``tools/audit/audit_*.py`` that ``run_all.sh`` never invokes, so it
      silently never runs.
 R3 — provenance (CLAUDE.md rule 10). See ``SHARED_IDENTITY`` below for why only
@@ -54,8 +58,11 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 BALANCE_FIELD = re.compile(
-    r"^\+\s*(?:Damage|HP|Cost|Speed|Range|ROF|ReloadDelay|Spread|Burst|"
-    r"BurstDelays|BuildDuration|MinRange)\s*:", re.MULTILINE)
+    r"^\+(\s*(?:Damage|HP|Cost|Speed|Range|ROF|ReloadDelay|Spread|Burst|"
+    r"BurstDelays|BuildDuration|MinRange))\s*:\s*(.+?)\s*$", re.MULTILINE)
+REMOVED_FIELD = re.compile(
+    r"^-(\s*(?:Damage|HP|Cost|Speed|Range|ROF|ReloadDelay|Spread|Burst|"
+    r"BurstDelays|BuildDuration|MinRange))\s*:\s*(.+?)\s*$", re.MULTILINE)
 LEDGER_PREFIXES = ("docs/balance/", "docs/design/cameo_balance")
 TRAILER = re.compile(r"^Co-Authored-By:\s*(.+)$", re.MULTILINE | re.IGNORECASE)
 SEPARATOR = "\x1e"
@@ -116,11 +123,21 @@ def git(root: pathlib.Path, *args: str) -> str:
     return proc.stdout
 
 
-HUNK = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
+HUNK = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
 
 
 def indent_of(line: str) -> int:
     return len(line) - len(line.lstrip("\t "))
+
+
+def enclosing_node(lines: list[str], idx: int) -> str | None:
+    """The indent-0 key owning the line at ``idx`` (0-based), or None."""
+    for j in range(idx, -1, -1):
+        line = lines[j]
+        if line.strip() and not line.lstrip().startswith("#") \
+                and indent_of(line) == 0:
+            return line.strip().split(":", 1)[0]
+    return None
 
 
 def priced_context(lines: list[str], idx: int) -> bool:
@@ -148,30 +165,126 @@ def priced_context(lines: list[str], idx: int) -> bool:
     return True
 
 
-def priced_balance_fields(root: pathlib.Path, sha: str, files: list[str]) -> set[str]:
-    """Balance-field names this commit added in a context that HAS a ledger row."""
-    found: set[str] = set()
+def parent_node_pairs(root: pathlib.Path, sha: str,
+                      nodes: set[str]) -> dict[str, set[tuple[str, str]]]:
+    """For each node name, every ``(field, value)`` balance pair it carried at
+    ``sha^`` — one grep + one file read per node, not per line.
+
+    Staged pack migrations add the destination block in one commit and drop
+    the source in another, so the remove side cannot be found inside the same
+    diff — it lives in a different commit or still sits in the legacy file.
+    A priced ``+field: value`` whose enclosing node already existed at the
+    parent commit with that exact value is a verbatim move, not a rebalance.
+    """
+    pair_re = re.compile(
+        r"^\s*(Damage|HP|Cost|Speed|Range|ROF|ReloadDelay|Spread|Burst|"
+        r"BurstDelays|BuildDuration|MinRange)\s*:\s*(.+?)\s*$")
+    out: dict[str, set[tuple[str, str]]] = {n: set() for n in nodes}
+    if not nodes:
+        return out
+    # ONE grep per commit for every flagged node at once, then one file read
+    # per hit — a per-line lookup is hundreds of subprocess calls on this tree.
+    node_re = re.compile(rf"^({'|'.join(re.escape(n) for n in nodes)})\s*:")
+    hits = git(root, "grep", "-l", "-E",
+               f"^({'|'.join(re.escape(n) for n in nodes)}):", f"{sha}^",
+               "--", "mods/")
+    for path in hits.splitlines():
+        # `git grep <rev>` prefixes every hit with `<rev>:` — strip it for
+        # `git show <rev>:<path>`
+        path = path.split(":", 1)[1] if ":" in path else path
+        current = None
+        for line in git(root, "show", f"{sha}^:{path}").splitlines():
+            if line.strip() and indent_of(line) == 0:
+                m = node_re.match(line)
+                current = m.group(1) if m else None
+                continue
+            if current is not None:
+                m = pair_re.match(line)
+                if m:
+                    out[current].add((m.group(1), m.group(2)))
+    return out
+
+
+def priced_balance_fields(root: pathlib.Path, sha: str,
+                          files: list[str]) -> set[str]:
+    """Balance-field names this commit added in a context that HAS a ledger row.
+
+    A ``+field: value`` line is a balance edit ONLY when that exact
+    ``(field, value)`` pair was not also REMOVED in the same commit (2026-09-06).
+    A W24 collapse or a weapon migration re-emits the authored value verbatim:
+    ``-Damage: 10000`` out, ``+Damage: 10000`` back in at the same or a new
+    location. Nothing was rebalanced, so demanding a ledger row is a false
+    positive — those are the R1 hits that trained people to ignore this audit.
+    Value pairs are matched across the commit's whole yaml diff because the
+    canonical moves (fold into a ``^Warhead_*`` template, migrate between pack
+    files) cross file and node boundaries.
+
+    Crucially this does NOT mute a real value change: the 2026-09-06 SUM
+    collapse (``-Damage: 2000`` x2 -> ``+Damage: 4000``) leaves ``(Damage,
+    4000)`` with no removed twin and is still reported — which is correct,
+    because an un-ledgered value change is exactly what R1 exists to catch.
+    Removed-side context is checked against the PRE-image so a ``-Damage``
+    dropped inside an unpriced ``^Template`` cannot cover a priced ``+Damage``.
+
+    Files the commit CREATES are skipped outright: staged pack migrations add
+    the destination file in one commit and drop the source in another, so the
+    add side has no removed twin to match. A new file is introduced content,
+    not a hand edit of an existing priced number — and ledger coverage for new
+    content is what ``audit_balance_drift`` + ``extract_stats --check`` verify,
+    not this audit.
+    Staged pack migrations append into an existing destination file (status
+    ``M``) with the source drop in a different commit, so neither a file-status
+    check nor the same-diff pair match can see the remove side. For those,
+    ``parent_node_pairs`` checks whether the enclosing node already carried the
+    exact value at ``sha^`` — the verbatim-move proof that survives staging.
+    """
+    added: set[tuple[str, str, str]] = set()
+    removed: set[tuple[str, str]] = set()
     for path in files:
         diff = git(root, "show", "--pretty=", "--unified=0", sha, "--", path)
         if not diff:
             continue
         post = git(root, "show", f"{sha}:{path}").splitlines()
-        lineno = 0
+        # Only fetch the pre-image when the diff actually removes a balance
+        # field — file-add commits (new packs) have no parent version to show.
+        pre = (git(root, "show", f"{sha}^:{path}").splitlines()
+               if REMOVED_FIELD.search(diff) else [])
+        post_lineno = pre_lineno = 0
         for line in diff.splitlines():
             hunk = HUNK.match(line)
             if hunk:
-                lineno = int(hunk.group(1))
+                pre_lineno = int(hunk.group(1))
+                post_lineno = int(hunk.group(2))
                 continue
             if line.startswith("+++") or line.startswith("---"):
                 continue
             if line.startswith("+"):
                 match = BALANCE_FIELD.match(line)
-                if match and 0 < lineno <= len(post) and priced_context(post, lineno - 1):
-                    found.add(line.lstrip("+").strip().split(":", 1)[0].strip())
-                lineno += 1
-            elif not line.startswith("-"):
-                lineno += 1
-    return found
+                if match and 0 < post_lineno <= len(post) \
+                        and priced_context(post, post_lineno - 1):
+                    added.add((match.group(1).strip(), match.group(2),
+                               enclosing_node(post, post_lineno - 1) or ""))
+                post_lineno += 1
+            elif line.startswith("-"):
+                match = REMOVED_FIELD.match(line)
+                if match and 0 < pre_lineno <= len(pre) \
+                        and priced_context(pre, pre_lineno - 1):
+                    removed.add((match.group(1).strip(), match.group(2)))
+                # the removed line consumed a pre-image line, not a post one
+                pre_lineno += 1
+            else:
+                pre_lineno += 1
+                post_lineno += 1
+    candidates = {(f, v, n) for f, v, n in added if (f, v) not in removed}
+    # same-commit move or verbatim collapse already cleared; for the rest, one
+    # parent-tree lookup per NODE covers all its flagged fields at once
+    parent = parent_node_pairs(root, sha, {n for _, _, n in candidates if n})
+    out = set()
+    for f, v, node in candidates:
+        if node and (f, v) in parent.get(node, ()):
+            continue                      # staged migration: source still at sha^
+        out.add(f)
+    return out
 
 
 def commits(root: pathlib.Path, days: int) -> list[dict[str, str]]:
@@ -210,6 +323,7 @@ def main() -> int:
         files = [f for f in git(root, "show", "--pretty=", "--name-only", sha)
                  .splitlines() if f]
         touched.update(files)
+
 
         trailer = TRAILER.search(commit["body"])
         shared = commit["author"] in SHARED_IDENTITY

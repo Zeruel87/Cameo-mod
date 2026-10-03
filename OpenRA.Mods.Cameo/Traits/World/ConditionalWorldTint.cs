@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System.Numerics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
@@ -39,12 +40,12 @@ namespace OpenRA.Mods.Cameo.Traits
 		protected override void TraitEnabled(Actor self)
 		{
 			self.Trait<TerrainLighting>().SetAmbientTint(
-				new float3(Info.Ambient * Info.Red, Info.Ambient * Info.Green, Info.Ambient * Info.Blue));
+				new Vector3(Info.Ambient * Info.Red, Info.Ambient * Info.Green, Info.Ambient * Info.Blue));
 		}
 
 		protected override void TraitDisabled(Actor self)
 		{
-			self.Trait<TerrainLighting>().SetAmbientTint(float3.Ones);
+			self.Trait<TerrainLighting>().SetAmbientTint(Vector3.One);
 		}
 	}
 }

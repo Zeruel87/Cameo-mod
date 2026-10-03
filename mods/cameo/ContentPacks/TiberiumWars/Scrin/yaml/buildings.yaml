@@ -1,0 +1,1208 @@
+# Structures-and-defenses foundation. These actors are available to maps and the
+# editor, but stay outside production until the Drone Ship, weapons, and the rest
+# of the faction exist.
+
+^Scrin3x1Shape:
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -1536, -512
+			BottomRight: 1536, 512
+	Selectable:
+		Bounds: 3072, 1024
+
+# Standard base-building lifecycle without borrowing faction-specific TD/RA art.
+# Scrin structures can be placed, repaired, captured, and sold like other bases;
+# procedural materialization replaces baked make/deconstruction sequences.
+^ScrinBuilding:
+	Inherits: ^BaseBuilding
+	DeathSounds:
+	-WithMakeAnimation:
+	-WithDeathAnimation:
+	Building:
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune
+		BuildSounds: scrin_building_placed.wav
+	ProvidesPrerequisite@buildingname:
+
+^ScrinDefense:
+	Inherits: ^ScrinBuilding
+	Inherits@defense: ^BasicDefense
+	-GivesBuildableArea:
+	-CommandBarBlacklist:
+	-AcceptsDeliveredCash:
+
+^ScrinAuthenticBuildup:
+	WithMakeAnimation:
+		Condition: build-incomplete
+	WithMakeOverlay@AURORA:
+		Sequence: aurora-make
+		Palette: effect
+
+scrin_drone_platform:
+	Inherits: ^ScrinBuilding
+	Voiced:
+		VoiceSet: ScrinDronePlatformVoice
+	Inherits@conyard: ^Conyard
+	Inherits@shape: ^3x3Shape
+	-Buildable:
+	Tooltip:
+		Name: actor_scrin_drone_platform.name
+	Building:
+		Dimensions: 3,3
+		Footprint: _x_ xxx _x_
+		LocalCenterOffset: 0,0,0
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune
+	RenderSprites:
+		PlayerPalette: player_rgba
+	WithMakeAnimation:
+	BaseBuilding:
+	BaseProvider:
+		Range: 15c0
+	Production@NORMAL:
+		Produces: Building, Defence
+		RequiresCondition: !(classicproductionqueues || hybridproductionqueues)
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding, RADefence
+		RequiresCondition: classicproductionqueues || hybridproductionqueues
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@BUILDING:
+		ProductionType: Building
+		RequiresCondition: !(classicproductionqueues || hybridproductionqueues)
+	ProductionBar@RABUILDING:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues || hybridproductionqueues
+	ProvidesPrerequisite@buildingname:
+	Transforms:
+		-RequiresCondition:
+		-PauseOnCondition:
+		IntoActor: scrin_drone_ship
+		Offset: 1,1
+		Facing: 480
+		NoTransformNotification: BuildingCannotPlaceAudio
+	-TransformsIntoMobile:
+	-TransformsIntoPassenger:
+	-TransformsIntoRepairable:
+	-TransferTimedExternalConditionOnTransform:
+	-GrantConditionOnPrerequisite@GLOBALFACTUNDEPLOY:
+
+scrin_reactor:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 180000
+	Voiced:
+		VoiceSet: ScrinReactorVoice
+	Inherits@shape: ^2x2Shape
+	Tooltip:
+		Name: actor_scrin_reactor.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 10
+		Prerequisites: ~scrin_drone_platform, ~!scrin_upgrade_fusion_reactor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: actor_scrin_reactor.description
+	Valued:
+		Cost: 600
+	Power:
+		Amount: 225
+	GrantConditionOnPrerequisite@FUSION:
+		Condition: fusion-reactor
+		Prerequisites: scrin_upgrade_fusion_reactor
+	TransformOnCondition@FUSION:
+		RequiresCondition: fusion-reactor
+		IntoActor: scrin_fusion_reactor
+		SkipMakeAnims: true
+	Building:
+		Dimensions: 2,2
+		Footprint: xx xx
+		LocalCenterOffset: 0,0,0
+		TerrainTypes: Clear,ClearTemperat,ClearWinter,ClearJungle,ClearSnow,ClearDesert,Road,Concrete,ClearDune
+	RenderSprites:
+		PlayerPalette: scrin_reactor_player
+	WithMakeAnimation:
+		Condition: build-incomplete
+	WithMakeOverlay@AURORA:
+		Sequence: aurora-make
+		Palette: effect
+
+scrin_fusion_reactor:
+	Inherits: scrin_reactor
+	Health:
+		HP: 240000
+	-GrantConditionOnPrerequisite@FUSION:
+	-TransformOnCondition@FUSION:
+	# Preserve the standard Reactor tech prerequisite after existing Reactors
+	# transform into this actor.
+	ProvidesPrerequisite@STANDARD_REACTOR:
+		Prerequisite: scrin_reactor
+	Tooltip:
+		Name: actor_scrin_fusion_reactor.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 10
+		Prerequisites: ~scrin_drone_platform, ~scrin_upgrade_fusion_reactor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Generates additional power using a stabilized fusion process.
+	Valued:
+		Cost: 800
+	Power:
+		Amount: 450
+	RenderSprites:
+		Image: scrin_fusion_reactor
+		PlayerPalette: scrin_fusion_reactor_player
+
+scrin_extractor:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 300000
+	Voiced:
+		VoiceSet: ScrinExtractorVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^4x3Shape
+	Tooltip:
+		Name: actor_scrin_extractor.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 20
+		Prerequisites: ~scrin_drone_platform
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Processes Tiberium into credits and deploys a Harvester.
+	Valued:
+		Cost: 1500
+	Power:
+		Amount: -30
+	Building:
+		Dimensions: 4,3
+		Footprint: =xx= xxxx =xx=
+		LocalCenterOffset: 0,-512,0
+	Selectable:
+		Bounds: 3072, 2048
+	RenderSprites:
+		PlayerPalette: scrin_extractor_player
+	Refinery:
+		TickRate: 15
+		PlayerExperienceModifier: 20
+	StoresPlayerResources:
+		Capacity: 10000
+	WithResourceStoragePipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		PipCount: 20
+		FullSequence: pip-yellow
+	DockHost:
+		Type: Unload
+		DockAngle: 896
+		# Park in the southwest passable footprint cell, then tractor-drag
+		# inward into the extraction socket.
+		DockOffset: -1c512, 1c512, 0
+		IsDragRequired: True
+		DragOffset: -879, 1118, 0
+		DragLength: 15
+		MaxQueueLength: 5
+	FreeActor@HARVESTER:
+		Actor: scrin_harvester
+		SpawnOffset: -1,2
+		Facing: 896
+
+scrin_portal:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 180000
+	Voiced:
+		VoiceSet: ScrinPortalVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^Scrin3x1Shape
+	Tooltip:
+		Name: actor_scrin_portal.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 30
+		Prerequisites: ~scrin_drone_platform, scrin_reactor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Trains Scrin infantry.
+	Valued:
+		Cost: 800
+	Power:
+		Amount: -20
+	Building:
+		Dimensions: 3,1
+		Footprint: xxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_portal_player
+	WithIdleOverlay@CORE:
+		Image: scrin_portal_core
+		Sequence: idle
+		Palette: effect
+		RequiresCondition: !build-incomplete
+	WithIdleOverlay@FOREGROUND:
+		Image: scrin_portal_foreground
+		Sequence: idle
+		Palette: player_rgba
+		IsPlayerPalette: true
+		RequiresCondition: !build-incomplete
+	MaterializingProduction@SCRININFANTRY:
+		Produces: ScrinInfantry
+		PauseOnCondition: disabled
+	ProductionQueue@SCRININFANTRY:
+		Type: ScrinInfantry
+		DisplayOrder: 2
+		Group: Infantry
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Training
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@SCRININFANTRY:
+		ProductionType: ScrinInfantry
+	RallyPoint:
+		Path: 1,1
+	Exit@SCRININFANTRY:
+		# Materialize at the portal-core center, then leave through the
+		# south-southwest front opening.
+		SpawnOffset: 0,0,0
+		ExitCell: 1,1
+		ProductionTypes: ScrinInfantry
+
+scrin_warp_gate:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 400000
+	Voiced:
+		VoiceSet: ScrinWarpGateVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^4x2Shape
+	Tooltip:
+		Name: actor_scrin_warp_gate.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 40
+		Prerequisites: ~scrin_drone_platform, scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Produces standard Scrin vehicles.
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -40
+	Building:
+		Dimensions: 4,2
+		Footprint: xxxx xxxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_warp_gate_player
+	WithIdleOverlay@CORE:
+		Image: scrin_warp_gate_core
+		Sequence: idle
+		Palette: effect
+		RequiresCondition: !build-incomplete
+	MaterializingProduction@SCRINVEHICLE:
+		Produces: ScrinVehicle
+		PauseOnCondition: disabled
+	ProductionQueue@SCRINVEHICLE:
+		Type: ScrinVehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@SCRINVEHICLE:
+		ProductionType: ScrinVehicle
+	RallyPoint:
+		Path: 1,2
+	Exit@SCRINVEHICLE:
+		# Horizontally aligned with the floating core, and placed 5 rendered
+		# pixels south of its previous ground spawn position.
+		SpawnOffset: 0,107,0
+		ExitCell: 1,2
+		ProductionTypes: ScrinVehicle
+
+scrin_gravity_stabilizer:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 300000
+	Voiced:
+		VoiceSet: ScrinGravityStabilizerVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^3x2Shape
+	Tooltip:
+		Name: actor_scrin_gravity_stabilizer.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 50
+		Prerequisites: ~scrin_drone_platform, scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Produces Stormriders and Drone Ships.
+	Valued:
+		Cost: 1500
+	Power:
+		Amount: -30
+	Building:
+		Dimensions: 3,2
+		Footprint: xxx xxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_gravity_stabilizer_player
+	WithIdleOverlay@CORE:
+		Image: scrin_gravity_stabilizer_core
+		Sequence: idle
+		Palette: effect
+		RequiresCondition: !build-incomplete
+	MaterializingProduction@SCRINAIRCRAFT:
+		Produces: ScrinAircraft
+		PauseOnCondition: disabled
+	ProductionQueue@SCRINAIRCRAFT:
+		Type: ScrinAircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@SCRINAIRCRAFT:
+		ProductionType: ScrinAircraft
+	RallyPoint:
+	Exit@SCRINAIRCRAFT:
+		# Gravity Stabilizer reuses the Warp Gate core's horizontal center.
+		SpawnOffset: 59,0,0
+		ProductionTypes: ScrinAircraft
+
+scrin_nerve_center:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 250000
+	Voiced:
+		VoiceSet: ScrinNerveCenterVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x1Shape
+	Tooltip:
+		Name: actor_scrin_nerve_center.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 60
+		Prerequisites: ~scrin_drone_platform, scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Unlocks advanced structures and researches Scrin upgrades.
+	Valued:
+		Cost: 1500
+	Power:
+		Amount: -40
+	Building:
+		Dimensions: 2,1
+		Footprint: xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_nerve_center_player
+	Production@UPGRADES:
+		Produces: Upgrades
+		PauseOnCondition: disabled
+	ProductionQueue@UPGRADES:
+		Type: Upgrades
+		DisplayOrder: 8
+		Group: Upgrades
+		LowPowerModifier: 300
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@UPGRADES:
+		ProductionType: Upgrades
+
+scrin_stasis_chamber:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 180000
+	Voiced:
+		VoiceSet: ScrinStasisChamberVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x2Shape
+	Tooltip:
+		Name: actor_scrin_stasis_chamber.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 70
+		Prerequisites: ~scrin_drone_platform, scrin_portal, scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Unlocks elite infantry and advanced control technologies.
+	Valued:
+		Cost: 1200
+	Power:
+		Amount: -30
+	Building:
+		Dimensions: 1,2
+		Footprint: x x
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_stasis_chamber_player
+
+scrin_technology_assembler:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 400000
+	Voiced:
+		VoiceSet: ScrinTechnologyAssemblerVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^3x3Shape
+	Tooltip:
+		Name: actor_scrin_technology_assembler.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 80
+		Prerequisites: ~scrin_drone_platform, scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Unlocks capital units and high-tier structures.
+	Valued:
+		Cost: 2500
+	Power:
+		Amount: -60
+	Building:
+		Dimensions: 3,3
+		Footprint: xx_ xxx _xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_technology_assembler_player
+
+scrin_signal_transmitter:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 400000
+	Voiced:
+		VoiceSet: ScrinSignalTransmitterVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x2Shape
+	Tooltip:
+		Name: actor_scrin_signal_transmitter.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 90
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Enables the most advanced Scrin technology.
+	Valued:
+		Cost: 3000
+	Power:
+		Amount: -75
+	Building:
+		Dimensions: 2,2
+		Footprint: =x x=
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_signal_transmitter_player
+
+scrin_buzzer_hive:
+	Inherits: ^ScrinDefense
+	Health:
+		HP: 90000
+	Voiced:
+		VoiceSet: ScrinBuzzerHiveVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: actor_scrin_buzzer_hive.name
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 20
+		Prerequisites: ~scrin_drone_platform, scrin_reactor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Basic defensive organism.
+	Valued:
+		Cost: 500
+	Power:
+		Amount: -10
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_buzzer_hive_player
+	Armament:
+		Weapon: ScrinBuzzerHiveBeam
+	AttackOmni:
+		Voice:
+		PauseOnCondition: disabled
+
+scrin_photon_cannon:
+	Inherits: ^ScrinDefense
+	Health:
+		HP: 105000
+	Voiced:
+		VoiceSet: ScrinPhotonCannonVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: actor_scrin_photon_cannon.name
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 30
+		Prerequisites: ~scrin_drone_platform, scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: General-purpose anti-ground and anti-air defense.
+	Valued:
+		Cost: 1000
+	Power:
+		Amount: -25
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 0
+		RealignDelay: -1
+		# Pivot from the measured TURRET axis bone (second-eye fit, ratio 0.59);
+		# a registration approximation, not exact.
+		Offset: 0,-101,75
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: ScrinPhotonCannonBeam
+		# FX_Weapon_00: the KW AlienPhotonCannon native FireFX/Launch bone.
+		# Muzzle from the second-eye fit; registration approximation, not exact.
+		LocalOffset: -53,0,258
+	AttackTurreted:
+		Voice:
+		PauseOnCondition: disabled
+	RenderSprites:
+		PlayerPalette: scrin_photon_cannon_player
+
+scrin_plasma_missile_battery:
+	Inherits: ^ScrinDefense
+	Health:
+		HP: 120000
+	Voiced:
+		VoiceSet: ScrinPlasmaBatteryVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: actor_scrin_plasma_missile_battery.name
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 40
+		Prerequisites: ~scrin_drone_platform, scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Long-range heavy defense.
+	Valued:
+		Cost: 1600
+	Power:
+		Amount: -40
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	Turreted:
+		TurnSpeed: 40
+		InitialFacing: 0
+		RealignDelay: -1
+		# Pivot from the measured TURRET axis bone (second-eye fit, ratio 0.59);
+		# a registration approximation, not exact.
+		Offset: 0,-54,294
+	-WithSpriteBody:
+	WithEmbeddedTurretSpriteBody:
+	Armament:
+		Weapon: ScrinDefenseHeavyBeam
+		# FX_Weapon_01 pod point: the KW AlienPlasmaMissileBattery fire/launch
+		# bone. Muzzle from the second-eye fit; registration approximation, not exact.
+		LocalOffset: 113,0,134
+	AttackTurreted:
+		Voice:
+		PauseOnCondition: disabled
+	RenderSprites:
+		PlayerPalette: scrin_plasma_missile_battery_player
+
+scrin_growth_accelerator:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 150000
+	Voiced:
+		VoiceSet: ScrinGrowthAcceleratorVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x1Shape
+	Tooltip:
+		Name: actor_scrin_growth_accelerator.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 45
+		Prerequisites: ~scrin_drone_platform, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Supports Tiberium harvesting operations.
+	Valued:
+		Cost: 1000
+	Power:
+		Amount: -20
+	Building:
+		Dimensions: 2,1
+		Footprint: xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_growth_accelerator_player
+	SeedsResource:
+		ResourceType: Tiberium
+		Interval: 75
+		MaxRange: 100
+
+# Reaper-17's enhanced Growth Accelerator. This visual uses the authentic
+# additional Tiberium extraction pods, but gameplay income/regrowth behavior
+# remains deferred with the playable faction rules.
+scrin_growth_stimulator:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 200000
+	Voiced:
+		VoiceSet: ScrinGrowthStimulatorVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x1Shape
+	Tooltip:
+		Name: actor_scrin_growth_stimulator.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 95
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler, scrin_growth_accelerator
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Advanced Tiberium support structure.
+	Valued:
+		Cost: 2000
+	Power:
+		Amount: -40
+	Building:
+		Dimensions: 2,1
+		Footprint: xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_growth_stimulator_player
+	SeedsResource:
+		ResourceType: Tiberium
+		Interval: 45
+		MaxRange: 200
+
+scrin_storm_column:
+	Inherits: ^ScrinDefense
+	Health:
+		HP: 150000
+	Voiced:
+		VoiceSet: ScrinStormColumnVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: actor_scrin_storm_column.name
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 80
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: High-tier ion storm defense.
+	Valued:
+		Cost: 2500
+	Power:
+		Amount: -75
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_storm_column_player
+	Armament:
+		Weapon: ScrinStormColumnBeam
+		# KW AlienStormColumn fires from dummy09, the animated top-orb emitter.
+		# Static offset from the second-eye production-measured audit
+		# (catalog/emitter-storm-column-second-eye.md): mean muzzle (-0.26,
+		# -64.95) px rel. actor center; IDLA-cycle sway <= 1.34 px.
+		LocalOffset: 0,-6,1386
+	AttackOmni:
+		Voice:
+		PauseOnCondition: disabled
+
+scrin_rift_generator:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 1000000
+	Voiced:
+		VoiceSet: ScrinRiftGeneratorVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^3x3Shape
+	Tooltip:
+		Name: actor_scrin_rift_generator.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 110
+		Prerequisites: ~scrin_drone_platform, scrin_signal_transmitter
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Experimental rift-generation superweapon structure.
+	Valued:
+		Cost: 10000
+	Power:
+		Amount: -200
+	Building:
+		Dimensions: 3,3
+		Footprint: xxx xxx xxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_rift_generator_player
+	WithIdleOverlay@ORB:
+		Image: scrin_rift_generator_orb
+		Sequence: idle
+		Palette: effect
+		RequiresCondition: !build-incomplete
+	DetonateWeaponPowerCA@SCRIN_RIFT:
+		OrderName: scrin_rift
+		Prerequisites:
+			1: ~techlevel.superweapons
+		IconImage: scrin_rift_generator
+		Icons:
+			1: icon
+		IconPalette: scrin_rift_generator
+		Cursor: ability
+		ChargeInterval: 10500
+		StartFullyCharged: true
+		Names:
+			1: actor_scrin_rift_generator.name
+		Descriptions:
+			1: support-power-scrin-rift.description
+		Weapons:
+			1: ScrinRiftInit
+		SelectTargetTextNotification: Select target.
+		DisplayRadarPing: true
+		BeaconActor: camera.placeholderhack
+		CameraRange: 8c0
+		CameraRemoveDelay: 250
+		PauseOnCondition: disabled
+
+scrin_rift_weapon_effect:
+	Inherits: ^RiftBase
+	RenderSprites:
+		Image: scrin_rift_weapon_orb
+		Palette: effect
+	WithRotatingSprite@VORTEX:
+		Image: scrin_rift_weapon_vortex
+		Sequence: idle
+		Palette: effect
+		Alpha: 1.0
+		RevolutionTicks: 500
+		Clockwise: true
+	WithSpriteBody:
+	PeriodicExplosion:
+		Weapon: ScrinRiftShockwavePulse
+	PeriodicExplosion@DAMAGE:
+		Weapon: ScrinRiftDamage
+	WithLifetimeFade:
+		Duration: 250, 250
+		FadeInTicks: 12
+		FadeOutTicks: 12
+	Health:
+		HP: 1
+	RevealsShroud:
+		Range: 8c0
+		Type: CenterPosition
+
+scrin_lightning_spike:
+	Inherits: ^ScrinDefense
+	Health:
+		HP: 100000
+	Voiced:
+		VoiceSet: ScrinLightningSpikeVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: actor_scrin_lightning_spike.name
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 55
+		Prerequisites: ~scrin_drone_platform, scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Compact lightning defense.
+	Valued:
+		Cost: 900
+	Power:
+		Amount: -20
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_lightning_spike_player
+	Armament:
+		Weapon: ScrinLightningSpikeBeam
+		# KW AlienLightningSpike fires from Bone_Weapon, the spike tip. The
+		# live sprite is static single-facing art: the tip's measured position
+		# is exact on screen at the canonical facing (top alpha row at (19,4),
+		# anchor (24,40); depth along the view axis is not recoverable from one
+		# frame and is set to zero).
+		LocalOffset: 0,-107,768
+	AttackOmni:
+		Voice:
+		PauseOnCondition: disabled
+
+scrin_tiberium_hive:
+	Inherits: ^ScrinDefense
+	Health:
+		HP: 110000
+	Voiced:
+		VoiceSet: ScrinTiberiumHiveVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Tooltip:
+		Name: actor_scrin_tiberium_hive.name
+	Buildable:
+		Queue: Defence, RADefence
+		BuildPaletteOrder: 65
+		Prerequisites: ~scrin_drone_platform, scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Tiberium-infused defensive organism.
+	Valued:
+		Cost: 1200
+	Power:
+		Amount: -30
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_tiberium_hive_player
+	Armament:
+		Weapon: ScrinAcidBeam
+	AttackOmni:
+		Voice:
+		PauseOnCondition: disabled
+
+scrin_warp_chasm:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 450000
+	Voiced:
+		VoiceSet: ScrinWarpChasmVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^4x2Shape
+	Tooltip:
+		Name: actor_scrin_warp_chasm.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildLimit: 1
+		BuildPaletteOrder: 85
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Produces all Scrin vehicles and aircraft.
+	Valued:
+		Cost: 3000
+	Power:
+		Amount: -80
+	Building:
+		Dimensions: 4,2
+		Footprint: xxxx xxxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_warp_chasm_player
+	WithIdleOverlay@CORE:
+		Image: scrin_warp_chasm_core
+		Sequence: idle
+		Palette: effect
+		RequiresCondition: !build-incomplete
+	MaterializingProduction@SCRINADVANCED:
+		Produces: ScrinAdvancedVehicle, ScrinWarpAircraft, ScrinCapitalAircraft
+		PauseOnCondition: disabled
+	ProductionQueue@SCRINWARPAIRCRAFT:
+		Type: ScrinWarpAircraft
+		DisplayOrder: 4
+		Group: Aircraft
+		AlwaysShowForFactions: scrin
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionQueue@SCRINADVANCEDVEHICLE:
+		Type: ScrinAdvancedVehicle
+		DisplayOrder: 3
+		Group: Vehicle
+		LowPowerModifier: 300
+		ReadyAudio: UnitReady
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@SCRINADVANCEDVEHICLE:
+		ProductionType: ScrinAdvancedVehicle
+	ProductionBar@SCRINWARPAIRCRAFT:
+		ProductionType: ScrinWarpAircraft
+	RallyPoint:
+		Path: 1,2
+	Exit@SCRINADVANCEDVEHICLE:
+		# Ground position directly below the floating core.
+		SpawnOffset: 0,0,0
+		ExitCell: 1,2
+		ProductionTypes: ScrinAdvancedVehicle
+	Exit@SCRINWARPAIRCRAFT:
+		SpawnOffset: 0,0,0
+		ProductionTypes: ScrinWarpAircraft, ScrinCapitalAircraft
+
+scrin_foundry:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 250000
+	Voiced:
+		VoiceSet: ScrinFoundryVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x1Shape
+	Tooltip:
+		Name: actor_scrin_foundry.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 75
+		Prerequisites: ~scrin_drone_platform, scrin_nerve_center
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Provides additional construction capacity.
+	Valued:
+		Cost: 1800
+	Power:
+		Amount: -30
+	Building:
+		Dimensions: 2,1
+		Footprint: xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_foundry_player
+	Production@NORMAL:
+		Produces: Building
+		RequiresCondition: !(classicproductionqueues || hybridproductionqueues)
+	Production@CLASSICPRODUCTIONQUEUES:
+		Produces: RABuilding
+		RequiresCondition: classicproductionqueues || hybridproductionqueues
+	ProductionQueue@Building:
+		Type: Building
+		DisplayOrder: 0
+		Group: Building
+		LowPowerModifier: 200
+		ReadyAudio: ConstructionComplete
+		BlockedAudio: NoBuild
+		LimitedAudio: BuildingInProgress
+		QueuedAudio: Building
+		OnHoldAudio: OnHold
+		CancelledAudio: Cancelled
+		InfiniteBuildLimit: 10
+	ProductionBar@BUILDING:
+		ProductionType: Building
+		RequiresCondition: !(classicproductionqueues || hybridproductionqueues)
+	ProductionBar@RABUILDING:
+		ProductionType: RABuilding
+		RequiresCondition: classicproductionqueues || hybridproductionqueues
+
+scrin_outpost:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 120000
+	Voiced:
+		VoiceSet: ScrinOutpostVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^1x1Shape
+	Tooltip:
+		Name: actor_scrin_outpost.name
+	Valued:
+		Cost: 800
+	Power:
+		Amount: -10
+	BaseProvider:
+		Range: 8c0
+	Building:
+		Dimensions: 1,1
+		Footprint: x
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_outpost_player
+
+scrin_control_node:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 400000
+	Voiced:
+		VoiceSet: ScrinControlNodeVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^4x3Shape
+	Tooltip:
+		Name: actor_scrin_control_node.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 100
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Strategic command structure.
+	Valued:
+		Cost: 4000
+	Power:
+		Amount: -100
+	Building:
+		Dimensions: 4,3
+		Footprint: xxxx xxxx xxxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_control_node_player
+
+scrin_phase_generator:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 400000
+	Voiced:
+		VoiceSet: ScrinPhaseGeneratorVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x2Shape
+	Tooltip:
+		Name: actor_scrin_phase_generator.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 105
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Strategic phase-control structure.
+	Valued:
+		Cost: 4000
+	Power:
+		Amount: -100
+	Building:
+		Dimensions: 2,2
+		Footprint: xx xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_phase_generator_player
+
+# Kane's Wrath Global Conquest strategic structures. They remain map/editor
+# actors; their metagame operations are not part of this visual foundation.
+scrin_lifeform_recycling_plant:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 350000
+	Voiced:
+		VoiceSet: ScrinLifeformPlantVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^2x1Shape
+	Tooltip:
+		Name: actor_scrin_lifeform_recycling_plant.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 115
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Strategic lifeform processing structure.
+	Valued:
+		Cost: 3500
+	Power:
+		Amount: -80
+	Building:
+		Dimensions: 2,1
+		Footprint: xx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_lifeform_recycling_plant_player
+
+scrin_terraforming_nexus:
+	Inherits: ^ScrinBuilding
+	Health:
+		HP: 450000
+	Voiced:
+		VoiceSet: ScrinTerraformingNexusVoice
+	Inherits@buildup: ^ScrinAuthenticBuildup
+	Inherits@shape: ^3x2Shape
+	Tooltip:
+		Name: actor_scrin_terraforming_nexus.name
+	Buildable:
+		Queue: Building, RABuilding
+		BuildPaletteOrder: 120
+		Prerequisites: ~scrin_drone_platform, scrin_technology_assembler
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Strategic planetary conversion structure.
+	Valued:
+		Cost: 4500
+	Power:
+		Amount: -100
+	Building:
+		Dimensions: 3,2
+		Footprint: xxx xxx
+		LocalCenterOffset: 0,0,0
+	RenderSprites:
+		PlayerPalette: scrin_terraforming_nexus_player

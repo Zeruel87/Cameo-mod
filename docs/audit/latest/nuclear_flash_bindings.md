@@ -1,1 +1,2 @@
-PASS: RA1, Ixian, and CABAL launchers retain their active nuclear flashes
+FAIL: directional nuclear-flash contract
+  - RAAtomic must inherit ^AtomicCore directly

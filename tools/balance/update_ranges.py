@@ -25,6 +25,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/balance"))
 import formula  # noqa: E402
+from firepower import armament_firepower, priced_by_default
+import class_membership  # noqa: E402
 
 LEDGER_DIR = ROOT / "docs/balance"
 ANCHORS_FILE = LEDGER_DIR / "class_anchors.json"
@@ -38,19 +40,16 @@ def fnum(v):
         return None
 
 
-def subtype_to_anchor(st: str | None) -> str | None:
-    """Map a ledger subtype to a class_anchor key when not explicit."""
-    if not st:
-        return None
-    name = re.sub(r"[^A-Za-z0-9]", "", str(st)).casefold()
-    exact = {
-        "scoutinfantry": "scout",
-        "closecombatinfantry": "closecombat",
-        "specialforcesinfantry": "special_forces",
-        "mainbattletank": "mbt",
-        "linebreaker": "mbt",
-    }
-    return exact.get(name)
+def subtype_to_anchor(st):
+    """DELEGATES to `tools/balance/class_membership.py`, the single map.
+
+    ⛔ There were THREE copies of this function and they disagreed: `build_workbook.py` and
+    this one knew 5 subtypes, `propose_class_rebalance.py` knew 17, and all three said
+    `linebreaker -> mbt` when `line_breaker` is its own class — 40 line-breakers were being
+    folded into the MBT population. Kept as a name so the call sites do not all have to
+    change at once.
+    """
+    return class_membership.subtype_to_anchor(st)
 
 
 def load_anchors():
@@ -58,10 +57,11 @@ def load_anchors():
     return {k: v for k, v in data.items() if isinstance(v, dict) and "spec" in v}
 
 
-def unit_dps(u, fp_factor: float):
+def unit_dps(u, fp_factor=None):
+    """Optional legacy factor applies only without resolved data."""
     total = 0.0
     for arm in u.get("armaments", []):
-        if not arm.get("pricing", True):
+        if not priced_by_default(arm):
             continue
         dmg = formula.spread_damage_sum(arm.get("damage_warheads", []))  # SUM law, chips excluded
         if not dmg:
@@ -69,12 +69,31 @@ def unit_dps(u, fp_factor: float):
         rd = fnum(arm.get("reloaddelay")) or 1
         burst = int(fnum(arm.get("burst")) or 1)
         bd = arm.get("burstdelays")
-        total += formula.dps(dmg, rd, burst, bd, fp_factor)
+        fp = (fp_factor if fp_factor is not None and 'resolved_firepower_modifiers' not in u
+              else armament_firepower(u, arm))
+        total += formula.dps(dmg, rd, burst, bd, fp)
     return total
+
+
+def ensure_write_supported(doc, anchors, faction_filter):
+    """Preflight before any writes; current-output estimates are not range policy."""
+    if faction_filter and faction_filter not in doc.get('ledger', ''):
+        return
+    for section in doc.get('sections', {}).values():
+        for actor, unit in section.items():
+            design = unit.get('design') or {}
+            cls = design.get('class_anchor') or subtype_to_anchor(design.get('subtype'))
+            if cls in anchors and 'resolved_firepower_modifiers' in unit:
+                raise SystemExit(
+                    f'{actor}: range write-back with resolved firepower is not reviewed. '
+                    'Run without --confirm for diagnostics; no ledgers written. '
+                    'Anchor and replacement-armament range policies need review.')
 
 
 def process_ledger(path: pathlib.Path, anchors, faction_filter, confirm: bool):
     doc = json.loads(path.read_text(encoding="utf-8"))
+    if confirm:
+        ensure_write_supported(doc, anchors, faction_filter)
     if faction_filter and faction_filter not in doc.get("ledger", ""):
         return 0
     changes = 0
@@ -91,11 +110,9 @@ def process_ledger(path: pathlib.Path, anchors, faction_filter, confirm: bool):
                          or (u.get("speed_air") or {}).get("v"))
             special = fnum(design.get("special")) or 1.0
             tech_tier = fnum(design.get("tech_tier")) or 1.0
-            fp_raw = fnum((u.get("firepower_multiplier") or {}).get("v"))
-            fp = (fp_raw / 100) if fp_raw is not None else 1.0
             if None in (cost, hp, speed):
                 continue
-            dps_eff = unit_dps(u, fp)
+            dps_eff = unit_dps(u)
             if dps_eff <= 0:
                 continue
             rng = formula.solve_class_baseline_range(
@@ -129,6 +146,11 @@ def main() -> int:
     args = ap.parse_args()
 
     anchors = load_anchors()
+    # Validate every selected ledger before process_ledger can write the first one.
+    if args.confirm:
+        for path in sorted(LEDGER_DIR.glob('*.json')):
+            ensure_write_supported(json.loads(path.read_text(encoding='utf-8')),
+                                   anchors, args.faction)
     total = 0
     for jf in sorted(LEDGER_DIR.glob("*.json")):
         if jf.name == "class_anchors.json":

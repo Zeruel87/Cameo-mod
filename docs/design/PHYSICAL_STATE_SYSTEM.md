@@ -1,5 +1,7 @@
 # Physical-State System — damage-scaled status meters (design spec, rev. 2026-08-09)
 
+> **Numeric evidence refresh — 2026-09-10, combined `839cdced4` plus reopened tooling.** `meters_filling_before_death` = **310**; `w24_multi_main_fed` = **290**. **2026-09-22 (DAWN lane-3): `w24_multi_main_fed` = 274.** **2026-09-23b (post-#456/#457): `w24_multi_main_fed` = 269; `meters_filling_before_death` = 318.** **2026-09-26 (master `afb66c9b5` resync): `meters_filling_before_death` = 320; `w24_multi_main_fed` = 260.** **2026-09-27 (`devin/nova/w7-packs` post-merge): `meters_filling_before_death` = 328; `w24_multi_main_fed` = 221** — the held-67 chip folds collapsed second mains into single mains, and meters are now fed by a larger share of damage. Measured on this combined tree; predicates and tolerances are unchanged. The flat-health denominator correction changes diagnostics, not live weapons or prices. Earlier branch-specific snapshots remain historical. **2026-09-27 (DAWN stack merge): `w24_multi_main_fed` = 256.** **2026-09-27b (#534+#516 combined tree): = 217.** **2026-09-27 (#534+#516 merged tree): `w24_multi_main_fed` = 217.**
+
 Status: **The framework + the entire Temperature axis ALREADY EXIST and are wired.** This rev
 corrects the first draft, which wrongly implied a from-scratch C# build. The real remaining work is
 small (one C# field + yaml config). Verify against the code before building — "don't trust, verify".
@@ -67,13 +69,14 @@ family and blend expressed as a fraction of it (`_m(0.75)`, `_m(0.35)`, …) ins
 hand-divided numbers. At 100 the race is **ratio 0.500 on both meters**: full effect with half the
 target's life still ahead of it, comfortably inside the 0.75 bar.
 
+Historical 2026-08-19 census (the current source339 scan has **301 of 643** qualifying bindings across its supported mechanisms):
+
 | mechanism | bindings | reach full effect before 25% HP |
 |---|--:|--:|
-| damage-scaled (heat + corrosion) | 527 | **111** |
-| discrete apply (cryo) | 22 | 7 |
-| **total** | **549** | **118 (21.5%)** |
+| damage-scaled (heat + corrosion) | 562 | **146** |
+| **total** | **562** | **146 (26.0%)** |
 
-⛔ **`meters_filling_before_death` = 118 of 549 — NOT the 534 (97.3%) this section claimed until
+⛔ **Historical correction (2026-08-19): `meters_filling_before_death` = 146 of 562 — NOT the 534 (97.3%) this section claimed until
 2026-08-19.** The correction is one term, and it is W24's term. Everything above assumes the
 damage that FILLS the meter is the damage that KILLS the target. It is not: a damage-scaled
 binding fills from the ONE warhead carrying `PhysicalStateName`, while the target dies to every
@@ -81,7 +84,7 @@ main warhead the weapon fires.
 
     ratio = 50 / Scale / fed_share            fed_share = fed damage / total main damage
 
-Only **41 of 427** damage-scaled metered weapons have `fed_share == 1`. The median is **0.398**,
+The 2026-08-19 snapshot found only **41 of 427** damage-scaled metered weapons had `fed_share == 1`. The median is **0.398**,
 so the typical metered weapon fills ~2.5× slower than modelled and misses the 0.75 bar outright.
 The worst are 12-main EMP weapons at **4%** (`eden_EMP`, `edenTiger_EMP`, `plymouth_EMP`, …).
 
@@ -96,7 +99,7 @@ parts relate*.
 ⛔ **This is why `BALANCE_PROGRAM_PLAN` §0a puts weapon STRUCTURE before pricing** — restated by
 the maintainer 2026-08-19: *"that's exactly why I said you should finish the 3 way weapon split
 first!"* Pricing a weapon whose structure is wrong measures the wrong object. The burn-down is
-pinned as `w24_multi_main_fed` (380, ratchet-down-only).
+pinned as `w24_multi_main_fed` (**290** in source339, 2026-09-10; 374 was an older snapshot). The latest reduction includes a tooling correction excluding nonhealth damage; it is not a count of newly converted weapons.
 
 ⚠ **RELAXATION is still excluded** and moves this number down further: `RelaxationDelay 25` +
 `RelaxationLinear 5` + `RelaxationScaled 50` bleeds ~642 meter/shot at `ReloadDelay 60` (23% of
@@ -134,9 +137,9 @@ the axes:
 | meter | actors | share of the 1609 priced (Health + Valued) actors |
 |---|--:|--:|
 | `Temperature` | 1592 | **98.6%** |
-| `Corrosion` | 724 | **45.0%** |
+| `Corrosion` | 839 | **52.1%** |
 
-A corrosion weapon does nothing at all to 51.3% of the roster. Claim: `corrosion_meter_actors`.
+A corrosion weapon does nothing at all to 47.9% of priced actors. Claims: `corrosion_meter_actors` = **839** and `meters_filling_before_death` = **328**, re-measured 2026-09-27 on `devin/nova/w7-packs` post-merge. **2026-09-28 (post-#252 Scrin pack, `5d7bbd6bd`): `corrosion_meter_actors` = 856, `meters_filling_before_death` = 329 (the table above is as of 2026-09-27).**
 
 ### E2 pricing — the rule as built
 
@@ -343,7 +346,7 @@ used for Temperature's blue cold side) AND (b) **threshold artwork** at the extr
 | Temperature hot | 🔴 red (bar exists) | overheat glow at max | red overlay exists; max-heat art TBD |
 | Temperature cold | 🔵 blue (`@CryoFreeze` overlay) | ❄ `frostspark` at `superfreeze` | **exists** |
 | **Corrosion** | 🟢 **green tint**, ever-increasing 200→20000 (`WithPhysicalStateColoredOverlay`, colour only) | the **existing pulsating corrosion effect**, played ONLY at 100% (20000) | **mostly EXISTS** — pulse effect exists; green tint is just the colour trait |
-| **Sonic** | 🔵 **looped, transparently-shifting blue** overlay (the sonic-mark visual) | — (on-hit, short duration) | **NEW art needed** — a looped shifting-blue overlay. PLACEHOLDER live now: `^SonicDebuff` uses a flat `WithColoredOverlay@SONICDEBUFF` (`0088FF40`, Multiply) — swap it for the looped overlay when the art lands. The commented-out `WithDecoration@SONICDEBUFF` in `^SonicDebuff` still points at the existing `2100commandodebuff` icon. |
+| **Sonic** | 🔵 **looped, transparently-shifting blue** overlay (the sonic-mark visual) | — (on-hit, short duration) | **NEW art needed** — a looped shifting-blue overlay. W7 PLACEHOLDER live: `^Resonant` uses a scaling `WithPhysicalStateColoredOverlay@Resonance` (blue, grows with the meter) + `PhysicalStateBar` — swap it for the looped overlay when the art lands. |
 | **Armor Breach** | very light **grey** scaling overlay | **breach icon** at 100% — a bullet punching through armor plating (when they take 200%) | **NEW art needed** — the breach icon; overlay is just grey colour |
 
 **New sprite art to create** (RGBA PngSheet per pair every new
@@ -373,9 +376,12 @@ reference an image+sequence, so the yaml wires with placeholders and the art dro
 > - **W9** — **Poison meter**: a Corrosion clone for infantry (corrosion eats vehicles,
 >   poison hurts infantry, flame does both). Gas clouds fill the meter by dwell time and
 >   the DoT scales off it — dose-response, no new C#.
-> - **W10** — **Blind meter**: range scales 100%→20% proportionally; at FULL blind only,
->   the weapon is disabled, the icon shows, and the `blinded` Targetable applies so
->   blinders retarget.
+> - **W10** — **Blind meter** (WIRED, EMBER 2026-09-24): range scales 100%→20%
+>   proportionally (`ModifiesCombatProportionalToPhysicalState@Blind`, `RangeTo: 20`);
+>   at FULL blind only, `blinded` is granted (20000/20000 cliff) → weapon pauses
+>   (`|| blinded` on all 46 `disabled` pause sites), icon shows, `blinded` Targetable
+>   drops so blinders retarget. `RangeMultiplier@blinded` retired (would double-dip
+>   to 4% at full meter).
 >
 > **Keep binary:** `^Berserkable` (chaos gas) — it flips a *mode* (who you obey), not a
 > magnitude. Rule of thumb: meter a *magnitude*, keep a *mode* binary.
@@ -455,7 +461,9 @@ DECIDED:
 1. **Corrosion peak** = DoT + slow + vuln (values in §2). Hazmat halves the DoT.
 2. **Cryo = a thin child of Prism** — `^Warhead_Cryo_*` inherits `^Warhead_Prism_*` and only adds Temperature −100; base Prism (Prism Tank / Athena Cannon) stays freeze-free. Prism anti-LIGHT Versus already locked.
 3. **New axes to build:** Armor Breach + Hex + Knockback (new C# `PushWarhead`) + the base wiring (Corrosion/Prism-cryo/Plasma/Sonic).
-4. **Sonic** = global `CommandoDebuff → SonicDebuff`, baked into `^Warhead_Sonic_*` (predator laser + waveforce keep applying it). **BUILT `5a14355e6`** — the family templates now grant the mark themselves; the three hand-tuned grants (GDI predator laser 22/222, Japan waveforce 222/666 + 150/1500, RA2 `IonPulseDischarge`'s 4 expanding rings) were only renamed, not folded, because converting their warheads is a separate permission-gated change.
+4. **Sonic** = global `CommandoDebuff → SonicDebuff`, baked into `^Warhead_Sonic_*` (predator laser + waveforce keep applying it). **BUILT `5a14355e6`** — superseded by **W7 (EMBER, `devin/ember/l6-w7-resonance`)**: `SonicDebuff` retired, the binary mark is now the `Resonance` meter (`^Resonant`, `PhysicalStates: Resonance: 100` on all five Sonic families via `FAMILY_PHYSICAL_STATE`; blends feed it at the per-parent-average share). The three hand-tuned grants (predator laser, waveforce, `IonPulseDischarge` rings) are now converted to `ApplyPhysicalState` flat feeds; pack-local grants go via REQUEST to the pack owners. **W7 shared side MERGED #476 → `e97924d4c`.** ⚠ **Follow-up (EMBER, `devin/ember/w7-debuff-area`)**: #476 dropped the `_Debuff` nodes entirely, but they were a second channel — `Range = 2×Spread` marked a ring twice the damage radius. Restored as flat `ApplyPhysicalState` feeds via `FAMILY_AREA_STATE` in the generator + `TSGrenadeSonic`'s hand-widened 532 node; `audit_physical_state_warheads` gained a Range-aware exemption (fixed feed `Range` > damage `Spread` = area channel, not a double-apply).
+4b. **Poison** — **W9 (EMBER, `devin/ember/l6-w9-poison`)**: `^Poisonable` is now a Corrosion clone carrying `PhysicalState@Poison` (health-relative, ±20000, Corrosion's 5/50 decay) + bar + deadzone/`Poisoning`/`PoisonMax` conditions + yellow-green `WithPhysicalStateColoredOverlay`. The DoT is `ChangesHealthProportionalToPhysicalState` in percentage mode — `DamageAtMaximum: 1` / `DamageInterval: 20` reproduces the old `-1%/20t` sustained rate at full meter and scales down with dose (one dart ≠ a lingering cloud). Binary `poisoned` condition + `Targetable@poisoned` + `ChangesHealth@poison` retired from `defaults.yaml`; infantry-only by construction (only `^DefaultInfantry` inherits). Live feed sites: `d2k_sard_crossbow` (Ordos, DAWN via REQUEST) + parked `darkreign.yaml` Amper darts (left dangling deliberately — pack is unmounted). **W9 shared side MERGED #479 → `5b89b1341`.**
+4c. **Blind** — **W10 (EMBER, `devin/ember/l6-w10-blind`)**: the maintainer had already seeded `PhysicalState@Blind` (0→20000, 200/tick decay after a 25-tick hold), the bar, the grey overlay, and the max-meter `GrantConditionOnPhysicalState@blinded` cliff. W10 completes it: `ModifiesCombatProportionalToPhysicalState@Blind` (`RangeTo: 20`, all other channels neutral by default — the trait is signed, defaults are 100) gives proportional range scaling; `RangeMultiplier@blinded` retired (it would double-dip to 20%×20% = 4% at full meter); all 46 `PauseOnCondition` sites carrying `disabled` now also carry `blinded` (full-blind = weapon disabled, same coverage as EMP); vision/detection/icon/`Targetable@blindable` stay on the `blinded` cliff per spec. Grants migrate `GrantExternalCondition: blinded` → `ApplyPhysicalState` `PhysicalStateName: Blind` `Amount: 20000` (full meter = binary-faithful; `PhysicalState.ApplyChange` clamps at `MaxValue`, so the old per-weapon `Duration` ordering cannot be expressed — flagged for ruling). Converted in-lane: SC Protoss `Corsair_EMP`, SC Terran `MedicFlare`, SC Zerg `DreadshroudSpore`; NOVA via REQUEST: RA Soviets `ShtoraLaser`, RA2Mod Syndicate `RA2GrenadePack`. The binary block (`ExternalCondition@blinded`, `TimedConditionBar@blinded`) stays until the pack grants land.
 5. **Every axis needs its own art** (§4b) — green pulsating corrosion overlay + armor-breach breach-icon are NEW assets.
 
 6. **Plasma Versus** = the **per-armor blend (average) of the Flame and Chemical ladders** (maintainer:

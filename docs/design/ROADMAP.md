@@ -3,6 +3,80 @@
 _Entry point for a new session: **[`docs/HANDOFF.md`](../HANDOFF.md)**. This file is the
 granular, resumable task queue that the handoff points into._
 
+## Reference evidence and Japan pilot (2026-09-09) — in review
+
+Owner: Astra coordination, OpenCode GLM 5.3 Flash implementation, under Blackrobe's
+overnight authorization. [Current instructions](REFERENCE_EXTRACTION_PLAN.md#september-9-follow-up-rulings)
+and [DTA investigation](../balance/review/DTA_INI_EXTRACTOR_RESEARCH_20260909.md).
+
+- [x] Review INI damage-channel preservation and consumer eligibility gates (local batch).
+  Reproduced: X-O's zero-direct-damage primary was replaced by its secondary; loaders
+  discarded incompleteness metadata. Received DTA files now match chassis values
+  across 863 actor records per variant; ten primary identities need correction.
+- [x] Implement and review external-source RA3/Dune II/Emperor extractors and regression coverage;
+  raw collection must not be presented as verified automatic balance eligibility.
+- [x] Complete the Katyusha display-name/reference correction and deterministic
+  assignment regeneration. Internal actor identity and firing operation stay unchanged.
+- [x] Implement a source/target-separated, input-pinned Japan diagnostic plus bounded
+  withheld-reference checks. These do not sign anchors or apply unit-stat changes.
+- [ ] Complete evidence-backed fitted proposals and representative matchup validation
+  after the source, class and weapon gates pass. No fabricated missing-source targets.
+- [ ] Obtain versioned Spice Wars data. DTA files arrived at 00:46 on 10 September;
+  selected mode and executable/extension version remain unverified.
+- [ ] Finish the new OpenRA all-armament evidence repair requested at 00:08 on
+  10 September. Factory-ready and maximum-upgrade states remain distinct; unknown
+  activation cannot be replaced with an all-conditions-false assumption.
+- [x] Implement and validate the continuous-heaviness runtime/tool contract before
+  scoped W24 activation (Aedis authorized implementation 00:40, interpolation 00:51);
+  see [the reviewed findings](../balance/review/CONTINUOUS_HEAVINESS_REVIEW_20260910.md).
+  ✅ SHIPPED 2026-08-24 (`7704fcf67`) — `HeavinessBell.cs` wired behind the inert
+  `Heaviness` yaml field; `audit_heaviness_bell` clean. Still gated: no yaml may set
+  `Heaviness` until a maintainer orders the rollout.
+
+Completed boxes above describe reviewed local implementation, not publication, anchor
+approval or an applied rebalance. Same-base full-suite comparison at `50b7d001b` retains
+all 24 baseline failure/error signatures; the later OpenRA repair needs its own final run.
+
+## STAT GRANULARITY + REGENERATION (2026-09-07) — maintainer rulings, IN FLIGHT
+
+- [x] DESIGN.md: HP to **1000-steps for every type** (was 2500 vehicles / 1000 infantry),
+  Speed to **steps of 1** (was 5). Both coarse steps existed only to make a DERIVED value
+  divide evenly, and both made the uniqueness law impossible — `mbt` has 51 members but
+  24 distinct HP values and 14 distinct speeds (`64dd80480`).
+- [x] `ScaledSelfHeal` trait — ticks-to-full, applied per tick with a carried fraction,
+  linear ramp over 125 ticks replacing `DamageCooldown`. Built, boot-gated, shipped
+  **INERT** (`4afa00095`).
+- [ ] **Convert the 892 `ChangesHealth@SelfHealing` nodes.** DELEGATED and split four ways —
+  `Cameo-mod-fleet/TASK_2026-09-07_regen_conversion.md`. Everything lands on
+  `devin/regen/conversion`; Claude-Local flips `defaults.yaml` LAST and merges whole,
+  because deleting overrides first leaves a flat `Step: 10` and flipping first
+  double-heals. Neither state may sit on master.
+- [ ] Infantry moves from **1.25x** to the ruled **2x** vehicle heal rate (80 s -> 50 s).
+  This is the first change that alters gameplay; wants a playtest, not just a boot gate.
+- [x] `audit_turn_speed.py` guards `TurnSpeed = Speed/5` (turretless 2x) — generator +
+  audit rather than C#, because turn speed is an integer `WAngle` at every layer and
+  `Aircraft` exposes no modifier hook (`d83812437`). Ratchets T1 37 · T2 142 · T3 27 · T4 137.
+- [ ] **Turret rulings not yet written into DESIGN.md**: all 27 turret/hull mismatches are
+  bugs; stationary defenses get the **2x rule on the TURRET** rather than the chassis, so a
+  defense tracks as fast as a frontal-weapon tank; a tank that DEPLOYS into an immobile
+  form doubles its rotation (GDI Rig, Terran siege tank, Matador). Husks alone keep no
+  turn rate.
+- [ ] Generate `Mobile` / `Turreted` / `Aircraft` TurnSpeed from Speed and drive the
+  T1/T2 ratchets down. 40% of vehicles currently disobey the rule.
+
+## Balance apply failure safety (2026-09-07)
+
+- [x] Repair `apply_balance.py` confirmation: reject incomplete plans, validate
+  provenance/shared consumers, stage extraction outside proposal ledgers, propagate
+  failed subprocesses, and restore transaction-owned writes on failure.
+- [x] Add failure-injection regressions and verify an unchanged live faction dry run.
+
+The former writer could save YAML despite planning errors, invoke the extractor
+with an obsolete positional argument, and report success after subprocess failure.
+The repair is independently reviewed; balance targets still require the normal
+sign-off and boot gates. Evidence and delivery status are in
+`docs/audit/ASTRA_REVIEW.md`.
+
 ## AI PERSONALITY SELECTOR (2026-08-21)
 
 - [x] Add synchronized random Rush/Turtle/Tech/Expansion/Steamroller selection
@@ -26,41 +100,209 @@ granular, resumable task queue that the handoff points into._
 
 ## AI ARCHITECTURE (2026-08-31)
 
-Design: [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md). Nothing here is implemented; the
-design document is the deliverable so far. Ordered so each item is independently
-verifiable.
+Design: [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md). Record-only completed-match telemetry
+and the first adaptive personality behavior are implemented on the follow-up branches;
+later adaptive decision behavior remains proposed.
+Ordered so each item is independently
+verifiable. §10 of the design is the module-by-module build plan: what every loaded
+bot module owns, what it reads from the master's snapshot, and the phase order
+(logging → observe-only master → switching → targeting → hints → fog → learning),
+each phase shippable on its own. §11 reconciles the five-agent research round: what was verified,
+what was rejected as unsourced, and the amendments it made to the target score, the log schema and
+the fog sequencing.
 
+- ⭐ **One implementation per mechanic (DESIGN §22, maintainer 2026-09-30): [`TYPE_MERGE_PLAN.md`](TYPE_MERGE_PLAN.md)** — 119 families of duplicate C# types (21 live side by side), ~660 agent-hours outside the bot layer; M1 = the 12 non-bot families running side by side, M2 = `Missile` (the Generals weapons need `MissileCA`).
+- ⭐ **The bot's ordered queue, measured status and effort estimate: [`AI_MASTER_PLAN.md`](AI_MASTER_PLAN.md)** (2026-09-30: 55 items, ~956 agent-hours, 42 A/B gates, six waves plus the 1b hardening wave from the Fransbot author's review, now with LC9 and the mission cards MC1–MC3 — [`AI_MISSION_CARDS.md`](AI_MISSION_CARDS.md)). The lines below keep the per-phase detail.
+- [ ] **Combined arms — maintainer order 2026-09-28, [`AI_ARCHITECTURE.md`](AI_ARCHITECTURE.md) §12.**
+  Each phase: telemetry first, behaviour behind a yaml switch, then a Nuclear Winter A/B
+  against the current master (≥ 8 matches, both spawns); lands only if it does not lose.
+  - [x] **S** Guerrilla band tagged on the actors (§2.8a, bands ruled 2026-09-29): 154 actors,
+    `derive_guerrilla_roles.py` + `audit_guerrilla_roles.py`. Inert until applied. **Claude.**
+  - [x] **S** (merged #633, 2026-09-30) Apply `guerrilla` to the six personalities (`@classic` keeps its list), 5,825 → 4,289
+    central ids, `audit_central_ids.py` ratchet: branch `claude/role_guerrilla_apply`, lands after
+    its Nuclear Winter A/B. **Claude.**
+  - [ ] **L** §2.9 the empty `ai.yaml` (maintainer goal 2026-09-29), phases P0–P7: P0 engine dump +
+    diff gate, P1 count-tool case fix + dead ids, P2 type/family tags on templates, P3 type × family
+    building defaults (Outpost 2 + Scrin wired; A/B), P4 remaining lists → roles, P5 per-unit settings
+    from weapons, P6 learned unit weights (after CA-3), P7 packs hold only exceptions. **Claude.**
+  - [x] **S** §2.9 P0 the equivalence gate: `BotModuleFieldDump` + `dump_bot_modules.py` /
+    `diff_bot_modules.py` (2,168 fields; negative control caught the 7 changed fields). **Claude.**
+  - [ ] **S** §2.8b derive `AirSquadTargetTypes` from weapons (fixes `@guerrilla`'s missing rows). **Claude.**
+  - [ ] **M** §2.8b `UnitsToBuild` weights from stats + role mix, after CA-3 (ruled). **NOVA** + Claude.
+  - [ ] **L** §6.4 learn every number between matches (ruled 2026-09-29): L0 per-bot `Info` copy +
+    learned-file reader (desync test), L1 measured priors, L2 score + knobs, L3 knob training,
+    L4 personality/opening bandit, L5 raw numbers. Dev builds train, release reads. **Claude.**
+  - [ ] **S** Apply `navalunit` after reviewing #627's misses: 19 ships are in ground squads today
+    (§12.4a rule 3). **Claude.**
+  - [x] **M** (merged #634, 2026-09-30; `artillery`/`firesupport` roles still report-only) Squad membership rulings §12.4a in `SquadManagerBotModuleCA`: artillery squads from the
+    `artillery` role only (not the 10-cell range rule), fire-support squads with a tank escort
+    protecting the artillery, and a guard that ships never join ground or air squads. **NOVA**
+    (CA-3/CA-4), roles from Claude.
+  - [~] **L** CA-1 arsenal tracker (**shipped 2026-09-29:** `BotArsenalLedger` + stats shadow #624, `BotUnitProfiles`, roles `staticaa`/`airunit`/`navalunit` report-only #627; open: apply roles, in-match production weight) — `BotUnitRoles` + `power`/`defence`/`tech` tags, own
+    per-type ledger via a Cameo shadow of `UpdatesPlayerStatistics`, fog-honest enemy ledger
+    with defence ranges and a per-region heat map, log fields; then the in-match production
+    weight. **Claude.**
+  - [~] **M** CA-1b offline fitter (**tool shipped:** `tools/ai/fit_arsenal_priors.py`; the priors file waits on ledger matches) → committed `mods/cameo/ai/learned/arsenal_priors.yaml`
+    (read at match start, §6.1); more harness matchups. **Claude** (Devin Cloud out of tokens).
+  - [~] **L** (telemetry + failure memory shipped #656; behaviour off) CA-2 siege and force preservation: stand-off outside remembered defence range,
+    artillery first, commit when the area's defences are gone or the Versus-weighted force
+    ratio wins; evaluate `FransGroundDefendForcePreservationGuard`. **DAWN.**
+    (Guard evaluated 2026-10-01: genericbot `ProtectOwn`/`PrepositionDefenceTick` drafted the
+    whole idle pool — `UseDefendPreservation` port behind `O_ca2_defend_reserve` on
+    `devin/dawn/ca2-defend-reserve`.)
+  - [~] **M** CA-3 role-mix production + squad composition with a use-every-role floor (**mechanism merged #678:**
+    `RoleMix` + `RoleMixRoleFloorPct` + `ChooseRoleDeficit` on master; the six personality `RoleMix` rows
+    land behind `UseRoleMix` as switch group `J_rolemix_production` in #731). **NOVA.**
+  - [x] **M** (merged #678) CA-4 formation movement (frontline leads, infantry with tanks, AA inside,
+    artillery back, gunships over the front, pace of the slowest frontline): `FormationMovement` +
+    `FormationTrailCells`/`FormationMaxLeadCells`/`FormationMaxStalledLeadCells` on
+    `SquadManagerBotModuleCA`, default off. **NOVA.**
+  - [~] **L** CA-5 air doctrine: gunship close air support, fighter pick-off, bomber strike
+    teams on an air-threat route layer. **EMBER.**
+  - [~] **M** CA-6 scouting → target choice incl. spawn-directed recon (§9 item 12). **DAWN.**
+    (§9-12a/b already shipped in the V1.29.48 Fransbot revendor + `EnemySpawnBonus`; genericbot loop
+    closure — `WeightIntelAge` + `UseTargetIntelBias` behind `N_ca6_target_intel` — on
+    `devin/dawn/ca6-scout-target-intel`.)
+  - [x] **S** (merged #647) Scout-rebuild rationing + garrisoned buildings valued as defences (AI_ARCHITECTURE
+    §12.12; measured causes §12.11: `hard` builds ~72 Humvees and ~5 tanks per match, and feeds
+    infantry into 0-value garrisons). **Claude.**
+  - [~] **L** (EX-0…EX-3 merged #651–#654; EX-4, towers, escort open) EX expansion planner (§12.13, DESIGN §19.1b): the field score
+    `value × safety / time-until-it-pays`, distance-minimising placement toward the target field,
+    one refinery per field plus towers, MCV hand-off, and the enemy creep scaled by difficulty ×
+    aggression. Steps EX-0 … EX-4, each A/B-gated. **Claude.**
+  - [~] **M** (Steamroller + Rush telemetry merged #658; Guerrilla telemetry on
+    `devin/dawn/pl-guerrilla-telemetry` — `own.regions_fresh`/`regions_enemy_presence`/`guerrilla_lead`,
+    record-only) Personality leads (§12.14, DESIGN §19.1c): telemetry first. Expansion, Turtle and Tech
+    **Claude**; Steamroller and Rush **NOVA**; Guerrilla map control **DAWN**.
+- [ ] **Research round 2 — [`AI_DEEP_RESEARCH.md`](AI_DEEP_RESEARCH.md) §9** (same gate; a
+  league score once LG exists). Order of value: CP → ZG/IM → MI → UT → LG/OM.
+  - [~] **M** CP combat predictor (**shipped:** record-only #623; squads engage/retreat with it on the six genericbot personalities, `RetreatRatioPct` 0.1–1.0) — Versus-aware Lanchester strength, engage/retreat hysteresis,
+    learned per-type factors; replaces the 6c scalar. **Claude.**
+  - [~] **L** ZG zone graph (CN `CNTacticalMap` port, precomputed zone paths) + **IM** influence
+    layers (threat ground/air, own strength, interest, staleness; decay to averages) — **ZG-a/b/c
+    merged** (#711/#713/#718, `UseZoneTopology` off = group `D_zone_topology`); IM-1/IM-2 on
+    drafts #725/#726 (group `H_influence_layers`). **NOVA.**
+  - [~] **M** MI budgeted micro: focus fire, kiting, pull back damaged (shipped in group A, 2026-10-01). **EMBER.**
+  - [ ] **M** CV concave engagement (maintainer order 2026-10-01, `AI_ARCHITECTURE.md` §12.7a): deploy into a
+    range-matched concave that widens with army size, then a staggered commit so every member reaches its range
+    together. Unified with NOVA's ATK-1 fan-out into ONE deploy state (§19.3). **Merged 2026-10-02 (switch `AG_assault_fanout`).**
+  - [ ] **L** ST scale targets (maintainer order 2026-10-01, DESIGN §19.10, `AI_ARCHITECTURE.md` §12.22): every base and
+    army size = one fog-honest target from the tier line, the seen enemy + unscouted margin, personality, game time;
+    replaces BotLimits caps and the hand-written BuildingLimits; switch `ST_scale_targets`. **Claude spec, Sonnet code.**
+  - [~] **L** UT utility strategist over the bipolar axes; one blended squad manager. **NOVA.**
+    UT-1/UT-2 merged (#736/#738, group `M_utility_axes`): delay-reset lean + guerrilla-cap
+    lean. UT-3 `nova/ut3-defend-share` — defence share: TurtleRush scales the CA-2 reserve,
+    own flag `UseUtilityDefendReserve`, group `Q_ut3_defend_share`.
+  - [x] **M** LG league harness (#625; exploiters get Hard's insurance since 2026-09-29) (past masters + exploiter personalities + maps/factions). **EMBER.**
+    In flight: `tools/ai/run_league.py` (spec → per-cell batch → `league_summary.json`
+    with pooled W-L, Wilson, per-member/spawn splits) + `exploit_rush` /
+    `exploit_turtle` / `exploit_guerrilla` hidden bot types pinned at one pole
+    via `BotPersonalityController.PinnedPersonalities`. "Past masters" freeze
+    as hidden bot types, not old binaries (classic is the first such freeze).
+  - [ ] **M** OM per-enemy-faction profiles with a bandit start (DESIGN §19.2). **Claude.**
+  - [~] **L** DF predictive defence, lure and punish (**shipped 2026-09-29, A/B pending:** DF-1 tracking, DF-2 pre-position + hold + lure, DF-3/4 fast squads join or punish, release by threat) (AI_DEEP_RESEARCH §14): enemy-group
+    tracking + heading extrapolation (record-only first), defence squad pre-positioned under own
+    towers with a poke-and-fall-back lure, fast squads convert by threat and reach, punish the
+    enemy base while its army is out. **Claude.**
+  - [~] **M** DI Director: pacing/aggression on a tension curve, no cheats, **on in the A/B**
+    (DESIGN §19.2). **NOVA**, with UT. DI-1 publisher `nova/director-1` (#740 —
+    publish-only telemetry, no switch); DI-2 consumer `nova/director-2` — phase-scaled
+    launch bar, group P.
+  - [ ] **S** LA offline analyst loop (AI_DEEP_RESEARCH §12): no local LLM, so an agent is the
+    analyst; input `tools/ai/fight_report.py` (#617), output `FINDINGS_*` + one A/B'd
+    candidate per finding. **Claude** (Devin Cloud out of tokens until next week).
+  - [~] **M** TC Team Commander for team games (§11): shared target + synchronised attacks,
+    defend requests, expansion claims, role split, human-ally beacons; 2v2 harness variant.
+    **NOVA**, with DI. TC-1 team blackboard publisher `nova/team-commander-1` —
+    publish-only, no switch. TC-2a `nova/tc2-sync-attacks` — ally Climax opens our
+    launch window (group `R_tc2_sync_attacks`, inert in 1v1). TC-2b
+    `nova/tc2-defend-answers` — ally defend requests answered via the protect-squad
+    escort path (group `S_tc2_defend_answers`). TC-2c `nova/tc2c-expansion-claims`
+    — ally expansion claims yield contested fields to the lower ClientIndex
+    (group `V_tc2_expansion_claims`). TC-2d `nova/tc2d-role-split` — allied
+    bots spread the TechRush-Expansion rest by deterministic index rank
+    (group `W_tc2_role_split`). TC-2e `devin/dawn/tc2e-capture-claims` —
+    allied capture claims yield contested capture targets to the lower
+    ClientIndex (group `AL_tc2e_capture_claims`). TC-3 2v2 harness landed
+    `devin/dawn/tc3-2v2-harness` — `--team-size 2` on
+    `tools/ai/run_ai_match_batch.py` + `"team_size"` league spec key, on the
+    shipped doubles map (DEVELOPMENT_LOG 2026-10-02).
+  - [ ] Beating the best humans (§13): discipline telemetry, multi-front pressure, base trade,
+    refuse bait, planned unpredictability, power-spike timing, superweapons, veterans, map
+    control, human-game logging, Elo per bot version, watchdogs — slotted as phases mature.
 - [x] Measure how ContentPack `ai.yaml` merges with the global AI file
   (add-only, packs load first, removal is a load-time crash).
 - [ ] **S** Migrate one pack's `UnitsToBuild` rows out of `ai/ai.yaml` into
-  `ContentPacks/TiberianDawn/GDI/yaml/ai.yaml`, gated on a byte-identical
-  `--resolved-rules Player` dump. Mechanical once the first one works.
+  `ContentPacks/TiberianDawn/GDI/yaml/ai.yaml`. **BLOCKED on merge order**
+  (Devin AI, 2026-09-05): `MiniYaml.MergePartial` appends ContentPack
+  `UnitsToBuild` rows BEFORE the global `ai.yaml` rows (packs load first),
+  so the `td_gdi_*` rows would jump to the top of `UnitsToBuild` instead of
+  their original interleaved position. A byte-identical
+  `--resolved-rules Player` dump is impossible; the resolved *content*
+  (same keys + values) is identical. The gate must be relaxed to
+  content-identical, or the migration needs a different approach (e.g.
+  keep the rows in the global file and mark them faction-owned via a
+  `RequiresCondition` on the trait, not on the rows).
 - [ ] **M** Repeat per pack, then per dictionary (`UnitLimits`,
   `BuildingFractions`).
 - [ ] **S** Personality-specific compositions via condition-gated
   `ProvidesPrerequisite` tokens plus group tokens for OR - zero C#.
-- [ ] **M** Guerrilla as the sixth personality (many small simultaneous raids).
-- [ ] **M** `MasterAiBotModule`: fogged per-enemy signals, main-target scoring,
-  personality choice. Switches travel as a `SetBotPersonality` order resolved by
-  a synced controller trait, because bot logic may not touch synced state.
+- [ ] **M** Add `personality-guerrilla` as a sixth personality for many small simultaneous
+  raids, gated on phase-3 log evidence that the computed rule fires often enough to justify it.
+  Tune a `SquadManagerBotModuleCA` instance using the existing `GuerrillaTypes`,
+  `MaxGuerrillaSize`, and `JoinGuerrilla` knobs, then add its notification block and audit
+  expected-set entries; no new C# is expected.
+- [x] **M** Phase 2 observe-only `MasterAiBotModule` and situation logging:
+  [`BotSituation.cs`](../../OpenRA.Mods.Cameo/Traits/BotModules/BotSituation.cs),
+  [`AiSituationLogWriter.cs`](../../OpenRA.Mods.Cameo/Traits/AiSituationLogWriter.cs).
+  Pre-fog, record-only; no orders, conditions, or synced-state changes.
+- [x] **M** Phase 3 synced `BotPersonalityController` and difficulty-gated dynamic
+  personality switching through `SetBotPersonality`; lower tiers retain fixed
+  random personalities.
+- [x] **M** Phase 4 main-target consumption: `SquadManagerBotModuleCA` prefers the
+  master's `MainTarget` for proactive picks when `PreferMainTarget` is enabled.
+- [x] **M** Phase 5 counter-demand conditions: `BotCounterDemandController` exposes
+  hysteretic, sustained `demand.*` prerequisites for pilot compositions.
+- [x] **M** `MasterAiBotModule`: fogged per-enemy signals, main-target scoring,
+  and later personality refinements. Phase-6 programme landed 2026-09-27:
+  6a fogged observation + `RegionMemory` + `UseFoggedObservation` (`ccfd7830a`),
+  6b `ScoutBotModule` (`c2dab139a`), 6c pre-commit risk gate
+  `IBotRegionThreatProvider` + `AttackRiskMargin` (`295396dfd`), 6d fogged
+  squad scans + `FrozenActorLayer` fallback targets (`16d876f51`), 6e risk
+  routing `IBotRouteThreatRouter` + `RegionRouter` (`951e480d7`), 6f p1
+  artillery attach (`9fdb6e236`), 6g per-squad priority tags `BotTargetTags`
+  (`735a30db4`), 6b scout/squad ownership release (`257a4cbff`).
 - [ ] **M** Per-enemy pairwise damage ledger (`PlayerStatistics` is aggregate and
   cannot attribute losses to a specific opponent).
-- [ ] **M** JSONL match logging: match / decision / outcome records, the episode
-  as the unit of learning. Record-only, no behaviour change - this is the
-  proof-of-concept deliverable.
-- [ ] **M** Offline aggregation tool: personality and composition performance per
-  faction matchup, with a minimum sample threshold.
+  - [x] **M** Record-only AI match logging: [`AI_MATCH_LOG.md`](AI_MATCH_LOG.md),
+    [`AiMatchLogRecorder.cs`](../../OpenRA.Mods.Cameo/Traits/AiMatchLogRecorder.cs),
+    [`AiMatchLogWriter.cs`](../../OpenRA.Mods.Cameo/Traits/AiMatchLogWriter.cs), and
+    [`aggregate_ai_matches.py`](../../tools/ai/aggregate_ai_matches.py). Schema version 1;
+    host-only JSONL writes with no gameplay effect and no read-back.
+  - [x] **M** Offline aggregation extensions: personality and composition performance per
+    faction matchup, with a minimum sample threshold. Schema 2 adds
+    `composition*` fields and `episode_timeline` (stat-snapshot boundaries);
+    the aggregator reports per-episode kill/death trade per
+    faction x personality x composition x enemy matchup.
 - [ ] **L** Bandit-style (UCB1/Thompson) personality priors per matchup, fitted
   offline and committed as reviewed data.
 - [ ] **L** Headless AI-vs-AI batch harness to produce the data volume.
 - [ ] **DEFERRED** Anything neural - blocked on factions and balance being
   finished, per the maintainer's own sequencing.
-- [ ] **OPEN DESIGN** Fogged bot observation. Bots currently scan `World.Actors`
-  and filter only cloak, never shroud, so they know the whole map from tick zero.
-  This is the only real cheat left (difficulty is `BotLimits` throttling, not
-  resources), and fixing it will make bots temporarily weaker and requires a
-  scouting module. Maintainer's call - see AI_ARCHITECTURE.md section 9,
-  decision 1.
+- [x] **SHIPPED** Fogged bot observation (phases 6a-6e above). Squad scans now
+  honour shroud via `IsPreferredObservedEnemyUnit` and remembered buildings via
+  `FrozenActorLayer`; `ScoutBotModule` provides the scouting half. Bots keep
+  the legacy omniscient scan whenever no `IBotFoggedEnemyProvider` answers
+  (10.1 degradation) or `UseFoggedObservation` is off. The follow-on tuning
+  pass the design warned about is the remaining work.
+- [x] **M** Phase 7a assign-layer missions: `MasterAiBotModule` publishes fog-honest,
+  ordered `Raid`/`Defend` intent and `SquadManagerBotModuleCA` consumes it only when forming
+  a new force; `Recon` remains with `ScoutBotModule`, `Secure` is deferred.
+- [x] **M** Phase 7a follow-up (after #592): replace the single exhausted-Defend
+region with multi-region exclusion, fix exhausted Defend/Raid consumer selection, count static defence only in the own base region, document the inherited non-fogged fallback, and add the permanent fog-enabled Raid runtime gate.
+- [ ] **M** Phase 7b mission bidding: squads bid for missions instead of the forming squad
+  taking the first affordable mission.
+- [ ] **M** Phase 7c `Secure` missions plus Fransbot anchors and squad rejoin.
 
 **Rule zero: crashes and player-visible regressions ALWAYS jump the queue.** Ordering inside a
 section: quickest wins first, then by severity. Effort: **S** < 1 h · **M** = one session ·
@@ -84,6 +326,36 @@ first. Faction reference: [`FACTIONS.md`](../FACTIONS.md).
 an open checkbox was moved.
 
 ---
+
+## ✅ RULED — three ideas from Combined Arms' damage model (2026-09-23)
+
+Asked by the maintainer after a Discord note from **Legato** (CA): CA has armour types only, a
+per-unit % against each, tooltips that say *"good vs heavy, weak vs infantry"*, and three extra
+rules: dedicated AA takes less from air weapons, `TankBuster` weapons deal bonus damage to 'tank'
+units, and a T3 flak-armour upgrade shields infantry from some splash. Measured against CA's source
+(`CAmod` @ `f31049d2`): all three are ONE hidden-multiplier trait, `DamageTypeDamageMultiplier`
+(`AirToGround` 50, **`TankBuster` 133 — not 150**, `FlakVestMitigated` 60 / 80), and the
+tooltips are hand-written `TooltipExtras` lines. Cameo already has the per-weapon % (the
+`^Warhead_*` families) and already prescribes `Strong vs … / Weak vs …` (DESIGN §7, 1,489 /
+1,061 live lines, **all hand-written and never checked**).
+
+**Maintainer ruling, 2026-09-23 — ADOPT:**
+
+1. **Derive `Strong vs` / `Weak vs` from each unit's resolved warhead profile** (generator or
+   audit) so §7's lines stay true as the reference averaging moves profiles. No balance change.
+   Read through `miniyaml.Ruleset.resolve_weapon` + `weapon_efficiency.versus_of`.
+2. **Dedicated AA takes less damage from aircraft weapons** — as an armour / plating class,
+   visible and priced by the pipeline. **Not** as CA's hidden multiplier: W26/R1 is retiring
+   those (*"HP is visible in the unit stat widget; a multiplier is not"*).
+3. **A TankBuster bonus against 'tank' units.** Adopted against the coordinator's advice (Cameo's
+   five-rung vehicle ladder and the AP families already peak on heavy armour). ⚠ **The FORM is not
+   ruled yet:** CA's form is the hidden multiplier W26/R1 forbids; the Cameo-native forms are a
+   Versus tilt in a `^Warhead_*` family or a 'tank' armour distinction. Ask before building.
+
+**NOT adopted:** the infantry flak-armour upgrade.
+
+None of this is built. Order: (1) first — it is balance-neutral and protects the reference
+averaging's output; (2) and (3) are balance changes and follow W24.
 
 ## ⭐ START HERE — [`BALANCE_PROGRAM_PLAN.md`](BALANCE_PROGRAM_PLAN.md)
 
@@ -177,9 +449,10 @@ Whether the grip should complete faster is a BALANCE question for the ledger, no
 
 ### 4. More axes to convert
 
-Documented in `PHYSICAL_STATE_SYSTEM.md` §5 but not built: **Sonic → `Resonance`** (W7, needs no
-new C#), **Hex** (Magic: −firepower/−accuracy/disable specials), **ArmorBreach**, **Knockback**
-(needs new C#). Only **Temperature** (98.6% exposure) and **Corrosion** (45.0%) exist today.
+Documented in `PHYSICAL_STATE_SYSTEM.md` §5 but not built: **Hex** (Magic: −firepower/−accuracy/
+disable specials), **ArmorBreach**, **Knockback** (needs new C#). **Sonic → `Resonance`** (W7)
+is in progress (EMBER, `devin/ember/l6-w7-resonance` — shared side done, pack refs pending);
+**Temperature** (98.6% exposure) and **Corrosion** (45.0%) exist today.
 
 ## ✅ RULED — the "broken ladders" were never broken (2026-08-23)
 
@@ -227,11 +500,14 @@ family/ladder pairs; with it, **zero**. Nothing needs authoring.
 continuous value; the interim per-ladder form is unique within a ladder but collides across them.
 Recorded as an explicit OPEN block in DESIGN §12.0i — think it through before changing anything.
 
-⭐ **The bell is unblocked.** §9.6's blockers 1 and 2 are both gone — blocker 2 (every family in the
-spread band) was already finished on 2026-08-22 and the document had not noticed
-(`audit_versus_profile`: 46 in band, `SPREAD_OFFENDERS_BASELINE = 0`). Next action is §9.6 step 5:
-implement the family-anchored bell in `AreaDamageWarhead`, **inert at h=1**, and prove the resolved
-profiles are byte-identical before any weapon sets a different `h`.
+⭐ ~~**The bell is unblocked.**~~ **✅ SHIPPED 2026-08-24 (`7704fcf67`).** §9.6 step 5 landed:
+`OpenRA.Mods.Cameo/Warheads/HeavinessBell.cs` is the C# port of the ruled bell (13-slot axis,
+`mu = (h + com)/2`, LO 2/3, σ 0.75, renorm + per-ladder rank restore), wired in
+`AreaDamageWarhead.RulesetLoaded` behind the `Heaviness` yaml field (thousandths; 0 = inert).
+Inertness is by construction — no weapon sets `Heaviness`, so resolved profiles are byte-identical.
+`audit_heaviness_bell`: 0 inversions, 0 mean drifts, 2 flat families at ratchet. Remaining: the
+Spread scale (`LEVEL_RADIUS_SCALE`) is deliberately NOT wired — it needs its own design ruling,
+and no yaml may set `Heaviness` until a maintainer orders a rollout.
 
 ## ✅ RULED AND SHIPPED — the Cryo families are adopted (2026-08-23, `a9f31258a`)
 
@@ -477,8 +753,10 @@ removal (`43df39235`); 5 earlier templates + buff-strip (`090d3d997`).
   contradicting `BALANCE_PIPELINE.md` §2; recommendation is to split them into
   `docs/balance/derived/`. Full spec + improvement roadmap:
   [`EFFECTIVE_DAMAGE.md`](EFFECTIVE_DAMAGE.md).
-- **[NEXT — needs a maintainer warhead order] Adopt the Sonic family.** `^Warhead_Sonic_*` now bakes
-  the `SonicDebuff` mark (`5a14355e6`), but **nothing inherits it**, so it is inert. Candidates:
+- **[PARTIALLY ADOPTED — recheck remaining candidates] Adopt the Sonic family.** `^Warhead_Sonic_*`
+  is now LIVE: TS GDI `TSSonicZapWeaponSonic` inherits `^Warhead_Sonic_Heavy` + `^Effect_Sonic_Heavy`,
+  and `^Warhead_CannonSonic_*`/`^Warhead_MissileSonic_*` variants are inherited across TiberianSun,
+  RedAlert, RedAlert2, and D2k packs (post-#483 Resonance/state wiring). Remaining candidates:
   TS GDI `TSSonicZapWeapon` / `TSSonicZapWeaponSonic` (the Disruptor — currently Tesla + Magic),
   the sonic UPGRADE variants `TSVulcanGunSonic` / `TSAssaultCannonSonic` / `TSAssaultCannonTalSonic` /
   `TSHellfireSonic` / `TSZoneHellfireSonic` / `TSBombSonic` / `TSGrenadeSonic` / `KodiakCannonSonic`
@@ -669,11 +947,72 @@ shaders → boot-gate → commit `mod.config`. Also in `CLAUDE.md` and the Sessi
 `ObjectCreator.FindType` returns the first assembly in `mod.yaml`'s `Assemblies` list holding
 the type name, and that order is AS, CA, **Cameo**, Cnc, D2k, Common, so an
 `OpenRA.Mods.Cameo` class of the same name replaces the engine's with **zero yaml changes**.
-Precedent: `ColorPickerColorShift`, `PlayerColorShift`, and `SelectionDecorations`
-(`57685c3a3`). Prove it with a Cameo-only field — `--docs` lists both types and proves nothing.
+Precedent: `ColorPickerColorShift`, `PlayerColorShift`, `SelectionDecorations`
+(`57685c3a3`), and now `RenderSpritesInfo` + `ColorPickerManagerInfo` (the colour-picker
+preview build, 2026-09-22). Prove it with a Cameo-only field — `--docs` lists both types
+and proves nothing.
 Memory: `cameo-engine-submodule`.
 
 ---
+
+## ⭐ NEW — a unique FACTION TRAIT for every faction (maintainer, 2026-09-12)
+
+Maintainer order: *"give each faction a unique faction trait as a bonus"*.
+
+**Scope: 24 factions**, each getting one. `asianalliance · atreides · cabal · corrino ·
+forgotten · futuretech · harkonnen · ixian · japan · latinsyndicate · naxis · ordos ·
+ra1_allies · ra1_soviets · ra2_allies · ra2_soviets · schwarzermond · steelconsortium ·
+td_gdi · td_nod · tkm · ts_gdi · ts_nod · yuri`
+
+### ⛔ FIRST: this is a THIRD layer, not a rename of either existing one
+
+[`DESIGN.md` §6](../DESIGN.md) already rules two upgrade layers, and the whole risk in this
+item is that someone reads "faction trait" as one of them and re-implements it. State the
+difference before writing any yaml:
+
+| layer | how you get it | who it affects | magnitude | status |
+|---|---|---|---|---|
+| **faction upgrade** | BUILT, costs credits | own faction | **15–25%** | shipped, many exist |
+| **team upgrade** | BUILT, costs credits | every ALLIED army | **5–10%** (≈ half the faction one) | one per faction eventually; SM's still unpicked (below) |
+| **faction trait** ← *this item* | **INNATE — never built, never bought, on from tick 0** | own faction | **TBD — needs a ruling** | none exist |
+
+The trait is the RA2/StarCraft-style identity bonus a player gets simply for picking the
+faction. Nothing in the tree currently occupies that layer.
+
+### Open rulings needed before any implementation
+
+- [ ] **Magnitude.** The §6 ladder is 15–25% built / 5–10% team. A free permanent bonus has to
+  sit UNDER a paid one or the upgrade economy inverts — but it is also always-on, so a flat
+  percentage is worth more than the same number on an upgrade. Recommend a ruling that keeps
+  traits **non-numeric wherever possible** (a capability, not a multiplier) precisely to dodge
+  that comparison.
+- [ ] **Does a trait interact with pricing?** ⛔ If a trait is a stat multiplier it enters
+  effective DPS/HP and the formula must price it, exactly as `FirepowerMultiplier` does
+  (`docs/design/FORMULA_V2.md`). A CAPABILITY trait does not. This is the strongest argument
+  for capability-shaped traits and should be settled first — it decides whether this item
+  blocks on the balance program or runs beside it.
+- [ ] **Uniqueness law.** "Unique" needs the same treatment the warhead families got
+  (`audit_family_uniqueness.py`): no two factions may share a trait, and near-duplicates
+  ("+10% speed" vs "+10% movement") are the failure mode. Wants an audit, not a review.
+
+### Why it is NOT just "pick 24 good effects"
+
+The lesson `DESIGN.md` §6 already paid for, on the SM team upgrade: *"The mistake was
+reasoning from an available mechanic instead of from faction identity."* A trait derived from
+what the engine happens to expose produces 24 multipliers that could belong to anyone. Each
+trait must be derivable from the faction's existing roster and lore — which for most factions
+is already written down, so this starts from the identity documents rather than a mechanics list.
+
+⚠ **Cabal, Forgotten, Yuri and the D2K houses need checking first** — several are sub-factions
+or AI-only in places, and a trait on a faction nobody can pick in the lobby is dead content.
+Confirm lobby-selectable factions before committing to 24.
+
+### Related, already ruled — do not re-derive
+
+* the two existing layers and the **team ≈ half of faction** magnitude law: `DESIGN.md` §6
+* **a team upgrade must fit faction identity**: `DESIGN.md` §6, 2026-08-15
+* the `<Delivery><Tech>` blend grid **is** the faction upgrade matrix: `DESIGN.md` §1444
+* platings are mutually exclusive, team upgrades are not: `DESIGN.md` §2317
 
 ## ❓ OPEN DESIGN — Schwarzer Mond team upgrade + faction lore pass (2026-08-15)
 
@@ -907,7 +1246,7 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   first — the current subtype rosters pull in snipers/casters/spies/core-combat
   units (scout: spies+zerg_defiler; SF: dragunov sniper, terran_*, zerg_hydralisk).
   PROGRESS 2026-07-22: **closecombat 3/4 at Δ≤1** — shotgunner/fanatic anchors
-  (Δ0), naxis_sssoldier (range 4500, FP 95%, Δ−0.8). `alien.nax` DEFERRED (Δ+67):
+  (Δ0), naxis_sssoldier (range 4500, FP 95%, Δ−0.8). `naxis_alien` DEFERRED (Δ+67):
   its weapon `NaxiAlienPistol` is defined in shared `mods/cameo/weapons/redalert2mod.yaml`
   and inherited cross-pack (Naxis + SchwarzerMond) — editing it would leak.
 - [ ] **Shared-weapon ownership pass** (systemic, found 2026-07-22): many members
@@ -940,8 +1279,8 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   charge-delay/frontal-facing negatives — so K is never under/over-counted.
 - [ ] Then vehicle anchor proposal (MBT live; light tank / heavy / tank
   destroyer / artillery / AA / scout / battlefortress / APC).
-- [ ] DEFERRED to elite-weapon audit: elite weapon range = base + 1000
-  (naxis elite is 6500, should be 6000).
+- [ ] Elite weapon range = base + 1000 — **ruled 2026-09-30, DESIGN §12.0m**; guarded by
+  `audit_elite_range.py` (56 off-rule pairs, lower-only); fix them in the rebalance, through the pipeline.
 - [ ] **Class descriptions rework** (maintainer 2026-07-22): every unit CLASS
   needs its own fluent `.description` (only a few exist so far —
   scout/antitank/mbt/commando + the 4 added today: heavy_sniper/rocket_trooper/
@@ -1140,7 +1479,7 @@ in-game); actors + stats + structure are LOCKED. Full anchor store:
   `steel_defender→steelconsortium_defenderbot`,
   `aa_samurai→asianalliance_japanesesamurai`,
   `aa_lynx→asianalliance_lynxtank`, `aa_mecha→asianalliance_pulverizermecha`,
-  `aa_flam→asianalliance_asiansentryflamer`; unresolved: `aa_archer`,
+  `aa_flam→asianalliance_sentryflamer`; unresolved: `aa_archer`,
   `aa_ftnk`, `steel_fedinf`, `steel_qinf`. Effort: S–M once decided.
 
 ### P0/P1 — User-reported issues (2026-07-15/17)
@@ -1453,11 +1792,10 @@ DESIGN formulas instead of silently "fixing".
 Maintainer picked the scout class first; proposed anchor 20000 HP /
 50 Speed / 5.0 Range / 4000 Damage / 50 Reload / Cost 100 with the
 2x-health bake replacing the ScoutInfantryBuff damage reduction.
-⚠ **The bake is HALF APPLIED (measured 2026-08-17): 19 of 35 scouts
-cancel the template's `DamageMultiplier@ScoutInfantryBuff: 50` with a
-local `Modifier: 100`; 16 still resolve to 50 and are therefore twice
-as durable as their price. Finishing this class means finishing that
-migration, not just setting the anchor** — W26 / FORMULA_V2.md.
+⚠ **The bake WAS half applied (measured 2026-08-17): 19 of 35 scouts
+cancelled the template's `DamageMultiplier@ScoutInfantryBuff: 50` with a
+local `Modifier: 100` — re-measured 2026-09-22: 0 still resolve,
+migration complete.** — W26 / FORMULA_V2.md.
 Assessment + simulation: docs/balance/formula_v2_classes.md — anchor
 structure confirmed, speed 60 recommended over 50, bake endorsed;
 BLOCKED ON: (1) garrisoned/pricing armament flag in the extractor,
@@ -1880,6 +2218,10 @@ types, creating a unified wall+turret defense system across the mod.
 
 ## Phase D — SP-ification of the other TS factions (after CABAL)
 - TS GDI, Nod, Forgotten, then Scrin — SP-recipe weapons/effects, workbook stats.
+- [x] Scrin structures foundation: hidden faction metadata plus nine
+  map/editor-ready structure actors and independent Kane's Wrath-derived sprites.
+- [ ] Add the Drone Ship and its deployment into the Drone Platform before
+  enabling Scrin in the lobby or defining starting units and production.
 
 ## Phase E — Platform & engine (background, L)
 - [x] **Port `AttackGarrisonedSP`** (one fire port per passenger) + convert all
@@ -2192,3 +2534,58 @@ types, creating a unified wall+turret defense system across the mod.
   run it repeatedly. Keep findings above updated in this section.
 
 ---
+
+## D2k Faction Rollout — Atreides / Harkonnen / Corrino (2026-08-25)
+
+**Coordinator:** Devin-Aurora.
+**Canonical plan:** `docs/HANDOFF.md` §3.B.
+**Driving requirement:** new Atreides and Harkonnen harvester sprites supplied by the maintainer; each of the three factions must have a completely unique tech tree and no shared units/assets with each other or with Ixian/Ordos.
+
+### Phase 0 — Foundation (Devin-Aurora)
+- [x] Add `mods/cameo/bits/d2k/atreides_harvester.png` and `mods/cameo/bits/d2k/harkonnen_harvester.png`.
+- [x] Create `atreides_spiceharvester` and `harkonnen_spiceharvester` actors + sequences.
+- [x] Update `refinery.atreides` and `harkonnen_refinery` `FreeActor` to spawn the new harvesters.
+- [x] Create empty `Atreides/yaml/weapons.yaml` and load it from `Atreides/content.yaml`.
+- [x] Boot-gate passes (`launch-game.cmd` reaches menu; `MenuPostProcessEffect.PostWorldLoaded` in `perf.log`; no new `exception-*.log`).
+- [x] Scoped Phase 0 commit: `f07d8d35e` (D2k faction rollout: Atreides completion + Corrino creation + Ordos/Harkonnen additions + boot-gate fixes).
+
+> **Phase 0 incident:** `ContentPacks/D2k/Ordos/yaml/sequences.yaml` had `ordos_laserturret` / `ordos_chemturret` `turret` sequences using `Length: 64` with `Facings: -64`, which requested 4096 frames from PNGs with 96 and 80 frames respectively. The turret definitions were corrected to `Facings: 32` (default `Length: 1`), which fits the PNGs' `FrameAmount` metadata. The new `ordos_lasertur.png` / `ordos_chemtur.png` assets and weapon definitions are owned by Devin-Echo; Devin-Echo should confirm the 32 facing turret layout.
+
+> **Phase 0 out-of-scope addition:** Devin-Dawn created the `ContentPacks/D2k/Corrino/` skeleton and added it to `mods/cameo/mod.yaml`. This accelerates Phase 3 but is not part of the Phase 0 commit.
+
+### Phase 1 — Harkonnen (Devin-Blaze)
+- [x] Complete Harkonnen tech tree (infantry: lightinfantry, rockettrooper, engineer; vehicles; aircraft: carryall; defenses; upgrades; weapons; sequences).
+- [x] Replace shared art references with unique `harkonnen_*` assets/actors where art exists; remaining placeholders flagged for art pass.
+- [x] Enable `FactionCA@Harkonnen` and add `StartingUnits` (MCV/Light/Heavy) in `afdaae46c`.
+- [x] Boot-gate + menu reached with zero new exceptions.
+- [x] **Build options follow-up (2026-09-21):** restored the missing `Queue`, palette order,
+  descriptions, and icon palettes for `harkonnen_autogunturret` and
+  `harkonnen_rocketturret`; both now appear in the Harkonnen Defence queue with their existing
+  construction-yard/barracks or outpost prerequisites.
+
+### Phase 2 — Atreides (Devin-Aurora) — COMPLETE in `f07d8d35e`
+- [x] Complete Atreides tech tree: 15 buildings, 4 infantry, 5 vehicles, 1 aircraft, 5 upgrades, sequences.
+- [x] Theme: noble house, air superiority, Fremen, faster construction.
+- [x] Uncomment `FactionCA@Atreides`, add `StartingUnits` (MCV/Light/Heavy).
+- [x] Boot-gate passed (menu in 60s, 0 new exceptions).
+- [ ] Final `utility.cmd cameo --check-yaml` clean run (advisory lint remaining).
+
+### Phase 3 — Corrino (Devin-Cyrus, then Devin-Aurora) — COMPLETE as of `af3ff5f9d`
+- [x] Create `ContentPacks/D2k/Corrino/` skeleton (content.yaml, all yaml files, translations, mod.yaml include).
+- [x] Theme: imperial Sardaukars, elite heavy infantry, uparmored harvesters, Death Hand support power.
+- [x] Add `StartingUnits@corrino` once the full roster is in place (Ixian `faction.yaml` already references `corrino_mobileconstructionvehicle` and `corrino_sardaukar_bazooka`).
+- [x] Boot-gate + `utility.cmd cameo --check-yaml`.
+- [x] Add four Corrino Sardaukar variants: Berserker (melee axe), Swordmaster (melee blade), Javelin (ranged spear), and Laser (laser rifle), with sequences, weapons, and boot-gate.
+
+### Phase 4 — Shared/global pass (Devin-Blaze + Devin-Echo) — IN PROGRESS
+- [ ] Add shared D2k templates, fix cross-faction prerequisites, walls/turrets/superweapons/promotions.
+- [ ] Remove dead legacy blocks from `mods/cameo/weapons/d2k.yaml` and `mods/cameo/rules/d2k.yaml` once their content has moved.
+- [ ] Run `find_empty_warhead.py`, `review_resolve_diff`, `audit_warhead_split`, `extract_stats --check`, and the full `tools/audit/run_all.py` suite.
+- [ ] Boot-gate; update all doc claims.
+
+### Cross-phase rules
+- Prefix every new actor/weapon/sequence/building with the faction name.
+- No references to `ixian_*`, `ordos_*`, or generic global actors inside the new faction packs.
+- All assets live in the repo (`mods/cameo/bits/d2k/<faction>/` or the pack's `files/`).
+- Every new weapon follows W24 one-main-damage pattern; no duplicate same-family mains.
+- Boot-gate before every commit.

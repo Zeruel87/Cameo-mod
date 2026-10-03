@@ -13,13 +13,28 @@ from pathlib import Path
 from collections import defaultdict
 
 MOD = Path(__file__).resolve().parents[2] / "mods" / "cameo"
-CENTRAL = ["weapons/weapons.yaml", "weapons/tiberiandawn.yaml", "weapons/redalert2mod.yaml",
-           "weapons/d2k.yaml", "weapons/starcraft.yaml", "weapons/warcraft2.yaml",
-           "weapons/tiberiansun.yaml", "weapons/outpost2.yaml"]
-FILES = [MOD / p for p in CENTRAL] + sorted((MOD / "ContentPacks").glob("*/*/yaml/weapons.yaml"))
+ROOT = MOD.parents[1]
+
+# Live weapon files come from mod.yaml's Weapons: list — a hard-coded list
+# misses newly mounted files (e.g. weapons/effects_<game>.yaml, ruling 5a).
+def _live_files():
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import miniyaml
+        man = miniyaml.load_manifest(ROOT)
+        out = []
+        for entry in man.weapons:
+            p = Path(str(entry))
+            out.append(p if p.is_absolute() else ROOT / p)
+        return [p for p in out if p.exists()]
+    except Exception:
+        return ([MOD / p for p in ("weapons/weapons.yaml",)]
+                + sorted((MOD / "ContentPacks").glob("*/*/yaml/weapons.yaml")))
+
+FILES = _live_files()
 
 RE_INHERITS = re.compile(r"^Inherits(?:@\S+)?:\s*(\S+)")
-RE_WARHEAD = re.compile(r"^(-?)Warhead@(\S+?):\s*(\S*)\s*$")
+RE_WARHEAD = re.compile(r"^(-?)Warhead@(\S+?):\s*(\S*)\s*(?:#.*)?$")
 RE_TOP = re.compile(r"^([^\s#][^:]*):")
 
 
@@ -70,7 +85,10 @@ def resolve(name, stack=()):
     merged = {}
     for p in rec["parents"]:
         for k, t in resolve(p, stack + (name,)).items():
-            merged[k] = t
+            # a bare Warhead@K: pin inside a template merges fields only —
+            # it must NOT clobber an earlier-supplied type with ''
+            if t or k not in merged:
+                merged[k] = t
     for removal, key, wtype in rec["wh"]:
         if removal:
             merged.pop(key, None)
@@ -83,13 +101,13 @@ def resolve(name, stack=()):
 
 bad = []
 for name, rec in nodes.items():
-    if name.startswith("^"):
-        continue  # abstract templates are never instantiated
+    # ^ templates ARE instantiated standalone by WeaponInfo.LoadWarheads —
+    # an empty-type node inside one NREs at boot (W27 batch-2 crash).
     for key, wtype in resolve(name).items():
         if wtype == "":
             bad.append((name, key))
 
-print(f"live files: {len(FILES)}  |  nodes: {len(nodes)}  |  concrete weapons scanned")
+print(f"live files: {len(FILES)}  |  nodes: {len(nodes)}  |  weapons + templates scanned")
 print(f"EMPTY-TYPE warheads (would NRE at CreateBasic): {len(bad)}\n")
 for name, key in sorted(bad):
     # which file defines this weapon?

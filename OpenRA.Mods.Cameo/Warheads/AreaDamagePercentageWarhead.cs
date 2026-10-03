@@ -49,7 +49,28 @@ namespace OpenRA.Mods.Cameo.Warheads
 			if (PercentageScale > 0)
 				throw new YamlException("AreaDamagePercentage cannot also set PercentageScale: "
 					+ "this would apply two percentage hits from one warhead.");
+
+			// The folded percentage half is FORBIDDEN here (see the PercentageScale
+			// rejection above): the PercentageVersusLight/Heavy endpoints parameterise
+			// that folded half, so authoring them would be silently dead yaml — reject
+			// them instead of letting heaviness eat half a configuration nobody reads.
+			if (PercentageVersusLight.Count > 0 || PercentageVersusHeavy.Count > 0)
+				throw new YamlException("AreaDamagePercentage cannot set PercentageVersusLight/Heavy: "
+					+ "these endpoints parameterise the folded percentage half, which this "
+					+ "warhead forbids entirely.");
+
+			// The shared-profile mode parameterises that same folded percentage half
+			// (heaviness-scaled PercentageScale); until this class explicitly supports
+			// it, any opt-in is rejected instead of being honoured only halfway.
+			if (HeavinessMode != HeavinessMode.Legacy)
+				throw new YamlException(
+					"AreaDamagePercentage does not support the SharedVersus heaviness mode: "
+					+ "only the Legacy mode (the default) is available here.");
 		}
+
+		// The subclass is itself the percentage primary: the folded half does not exist on
+		// it, so the base's band branch must never compute with it.
+		protected override bool SupportsPercentageBands => false;
 
 		protected override void InflictPrimaryDamage(Actor victim, Actor firedBy, HitShape shape, WarheadArgs args)
 		{

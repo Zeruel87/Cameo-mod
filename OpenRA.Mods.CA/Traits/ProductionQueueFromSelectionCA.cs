@@ -21,6 +21,7 @@ namespace OpenRA.Mods.CA.Traits
 	[TraitLocation(SystemActors.World)]
 	class ProductionQueueFromSelectionCAInfo : TraitInfo
 	{
+		public readonly bool AllySelection = false;
 		public readonly string ProductionTabsWidget = null;
 		public readonly string ProductionPaletteWidget = null;
 
@@ -32,10 +33,12 @@ namespace OpenRA.Mods.CA.Traits
 		readonly World world;
 		readonly Lazy<ProductionTabsCAWidget> tabsWidget;
 		readonly Lazy<ProductionPaletteWidget> paletteWidget;
+		readonly ProductionQueueFromSelectionCAInfo Info;
 
 		public ProductionQueueFromSelection(World world, ProductionQueueFromSelectionCAInfo info)
 		{
 			this.world = world;
+			Info = info;
 
 			tabsWidget = Exts.Lazy(() => Ui.Root.GetOrNull(info.ProductionTabsWidget) as ProductionTabsCAWidget);
 			paletteWidget = Exts.Lazy(() => Ui.Root.GetOrNull(info.ProductionPaletteWidget) as ProductionPaletteWidget);
@@ -56,21 +59,32 @@ namespace OpenRA.Mods.CA.Traits
 			// Queue-per-player
 			if (queue == null)
 			{
-				var types = world.Selection.Actors.Where(a => a.IsInWorld && a.World.LocalPlayer == a.Owner)
+				var types = world.Selection.Actors.Where(a => a.IsInWorld && HasValidOwner(a))
 					.SelectMany(a => a.TraitsImplementing<Production>().Where(p => !p.IsTraitDisabled))
-					.SelectMany(t => t.Info.Produces);
+					.SelectMany(t => t.Info.Produces)
+					.Concat(world.Selection.Actors.Where(a => a.IsInWorld && HasValidOwner(a))
+					.SelectMany(a => a.TraitsImplementing<LinkedProducerTarget>())
+					.SelectMany(t => t.Types));
 
 				queue = world.LocalPlayer.PlayerActor.TraitsImplementing<ProductionQueue>()
 					.FirstOrDefault(q => q.Enabled && types.Contains(q.Info.Type));
 			}
 
-			if (queue == null || !queue.BuildableItems().Any())
+			if (queue == null || !queue.AnyItemsToBuild())
 				return;
 
 			if (tabsWidget.Value != null)
 				tabsWidget.Value.CurrentQueue = queue;
 			else if (paletteWidget.Value != null)
 				paletteWidget.Value.CurrentQueue = queue;
+		}
+
+		private bool HasValidOwner(Actor actor)
+		{
+			if (Info.AllySelection)
+				return actor.World.LocalPlayer.IsAlliedWith(actor.Owner);
+
+			return actor.World.LocalPlayer == actor.Owner;
 		}
 	}
 }

@@ -1,6 +1,14 @@
-﻿# Cameo Knowledge Base Manual v.0.5
+﻿# Cameo Knowledge Base Manual v.0.6
 
-> **Version note:** Manual v.0.5 — this edition focuses on engine architecture and code reference (Parts 0–10, Appendices A–P). In addition to the v.0.3.1 content (ContentPack migration, RA2 weapons migration, YAML lint cleanup, PascalCase enforcement, cross-faction inheritance fixes, ~disabled policy, balance pipeline, TKM self-containment, NuclearFlashRenderer shader), cross-references to project governance, binding design rules, balance system details, lessons learned, audit status, faction lore, long-term vision, and agent handoff logs now point directly to their authoritative source documents rather than being mirrored as appendices. See `docs/README.md` for the canonical reading order and document map. All engine/code content has been cross-checked against the live codebase as of 2026-08-02.
+> **Version note:** Manual v.0.6 — this edition focuses on engine architecture and code reference (Parts 0–10, Appendices A–P). In addition to the v.0.3.1 content (ContentPack migration, RA2 weapons migration, YAML lint cleanup, PascalCase enforcement, cross-faction inheritance fixes, ~disabled policy, balance pipeline, TKM self-containment, NuclearFlashRenderer shader), cross-references to project governance, binding design rules, balance system details, lessons learned, audit status, faction lore, long-term vision, and agent handoff logs now point directly to their authoritative source documents rather than being mirrored as appendices. See `docs/README.md` for the canonical reading order and document map. All engine/code content has been cross-checked against the live codebase as of 2026-08-02, with a corrective re-verification pass on 2026-09-24.
+>
+> **Key changes in v.0.6 (2026-09-24):**
+> - Engine pin corrected to `462fc1fc4bfc490c42b88b429670c7f0c64c7aca` (was stale at three different values).
+> - Phantom content removed or marked: `DeployBotModule` and `ai_airforce.yaml`/`airnavalbot` describe Crystallized Nexus research material that was never shipped in Cameo (see `docs/research/bot-modules-survey.md`); the tinted-cell classes (`TintedCellsLayer`, `TintedCell`, `DamagedByTintedCells`, `CreateTintedCellsWarhead`) are repointed to their real home, `OpenRA.Mods.AS`.
+> - Filename references corrected to the underscored forms that exist on disk: `map_generators.yaml`, `ingame_player.yaml`, `commander_tree_window.yaml` (rule 9).
+> - `mod.yaml` line references refreshed (Assemblies: line 365, ContentPacks mount: line 14, LoadScreen: line 482, SpriteSequenceFormat: line 551, PackageFormats: line 7).
+> - `OpenRA.Mods.Cameo` class count updated to ~335; `FactionCA` definition sites corrected to `ContentPacks/*/yaml/faction.yaml`; `HarvesterBalancerCA` corrected to `HarvesterBalancer`; `OpenRA.Mods.AS` correctly attributed to Attacque Supérior (not Combined Arms).
+> - Coverage note: `OpenRA.Mods.Cameo` ships 15 warhead classes and 3 projectiles (`ScaledBullet`, `InstantHitWithFakeBullets`, `LightningZap`); several remain undocumented here. The physical-state meter system (`PhysicalState`, `ApplyPhysicalState`, `ChangesHealthProportionalToPhysicalState`, `ModifiesCombatProportionalToPhysicalState`) is authoritative in `docs/design/PHYSICAL_STATE_SYSTEM.md`.
 >
 > **Key changes in v.0.4 (2026-07-24):**
 > - All faction **rules** now loaded via `Include:` entries in `mod.yaml` (not direct `Rules:` entries). Faction sequences and weapons are partially migrated — some are loaded via ContentPacks, others remain direct entries in `mod.yaml`.
@@ -13,7 +21,7 @@
 > - 39 ContentPack `content.yaml` manifests across 11 themes
 >
 > **Key changes in v.0.5 (2026-08-02):**
-> - Engine pin updated from `2949af8` to `1f71ccde90c1194fe908702f2e915807b2f0f3fd`
+> - Engine pin updated to `1f71ccde90c1194fe908702f2e915807b2f0f3fd` (superseded — see v.0.6)
 > - 55 weapon-class templates (`^<Family>_<Level>`) spliced into `weapons.yaml`, replacing 6 stale provisional templates
 > - Projectile (24 `^Projectile<Family>_<Level>`) and effect (27 `^Effect<Family>_<Level>`) template libraries built and spliced
 > - `InfectCA.OnEnterComplete` crash fix: added `self.IsDead` guard before `w.Remove(self)` in frame-end task
@@ -234,7 +242,7 @@ Like OpenRA itself, Cameo is **data-driven**:
 
 This manual is a **companion** to the [OpenRA Knowledge Base Manual v.5](https://github.com/Renegade1993/OpenRA-Knowledge-Base-Manual). It does not duplicate the OpenRA engine documentation. Instead, it documents the layers that Cameo adds on top of OpenRA, and flags the places where Cameo diverges from the upstream engine or bundled mods.
 
-> **Version note:** This manual is current as of 2026-08-02 and reflects the Cameo source at the `master` branch. The OpenRA engine pinned by this mod is identified in `mod.config` as `ENGINE_VERSION="1f71ccde90c1194fe908702f2e915807b2f0f3fd"`, with the engine source fetched from a Cameo-maintained fork (`https://github.com/cameo-mod/OpenRA`). File paths and class names may change in newer Cameo or OpenRA versions, so always cross-check with the provided source tree.
+> **Version note:** This manual is current as of 2026-08-02 and reflects the Cameo source at the `master` branch. The OpenRA engine pinned by this mod is identified in `mod.config` as `ENGINE_VERSION="462fc1fc4bfc490c42b88b429670c7f0c64c7aca"`, with the engine source fetched from a Cameo-maintained fork (`https://github.com/cameo-mod/OpenRA`). File paths and class names may change in newer Cameo or OpenRA versions, so always cross-check with the provided source tree.
 
 ## How this manual relates to the OpenRA manual
 
@@ -558,7 +566,7 @@ The `Actor` class itself is an empty container; it delegates the actual work to 
 
 ## Cameo-specific notes
 
-Cameo layers most of its gameplay on top of the engine ECS described above. The two custom assemblies are loaded through `ObjectCreator` alongside `OpenRA.Game`, `OpenRA.Mods.Common`, and `OpenRA.Mods.AS` (Combined Arms). They provide new `TraitInfo`/`Trait` pairs and new activities without changing the core Actor, `TraitInfo`, `ActorInfo`, or `TraitDictionary` machinery.
+Cameo layers most of its gameplay on top of the engine ECS described above. The three custom assemblies are loaded through `ObjectCreator` alongside `OpenRA.Game`, `OpenRA.Mods.Common`, and the stock mod assemblies. They provide new `TraitInfo`/`Trait` pairs and new activities without changing the core Actor, `TraitInfo`, `ActorInfo`, or `TraitDictionary` machinery.
 
 ### The two custom assemblies
 
@@ -566,8 +574,11 @@ Cameo layers most of its gameplay on top of the engine ECS described above. The 
 |----------|-------------------|----------|
 | `OpenRA.Mods.Cameo` | Cameo-original traits, condition helpers, production mechanics, UI widgets, cash/promotion systems, infection rules, sprite-sequence handling | `FactionCA`, `PlayerPromotions`, `CashBack`, `CashTransferToAllies`, `LarvaProductionQueue`, `InfectableCA`, `HeliGrantConditionOnDeploy`, `CameoSpriteSequence` |
 | `OpenRA.Mods.CA` | Combined Arms-derived traits and activities that Cameo carries forward or modifies; many are subclasses of upstream classes | `AirstrikeMasterCA`, `AttackAircraftCA`, `DiveOnAttack`, `TeleportCA`, `InstantTransform`, `GrantConditionOnPrerequisiteCA`, `PortableChronoCA` |
+| `OpenRA.Mods.AS` | Attacque Supérior-derived systems whose source ships inside the pinned engine tree (`engine/OpenRA.Mods.AS/`): tinted-cell hazard layers, AS bot modules, extra warheads | `TintedCellsLayer`, `CreateTintedCellsWarhead`, `DamagedByTintedCells`, `LoadCargoBotModule` |
 
-Both assemblies are referenced in the mod manifest and are loaded by `ObjectCreator` when the ruleset is built. From the engine's perspective, a trait in `OpenRA.Mods.Cameo` is no different from a trait in `OpenRA.Mods.Common`: it is still a `TraitInfo`/`Trait` pair that the engine discovers by name, instantiates in construction order, and stores in `World.TraitDict`.
+> **Path convention.** `OpenRA.Mods.Cameo` builds from source at `OpenRA.Mods.Cameo/` in the repository root. `OpenRA.Mods.AS` builds from source inside the engine tree. `OpenRA.Mods.CA` is a **binary-only dependency** — the dll ships prebuilt in `engine/bin/` and its source is not vendored; `OpenRA.Mods.CA/...` paths in this manual follow the upstream Combined Arms repository layout and cannot be browsed locally.
+
+All three assemblies are referenced in the mod manifest (`Assemblies:` line) and are loaded by `ObjectCreator` when the ruleset is built. From the engine's perspective, a trait in `OpenRA.Mods.Cameo` is no different from a trait in `OpenRA.Mods.Common`: it is still a `TraitInfo`/`Trait` pair that the engine discovers by name, instantiates in construction order, and stores in `World.TraitDict`.
 
 ### Traits that extend or replace upstream behavior
 
@@ -2096,7 +2107,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Cameo/Traits/DeterministicCellOffset.cs` | Provides a deterministic per-cell visual offset for effects. |
 | `OpenRA.Mods.Cameo/Traits/DeterministicOffsetSmokeParticleEmitter.cs` | Emits smoke particles offset by `DeterministicCellOffset`. |
 | `OpenRA.Mods.Cameo/Traits/Render/WithDeterministicOffsetIdleOverlay.cs` | Renders an idle overlay at a deterministic per-cell offset. |
-| `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` | World trait that stores deterministic per-cell environmental levels. |
+| `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` | World trait that stores deterministic per-cell environmental levels. |
 
 > Note: The source files `WPos.cs`, `WDist.cs`, `WAngle.cs`, `WVec.cs`, and `WRot.cs` live directly under `OpenRA.Game`, not in `OpenRA.Game/Primitives`. The equivalent deterministic math utilities are in `OpenRA.Game/Exts.cs`.
 
@@ -2155,7 +2166,7 @@ Cameo adds a small number of traits that rely on deterministic hashing of cell c
 - **`DeterministicCellOffset`** (`OpenRA.Mods.Cameo/Traits/DeterministicCellOffset.cs`) — computes a `WVec` offset from the actor's `Location` using an FNV-1a-style hash. The `MinOffset`/`MaxOffset` bounds and a per-family `Salt` are configured in YAML, so different effect families can use the same cell but different offsets. The resulting offset is used only for rendering or cosmetic particle placement.
 - **`DeterministicOffsetSmokeParticleEmitter`** (`OpenRA.Mods.Cameo/Traits/DeterministicOffsetSmokeParticleEmitter.cs`) — requires `DeterministicCellOffsetInfo` and emits smoke particles at the deterministic offset.
 - **`WithDeterministicOffsetIdleOverlay`** (`OpenRA.Mods.Cameo/Traits/Render/WithDeterministicOffsetIdleOverlay.cs`) — renders a decorative idle overlay at the deterministic offset.
-- **`TintedCellsLayer`** (`OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`) — stores per-cell environmental levels (radiation, poison, etc.) as integers. The levels are modified by warheads and read by `DamagedByTintedCells`, all using integer arithmetic.
+- **`TintedCellsLayer`** (`OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs`) — stores per-cell environmental levels (radiation, poison, etc.) as integers. The levels are modified by warheads and read by `DamagedByTintedCells`, all using integer arithmetic.
 
 Because these traits only use integer hashing and never introduce floating-point values, they remain fully deterministic across platforms.
 
@@ -2670,7 +2681,7 @@ This example shows how a Cameo-specific attack trait can reuse the upstream dama
 | `OpenRA.Mods.Cameo/Warheads/SpawnActorInAreaWarhead.cs` | Warhead that spawns actors in an area. |
 | `OpenRA.Mods.Cameo/Warheads/SpawnActorOrWeaponWarhead.cs` | Warhead that spawns an actor or fires a weapon on impact. |
 | `OpenRA.Mods.Cameo/Warheads/SupportPowerInstantExplode.cs` | Instant-explode projectile for support-power actors. |
-| `OpenRA.Mods.CA/Warheads/CreateTintedCellsWarhead.cs` | Warhead that paints TintedCells on the map (radiation, poison, etc.). |
+| `OpenRA.Mods.AS/Warheads/CreateTintedCellsWarhead.cs` | Warhead that paints TintedCells on the map (radiation, poison, etc.). |
 | `OpenRA.Mods.CA/Warheads/ChronoFlashEffectWarhead.cs` | Warhead that triggers the global chrono flash effect. |
 | `OpenRA.Mods.CA/Warheads/WarpDamageWarhead.cs` | Warhead that affects the `Warpable` trait. |
 | `OpenRA.Mods.CA/Warheads/FireReverseRadiusWarhead.cs` | Warhead that fires weapons in a reverse wave pattern. |
@@ -2682,7 +2693,7 @@ This example shows how a Cameo-specific attack trait can reuse the upstream dama
 | `OpenRA.Mods.CA/Traits/Air/AttackAircraftCA.cs` | Aircraft attack trait variant. |
 | `OpenRA.Mods.CA/Traits/ChangesHealthVersus.cs` | Regeneration/damage-over-time trait with armor `Versus` support. |
 | `OpenRA.Mods.CA/Traits/ConvertsDamageToHealth.cs` | Converts a percentage of damage dealt into health for the attacker. |
-| `OpenRA.Mods.CA/Traits/DamagedByTintedCells.cs` | Damage-over-time from standing in TintedCells. |
+| `OpenRA.Mods.AS/Traits/DamagedByTintedCells.cs` | Damage-over-time from standing in TintedCells. |
 | `OpenRA.Mods.Cameo/Traits/ExplodesCA.cs` | `FireWarheadsOnDeathCA` — fires warheads on death with firepower multipliers. |
 | `OpenRA.Mods.CA/Traits/ChargingSelfDestruct.cs` | Trait that charges and then self-destructs. |
 | `OpenRA.Mods.CA/Traits/AirstrikeMasterCA.cs` | Master trait that spawns and launches airstrike slaves. |
@@ -2813,7 +2824,7 @@ CameoLaser:
 
 ### Cameo-specific warhead fields
 
-`CreateTintedCellsWarhead` (from `OpenRA.Mods.CA/Warheads/CreateTintedCellsWarhead.cs`) adds:
+`CreateTintedCellsWarhead` (from `OpenRA.Mods.AS/Warheads/CreateTintedCellsWarhead.cs`) adds:
 
 - `Spread` — range between falloff steps.
 - `Falloff` — level percentage at each step.
@@ -2875,7 +2886,7 @@ All of these implement `IProjectileInfo.Create` and `IProjectile.Tick`/`Render` 
 
 ### Custom warheads
 
-Cameo adds warheads under `OpenRA.Mods.CA/Warheads/` and `OpenRA.Mods.Cameo/Warheads/`:
+Cameo adds warheads under `OpenRA.Mods.AS/Warheads/`, `OpenRA.Mods.CA` (binary), and `OpenRA.Mods.Cameo/Warheads/`:
 
 - **`CreateTintedCellsWarhead`** — Paints a `TintedCellsLayer` (e.g., radiation, poison, fire) on the ground. Actors with `DamagedByTintedCells` standing in the layer take damage over time. Supports falloff, saturation, and cone filtering.
 - **`MindControlWarhead`** — Enslaves valid targets within `Range` to the firer's owner. Requires the source actor to have `MindControllerCA` and the target to have `MindControllableCA`.
@@ -2883,6 +2894,8 @@ Cameo adds warheads under `OpenRA.Mods.CA/Warheads/` and `OpenRA.Mods.Cameo/Warh
 - **`SpawnActorOrWeaponWarhead`** — Spawns an actor or fires a weapon on impact.
 - **`SupportPowerInstantExplode`** — A projectile/warhead hybrid used by support-power actors that use `Armament` as a support power. It instantly detonates at the source to prevent AI return fire.
 - **`ChronoFlashEffectWarhead`** — Triggers the global chrono flash effect.
+- **`AreaDamage` / `AreaDamagePercentage`** (`OpenRA.Mods.Cameo/Warheads/`) — the canonical damage warheads after the `SpreadDamage` migration; see `docs/design/AREADAMAGE_WARHEAD.md`.
+- **`OpenToppedDamageWarhead`** (`OpenRA.Mods.AS/Warheads/OpenToppedDamageWarhead.cs`) — the sniper exception: it calls `INotifyPassengersDamage.DamagePassengers` on the victim, damaging *passengers/garrisoners inside* the target — never the target itself. It is the one `*ExtraDamage`-pattern node that must NOT be folded into `AreaDamage` (folding would silently delete passenger damage).
 - **`WarpDamageWarhead`** — Affects actors with the `Warpable` trait.
 - **`FireReverseRadiusWarhead`** — Fires weapons in a reverse wave pattern.
 
@@ -2930,7 +2943,7 @@ When a `MindControlWarhead` impacts, it calls `MindControllerCA.AddSlave` to tra
 
 Tinted cells are a persistent area-denial system:
 
-- `TintedCellsLayer` (`OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`) stores per-cell level on the world actor.
+- `TintedCellsLayer` (`OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs`) stores per-cell level on the world actor.
 - `CreateTintedCellsWarhead` increases the level in a circle/cone around the impact.
 - `DamagedByTintedCells` causes actors standing in the layer to take damage per `DamageInterval` based on the cell level.
 - `ConditionalTintPostProcessEffect` can apply a global visual tint.
@@ -3291,6 +3304,13 @@ E1:
 ```
 
 `Ruleset` and `SequenceSet` skip `^` prefixed nodes after inheritance has been resolved. If you forget to filter them, the engine would try to create `ActorInfo("^soldier", ...)` which is not a real unit.
+
+### Actor ID grammar (maintainer-ruled)
+
+Cameo actor IDs are lower-case, underscore-separated, **faction-prefixed** (`atreides_combat_tank`, `ra1_soviets_tesla_tank`). Two suffix conventions are binding (DESIGN.md R19):
+
+- **`.` in an ID means a bot-only variant** — an actor whose `Prerequisites` carry `~botplayer`/`~hardbotplayer`, buildable by no human player. `.husk` is the one additional allowed use (husk actors are the same "not a real actor" class). A dot carrying anything else — a faction name (`.atreides`, `.cabal`, `.d2k`), a variant marker (`.para`, `.power`, `.destroyed`, `.laser`, `.mutant`) — is a naming violation being swept under `audit_naming_damage.py` N5; the faction name moves to the FRONT (`OILB.d2k` → `d2k_spicesifter`).
+- `@` splits a trait-instance label from the trait name (see below); it is never part of an actor ID's faction grammar.
 
 ### The `Inherits` / `Inherits@...` Key
 
@@ -3785,7 +3805,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs` | Defines `FactionCAInfo`, a subclass of `FactionInfo` that adds a `Game` field to every faction. |
 | `OpenRA.Mods.Cameo/Traits/Player/PlayerPromotions.cs` | Defines `PlayerPromotions`/`PlayerPromotionsInfo`, a player trait that tracks experience, grants promotion points, and exposes lobby options. |
 | `OpenRA.Mods.Cameo/Traits/Player/CustomFormationsModOptions.cs` | Defines `CustomFormationsModOptions`/`CustomFormationsModOptionsInfo`, a player trait that stores marker sprite/sequence configuration for the custom formation order generators. |
-| `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` | Defines `TintedCellsLayer`/`TintedCellsLayerInfo`, a world trait used for radiation, anthrax, and cryo cell tinting. |
+| `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` | Defines `TintedCellsLayer`/`TintedCellsLayerInfo`, a world trait used for radiation, anthrax, and cryo cell tinting. |
 | `OpenRA.Mods.Cameo/Graphics/CameoSpriteSequence.cs` | Defines `CameoSpriteSequenceLoader` and `CameoSpriteSequence`, the sequence format selected by `SpriteSequenceFormat: CameoSpriteSequence`. |
 | `OpenRA.Mods.Cameo/FileSystem/BagFile.cs` | Defines `AudioBagLoader` and `BagFile`, the package loader for `.bag`/`.idx` audio archives referenced by `PackageFormats: AudioBag`. |
 | `OpenRA.Mods.Cameo/LoadScreens/FitImageLoadScreen.cs` | Defines `FitImageLoadScreen`, the load-screen class referenced by `LoadScreen: FitImageLoadScreen`. |
@@ -3807,7 +3827,7 @@ Special handling:
 - `Metadata` is loaded through `FieldLoader.Load<ModMetadata>`.
 - `FileSystem` is mandatory and is stored as a raw `MiniYaml` block because the concrete file-system loader is instantiated via `ObjectCreator` later.
 - `MapFolders` is parsed as a dictionary of path → classification strings (`System`, `User`, etc.).
-- `MapCompatibility` always starts with the mod's own `Id`, then appends any comma-separated values from `SupportsMapsFrom:` (Cameo declares `SupportsMapsFrom: cnc, ra, cameo` at line 473).
+- `MapCompatibility` always starts with the mod's own `Id`, then appends any comma-separated values from `SupportsMapsFrom:` (Cameo declares `SupportsMapsFrom: cnc, ra, cameo` at line 547).
 - Any top-level key not in the `ReservedModuleNames` set is collected into `GlobalModData`, a `FrozenDictionary<string, MiniYaml>` that `ModData` will later convert into `IGlobalModData` instances.
 
 This design means a mod author can declare *what* the engine needs to load; the engine then knows *where* to look before it actually loads the assets.
@@ -3817,12 +3837,12 @@ This design means a mod author can declare *what* the engine needs to load; the 
 `ModData` is the runtime owner of everything that belongs to a loaded mod. Its constructor is long and sequential because each subsystem depends on the previous one:
 
 1. **Reload manifest.** It creates a fresh `Manifest` from the supplied manifest/package. This avoids keeping the original object graph.
-2. **Create object creator.** `ObjectCreator` loads the engine assembly plus any `Assemblies:` declared in `mod.yaml`. It builds a type cache and resolves `AppDomain` assembly requests. Cameo declares `Assemblies: OpenRA.Mods.AS.dll, OpenRA.Mods.CA.dll, OpenRA.Mods.Cameo.dll, OpenRA.Mods.Cnc.dll, OpenRA.Mods.D2k.dll, OpenRA.Mods.Common.dll` at line 282.
-3. **Mount virtual file system.** `ModFiles` is a `FileSystem` instance created with the mod id and package loaders. The `IFileSystemLoader` named in `Manifest.FileSystem.Value` is instantiated, field-loaded from the `FileSystem` YAML, and asked to mount the manifest's packages. This is the point at which `^EngineDir`, `~^SupportDir|Content/...`, `cnc|rules`, and so on become resolvable paths in the [VFS](#file-appendices-Appendix_A_Glossary). Cameo mounts a large number of `bits/` subdirectories and, crucially, `cameo|ContentPacks: ContentPacks` at line 15.
+2. **Create object creator.** `ObjectCreator` loads the engine assembly plus any `Assemblies:` declared in `mod.yaml`. It builds a type cache and resolves `AppDomain` assembly requests. Cameo declares `Assemblies: OpenRA.Mods.AS.dll, OpenRA.Mods.CA.dll, OpenRA.Mods.Cameo.dll, OpenRA.Mods.Cnc.dll, OpenRA.Mods.D2k.dll, OpenRA.Mods.Common.dll` at line 365.
+3. **Mount virtual file system.** `ModFiles` is a `FileSystem` instance created with the mod id and package loaders. The `IFileSystemLoader` named in `Manifest.FileSystem.Value` is instantiated, field-loaded from the `FileSystem` YAML, and asked to mount the manifest's packages. This is the point at which `^EngineDir`, `~^SupportDir|Content/...`, `cnc|rules`, and so on become resolvable paths in the [VFS](#file-appendices-Appendix_A_Glossary). Cameo mounts a large number of `bits/` subdirectories and, crucially, `cameo|ContentPacks: ContentPacks` at line 14.
 4. **Load global mod data.** For each entry in `Manifest.GlobalModData`, `ModData` looks up the C# type by key. If it implements `IGlobalModData` and has a `MiniYaml` constructor, that constructor is called directly; otherwise `ObjectCreator` creates the type and `FieldLoader` loads its child nodes. Cameo uses the standard engine `IGlobalModData` blocks (`MapGrid`, `WorldViewportSizes`, `GameSpeeds`, `AssetBrowser`, `ModCredits`, `DiscordService`, etc.) and does not currently add a custom top-level `IGlobalModData` type.
 5. **Initialize Fluent.** `FluentProvider.Initialize` loads the translation bundles listed in `FluentMessages` and `FluentCulture`.
-6. **Load screen (optional).** If `useLoadScreen` is true, the `LoadScreen:` class is instantiated, initialized, and displayed. Cameo names `LoadScreen: FitImageLoadScreen` at line 404.
-7. **Create loaders and caches.** `WidgetLoader`, `MapCache`, `SoundLoaders`, `SpriteLoaders`, `VideoLoaders`, `SpriteSequenceLoader`, `HotkeyManager`, and the frozen cursor dictionary. Because Cameo declares `SpriteSequenceFormat: CameoSpriteSequence` at line 481, the sequence loader is `CameoSpriteSequenceLoader`.
+6. **Load screen (optional).** If `useLoadScreen` is true, the `LoadScreen:` class is instantiated, initialized, and displayed. Cameo names `LoadScreen: FitImageLoadScreen` at line 482.
+7. **Create loaders and caches.** `WidgetLoader`, `MapCache`, `SoundLoaders`, `SpriteLoaders`, `VideoLoaders`, `SpriteSequenceLoader`, `HotkeyManager`, and the frozen cursor dictionary. Because Cameo declares `SpriteSequenceFormat: CameoSpriteSequence` at line 551, the sequence loader is `CameoSpriteSequenceLoader`.
 8. **Lazily load default rules and terrain.** `defaultRules` and `defaultTerrainInfo` are `Lazy<T>`; they only execute when first accessed.
 
 Important `ModData` members:
@@ -3880,7 +3900,7 @@ Assemblies: OpenRA.Mods.AS.dll, OpenRA.Mods.CA.dll, OpenRA.Mods.Cameo.dll, OpenR
 
 #### Package formats and the `AudioBag` loader
 
-Cameo declares `PackageFormats: Mix, AudioBag, D2kSoundResources` at line 8. `AudioBag` is not a stock format; it is implemented by `OpenRA.Mods.Cameo/FileSystem/BagFile.cs`. The `AudioBagLoader` class implements `IPackageLoader` and opens `.bag` archives that are paired with an `.idx` index file. The nested `BagFile` class implements `IReadOnlyPackage` and wraps the bagged audio data in a WAV header so the engine's sound loaders can consume it.
+Cameo declares `PackageFormats: Mix, AudioBag, D2kSoundResources` at line 7. `AudioBag` is not a stock format; it is implemented by `OpenRA.Mods.Cameo/FileSystem/BagFile.cs`. The `AudioBagLoader` class implements `IPackageLoader` and opens `.bag` archives that are paired with an `.idx` index file. The nested `BagFile` class implements `IReadOnlyPackage` and wraps the bagged audio data in a WAV header so the engine's sound loaders can consume it.
 
 This is the reason Cameo's `FileSystem` list can mount archives such as `~cameo|bits/ra2/audio.bag` and `~cameo|bits/protoss/protoss_audio.mix`.
 
@@ -3907,28 +3927,28 @@ Content packs are loaded via `Include:` directives in `mod.yaml`. Theme-level co
 
 #### Sprite sequence format
 
-Cameo uses `SpriteSequenceFormat: CameoSpriteSequence` at line 481, with an `IndexedSheetSize` of 2048. The loader class `CameoSpriteSequenceLoader` and sequence class `CameoSpriteSequence` are defined in `OpenRA.Mods.Cameo/Graphics/CameoSpriteSequence.cs`. `CameoSpriteSequence` extends `ClassicSpriteSequence` and adds tileset-specific filename overrides (`TilesetFilenames`, `TilesetFilenamesPattern`), an optional player remap reference colour, and fog/shroud conversion flags. This is what allows the same sequence YAML to pick different sprites for different tilesets.
+Cameo uses `SpriteSequenceFormat: CameoSpriteSequence` at line 551, with an `IndexedSheetSize` of 2048. The loader class `CameoSpriteSequenceLoader` and sequence class `CameoSpriteSequence` are defined in `OpenRA.Mods.Cameo/Graphics/CameoSpriteSequence.cs`. `CameoSpriteSequence` extends `ClassicSpriteSequence` and adds tileset-specific filename overrides (`TilesetFilenames`, `TilesetFilenamesPattern`), an optional player remap reference colour, and fog/shroud conversion flags. This is what allows the same sequence YAML to pick different sprites for different tilesets.
 
 #### Load screen
 
-The `LoadScreen: FitImageLoadScreen` block at lines 404–406 uses `OpenRA.Mods.Cameo/LoadScreens/FitImageLoadScreen.cs`. It inherits from `SheetLoadScreen` and displays a splash image plus a rotating set of load-screen images declared in the manifest.
+The `LoadScreen: FitImageLoadScreen` block at lines 482–484 uses `OpenRA.Mods.Cameo/LoadScreens/FitImageLoadScreen.cs`. It inherits from `SheetLoadScreen` and displays a splash image plus a rotating set of load-screen images declared in the manifest.
 
 #### Default order generator and custom formations
 
-Cameo declares `DefaultOrderGenerator: UnitOrderGenerator` at line 471. This is the stock engine default. The mod's custom formation behavior is provided by the order generators in `OpenRA.Mods.Cameo/Orders/` (`CustomFormationsUnitOrderGenerator`, `CustomFormationsAttackMoveOrderGenerator`, and the shared base classes). These are not selected through `DefaultOrderGenerator`; instead they are activated at runtime by the custom command-bar and world UI logic. The marker configuration they use is read from the `CustomFormationsModOptions` trait on the `Player` actor (see `mods/cameo/rules/player.yaml`, line 25).
+Cameo declares `DefaultOrderGenerator: UnitOrderGenerator` at line 546. This is the stock engine default. The mod's custom formation behavior is provided by the order generators in `OpenRA.Mods.Cameo/Orders/` (`CustomFormationsUnitOrderGenerator`, `CustomFormationsAttackMoveOrderGenerator`, and the shared base classes). These are not selected through `DefaultOrderGenerator`; instead they are activated at runtime by the custom command-bar and world UI logic. The marker configuration they use is read from the `CustomFormationsModOptions` trait on the `Player` actor (see `mods/cameo/rules/player.yaml`, line 25).
 
 #### `SupportsMapsFrom`
 
-Cameo declares `SupportsMapsFrom: cnc, ra, cameo` at line 473. This means the `MapCompatibility` list includes `cameo`, `cnc`, and `ra`, so the mod can load maps that were authored for the Tiberian Dawn or Red Alert mods in addition to native Cameo maps.
+Cameo declares `SupportsMapsFrom: cnc, ra, cameo` at line 547. This means the `MapCompatibility` list includes `cameo`, `cnc`, and `ra`, so the mod can load maps that were authored for the Tiberian Dawn or Red Alert mods in addition to native Cameo maps.
 
 #### Manifest-driven traits (not `IGlobalModData`)
 
 Most of Cameo's custom behavior is not delivered through `IGlobalModData` blocks but through traits that are registered by the custom assemblies and instantiated from the rules YAML. Key examples include:
 
-- **`FactionCA`** (`OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs`) — attached to the `World` actor in `mods/cameo/rules/world.yaml` (e.g., lines 680–719). It extends `FactionInfo` with a `Game` field, which groups factions by the game they come from (e.g., `Generic`, `CNC`, `RA`, `Starcraft`).
+- **`FactionCA`** (`OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs`) — attached to the `World` actor via `FactionCA@<internalname>` entries defined in each `mods/cameo/ContentPacks/*/yaml/faction.yaml` file (the `mods/cameo/rules/world.yaml` copies are commented out). It extends `FactionInfo` with a `Game` field, which groups factions by the game they come from (e.g., `Generic`, `CNC`, `RA`, `Starcraft`).
 - **`PlayerPromotions`** (`OpenRA.Mods.Cameo/Traits/Player/PlayerPromotions.cs`) — attached to the `Player` actor in `mods/cameo/rules/promotions.yaml` (line 2). It tracks experience, grants ranks, and exposes the `promotions` lobby option.
 - **`CustomFormationsModOptions`** (`OpenRA.Mods.Cameo/Traits/Player/CustomFormationsModOptions.cs`) — attached to the `Player` actor in `mods/cameo/rules/player.yaml` (line 25). It stores the palettes and sequences used by the custom formation order markers.
-- **`TintedCellsLayer`** (`OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`) — attached to the `World` actor in `mods/cameo/rules/world.yaml` (lines 1060–1100). It provides cell-level tinting for radiation, anthrax, and cryo effects, using a unique named layer per instance (`ra2radiation`, `tibradiation`, `genradiation`, etc.).
+- **`TintedCellsLayer`** (`OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs`) — attached to the `World` actor in `mods/cameo/rules/world.yaml` (lines 1060–1100). It provides cell-level tinting for radiation, anthrax, and cryo effects, using a unique named layer per instance (`ra2radiation`, `tibradiation`, `genradiation`, etc.).
 
 These traits are "manifest-driven" in the sense that they cannot be used unless the `Assemblies:` list in `mod.yaml` makes their types available to `ObjectCreator`, and the rules YAML references them by their registered YAML names.
 
@@ -3995,7 +4015,7 @@ MapFolders:
 Rules:
     cameo|rules/misc.yaml
     cameo|rules/player.yaml                         # CustomFormationsModOptions, PlayerPromotions
-    cameo|rules/world.yaml                          # FactionCA, TintedCellsLayer
+    cameo|rules/world.yaml                          # TintedCellsLayer (factions live in ContentPacks/*/yaml/faction.yaml)
     cameo|rules/promotions.yaml
     ...
 
@@ -4389,7 +4409,7 @@ After reading this chapter, you should be able to:
 - **Merge inherited overrides.** The entire node tree is merged with `MiniYaml.Merge([nodes])`, then flattened into a `Dictionary<string, MiniYaml>` via `ToDictionary()`.
 - **Populate strongly-typed fields.** Each top-level key (e.g. `Rules`, `Sequences`, `Weapons`, `Voices`, `Music`, `Chrome`, `TileSets`, `Assemblies`, `FileSystem`, `SpriteSequenceFormat`) is read into an immutable array or a custom object.
 - **Identify Cameo-specific manifest extensions:** the custom `Assemblies` list, `AudioBag` package format, `ContentPacks` VFS mount, `SpriteSequenceFormat: CameoSpriteSequence`, `LoadScreen: FitImageLoadScreen`, `SupportsMapsFrom: cnc, ra, cameo`, and the `ContentPacks|<Theme>/<Faction>/content.yaml` include pattern.
-- **Map key Cameo traits to their source:** `FactionCA`, `PlayerPromotions`, `CustomFormationsModOptions`, and `TintedCellsLayer` are declared in the rules YAML and supplied by `OpenRA.Mods.Cameo`/`OpenRA.Mods.CA`.
+- **Map key Cameo traits to their source:** `FactionCA`, `PlayerPromotions`, and `CustomFormationsModOptions` are supplied by `OpenRA.Mods.Cameo`/`OpenRA.Mods.CA`, while `TintedCellsLayer` comes from `OpenRA.Mods.AS`.
 
 If any of the concepts above feel unclear, review the relevant section before continuing. For source files and further reading, see the References section.
 
@@ -4410,7 +4430,7 @@ If any of the concepts above feel unclear, review the relevant section before co
 - `OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs` — custom faction info with `Game` field.
 - `OpenRA.Mods.Cameo/Traits/Player/PlayerPromotions.cs` — player promotion and lobby-options trait.
 - `OpenRA.Mods.Cameo/Traits/Player/CustomFormationsModOptions.cs` — marker configuration for custom formation order generators.
-- `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` — world-layer cell tinting for radiation/anthrax/cryo.
+- `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` — world-layer cell tinting for radiation/anthrax/cryo.
 - `OpenRA.Mods.Cameo/Graphics/CameoSpriteSequence.cs` — custom sprite sequence format and loader.
 - `OpenRA.Mods.Cameo/FileSystem/BagFile.cs` — `.bag`/`.idx` audio package loader.
 - `OpenRA.Mods.Cameo/LoadScreens/FitImageLoadScreen.cs` — custom load screen.
@@ -4624,7 +4644,7 @@ YAML keys are matched against C# field names case-sensitively. The default `Seri
 
 ## Cameo-Specific FieldLoader and ObjectCreator Usage
 
-The Cameo mod registers two custom C# assemblies — `OpenRA.Mods.Cameo` and `OpenRA.Mods.CA` — in `mods/cameo/mod.yaml`. `ObjectCreator` loads these assemblies alongside the engine and official mod assemblies, so any `TraitInfo` or custom YAML-loaded type they define can be referenced from YAML by the usual naming convention.
+The Cameo mod registers three custom C# assemblies — `OpenRA.Mods.Cameo`, `OpenRA.Mods.CA`, and `OpenRA.Mods.AS` — in `mods/cameo/mod.yaml`. `ObjectCreator` loads these assemblies alongside the engine and official mod assemblies, so any `TraitInfo` or custom YAML-loaded type they define can be referenced from YAML by the usual naming convention.
 
 ### Cameo assemblies
 
@@ -4634,11 +4654,11 @@ The Cameo mod registers two custom C# assemblies — `OpenRA.Mods.Cameo` and `Op
 Assemblies: OpenRA.Mods.AS.dll, OpenRA.Mods.CA.dll, OpenRA.Mods.Cameo.dll, OpenRA.Mods.Cnc.dll, OpenRA.Mods.D2k.dll, OpenRA.Mods.Common.dll
 ```
 
-`ObjectCreator` scans every namespace of every listed assembly. The core engine assembly is always loaded first, followed by the manifest assemblies in the order declared. This means a YAML name such as `FactionCA` resolves to `FactionCAInfo` in `OpenRA.Mods.Cameo`, while `TintedCellsLayer` resolves to `TintedCellsLayerInfo` in `OpenRA.Mods.CA`, as long as the bare class name is unique across the scanned namespaces.
+`ObjectCreator` scans every namespace of every listed assembly. The core engine assembly is always loaded first, followed by the manifest assemblies in the order declared. This means a YAML name such as `FactionCA` resolves to `FactionCAInfo` in `OpenRA.Mods.Cameo`, while `TintedCellsLayer` resolves to `TintedCellsLayerInfo` in `OpenRA.Mods.AS`, as long as the bare class name is unique across the scanned namespaces.
 
 ### Custom `TraitInfo` examples
 
-#### `TintedCellsLayer` (`OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`)
+#### `TintedCellsLayer` (`OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs`)
 
 A world trait that stores per-cell radiation/tint levels. Its `Info` class uses the standard `FieldLoader` path:
 
@@ -5077,7 +5097,7 @@ If any of the concepts above feel unclear, review the relevant section before co
   - `OpenRA.Mods.Cameo/Traits/Player/CustomFormationsModOptions.cs` — `[FieldLoader.Require]` usage on palette/sequence fields.
   - `OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs` — `FactionCAInfo` extending `FactionInfo`.
   - `OpenRA.Mods.Cameo/Traits/Player/PlayerPromotions.cs` — required dictionary fields and `ILobbyOptions`.
-  - `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` — world trait using enum and `Color` parsers.
+  - `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` — world trait using enum and `Color` parsers.
   - `mods/cameo/mod.yaml` — `Assemblies` and `SpriteSequenceFormat` entries that register the custom assemblies and sequence loader.
   - `mods/cameo/rules/world.yaml` — `TintedCellsLayer` instance definitions.
   - `mods/cameo/rules/player.yaml` — `CustomFormationsModOptions` definition.
@@ -5207,7 +5227,7 @@ This example shows how a single YAML change flows through the ruleset system int
 | `OpenRA.Mods.CA/Projectiles/PlasmaBeam.cs` | Cameo plasma beam projectile. |
 | `OpenRA.Mods.CA/Projectiles/WarheadTrailProjectileCA.cs` | Cameo projectile that detonates all warheads on a weapon at intervals. |
 | `OpenRA.Mods.Cameo/Warheads/MindControlWarhead.cs` | Cameo warhead that enslaves targets to the firer. |
-| `OpenRA.Mods.CA/Warheads/CreateTintedCellsWarhead.cs` | Cameo warhead that creates a tinted cell (radiation, toxins, etc.) on the `TintedCellsLayer`. |
+| `OpenRA.Mods.AS/Warheads/CreateTintedCellsWarhead.cs` | Cameo warhead that creates a tinted cell (radiation, toxins, etc.) on the `TintedCellsLayer`. |
 | `OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs` | Cameo faction definition trait (extends `Faction`). |
 | `OpenRA.Mods.Cameo/Traits/Player/PlayerPromotions.cs` | Tracks player experience and promotion points. |
 | `OpenRA.Mods.Cameo/Traits/PromotionUpgrade.cs` | Tag trait for promotion-tree upgrades. |
@@ -6114,7 +6134,7 @@ Cameo does not use a `RequiresVersion` field in `mod.yaml`. Instead, the engine 
 
 ```
 mod.config
-    ENGINE_VERSION="1f71ccde90c1194fe908702f2e915807b2f0f3fd"
+    ENGINE_VERSION="462fc1fc4bfc490c42b88b429670c7f0c64c7aca"
     AUTOMATIC_ENGINE_SOURCE="https://github.com/cameo-mod/OpenRA/archive/${ENGINE_VERSION}.zip"
     ENGINE_DIRECTORY="./engine"
     AUTOMATIC_ENGINE_MANAGEMENT="True"
@@ -6191,7 +6211,7 @@ ModelSequences:
 
 ### Relationship to the upstream OpenRA SDK
 
-Cameo uses the standard OpenRA Mod SDK structure: `mod.config` drives the build, `Makefile`/`make.ps1` compile the mod, `fetch-engine.sh` manages the engine dependency, and `launch-game.*`/`utility.*` wrap the engine binary. The main difference is that the engine is fetched from the `cameo-mod/OpenRA` fork rather than the upstream `OpenRA/OpenRA` repository, and the pinned commit is `1f71ccde90c1194fe908702f2e915807b2f0f3fd`. The mod does not declare `RequiresMods` because it mounts the engine’s common mod (`^EngineDir|mods/common`) and official mod packages (`cnc`, `ra`, etc.) through the `FileSystem` section and the `SupportsMapsFrom` list.
+Cameo uses the standard OpenRA Mod SDK structure: `mod.config` drives the build, `Makefile`/`make.ps1` compile the mod, `fetch-engine.sh` manages the engine dependency, and `launch-game.*`/`utility.*` wrap the engine binary. The main difference is that the engine is fetched from the `cameo-mod/OpenRA` fork rather than the upstream `OpenRA/OpenRA` repository, and the pinned commit is `462fc1fc4bfc490c42b88b429670c7f0c64c7aca`. The mod does not declare `RequiresMods` because it mounts the engine’s common mod (`^EngineDir|mods/common`) and official mod packages (`cnc`, `ra`, etc.) through the `FileSystem` section and the `SupportsMapsFrom` list.
 
 ## Interconnectivity
 ![Algorithms diagram](images/Part_03_Chapter_01_Mod_SDK-algorithm-diagram-or-pseudocode-flowchart-for-the-non-trivia-5983ed.svg)
@@ -6445,7 +6465,7 @@ Edit the root `mod.config` (or create a `user.config` override) so the SDK downl
 
 ```
 MOD_ID="mymod"
-ENGINE_VERSION="7ba39d9"
+ENGINE_VERSION="462fc1fc"
 AUTOMATIC_ENGINE_MANAGEMENT="True"
 AUTOMATIC_ENGINE_SOURCE="https://github.com/cameo-mod/OpenRA/archive/${ENGINE_VERSION}.zip"
 ENGINE_DIRECTORY="./engine"
@@ -6722,7 +6742,7 @@ For a new mod, copy the relevant blocks into your own `rules/player.yaml` and `r
 | Variable | Default example | Meaning |
 | :---- | :---- | :---- |
 | `MOD_ID` | `"cameo"` | The directory name under `mods/` that contains the mod's `mod.yaml`. The engine will load `mods/$MOD_ID/mod.yaml`. Must not contain spaces. |
-| `ENGINE_VERSION` | `"7ba39d9"` | The exact Cameo engine commit required by this mod. This is the version string written into the engine's `VERSION` file and used as the Git ref / archive tag for downloads. |
+| `ENGINE_VERSION` | `"462fc1fc"` | The exact Cameo engine commit required by this mod. This is the version string written into the engine's `VERSION` file and used as the Git ref / archive tag for downloads. |
 | `ENGINE_DIRECTORY` | `"./engine"` | The local path (relative to the SDK root) where the engine source/binaries are stored. |
 
 ### Engine management variables
@@ -6943,7 +6963,7 @@ if command is check-scripts:
 - **Runtime mismatch:** on Unix, if both `mono` and `dotnet` are installed, the launcher chooses based on whether the built engine assembly contains `.NETCoreApp,Version=`. If the engine is rebuilt for a different framework without updating the launcher, the wrong runtime may be selected. Keep the engine and SDK versions in sync.
 - **Windows batch parser limitations:** `launch-game.cmd` splits each config line at the first `=` only. Values that themselves contain `=` will be truncated. Avoid `=` in config values.
 - **PowerShell execution policy:** `make.cmd` passes `-ExecutionPolicy Bypass` to PowerShell, so the script can run even if the default policy is restricted. Do not remove this flag unless the environment is already configured to allow unsigned scripts.
-- **Engine archive top-level directory:** `fetch-engine.sh` assumes the downloaded zip has exactly one top-level directory (e.g., `OpenRA-7ba39d9`). The Windows script uses `Get-ChildItem -Recurse | Select-Object -First 1` for the same assumption. Custom archives must follow this layout.
+- **Engine archive top-level directory:** `fetch-engine.sh` assumes the downloaded zip has exactly one top-level directory (e.g., `OpenRA-462fc1fc`). The Windows script uses `Get-ChildItem -Recurse | Select-Object -First 1` for the same assumption. Custom archives must follow this layout.
 - **Do not commit the engine directory:** `ENGINE_DIRECTORY` and `AUTOMATIC_ENGINE_EXTRACT_DIRECTORY` are intended to be temporary. Add them to `.gitignore` so the pinned engine is not committed.
 - **Mod search paths:** the launcher passes `Engine.ModSearchPaths="./mods,<engine>/mods"` (Windows) or `${TEMPLATE_ROOT}/mods,./mods` (Unix). The engine then scans those directories for a subdirectory matching `MOD_ID`. If the mod is not found, the engine will fail to start; the path must be correct relative to the engine directory.
 - **Cameo-specific missing-assembly crashes:** if the mod loads but crashes immediately with a trait-not-found error, verify that `mods/<MOD_ID>/mod.yaml` lists all six required DLLs: `OpenRA.Mods.Common.dll`, `OpenRA.Mods.Cnc.dll`, `OpenRA.Mods.D2k.dll`, `OpenRA.Mods.AS.dll`, `OpenRA.Mods.CA.dll`, and `OpenRA.Mods.Cameo.dll`.
@@ -7139,7 +7159,7 @@ fi
 The engine version is pinned in `mod.config`:
 
 ```bash
-ENGINE_VERSION="7ba39d9"
+ENGINE_VERSION="462fc1fc"
 AUTOMATIC_ENGINE_SOURCE="https://github.com/cameo-mod/OpenRA/archive/${ENGINE_VERSION}.zip"
 ENGINE_DIRECTORY="./engine"
 AUTOMATIC_ENGINE_EXTRACT_DIRECTORY="./engine_temp"
@@ -7330,7 +7350,7 @@ The primary build commands are the `Makefile` targets. On Windows, use the equiv
 
 Cameo does not store the OpenRA engine source in the repository. Instead, `fetch-engine.sh` downloads the version pinned in `mod.config`:
 
-- `ENGINE_VERSION` — the Git commit/branch/tag to fetch (e.g. `7ba39d9`).
+- `ENGINE_VERSION` — the Git commit/branch/tag to fetch (e.g. `462fc1fc`).
 - `AUTOMATIC_ENGINE_SOURCE` — the URL to download (e.g. `https://github.com/cameo-mod/OpenRA/archive/${ENGINE_VERSION}.zip`).
 - `ENGINE_DIRECTORY` — local path to extract the engine (default `./engine`).
 - `AUTOMATIC_ENGINE_EXTRACT_DIRECTORY` — temporary extraction directory.
@@ -8011,8 +8031,8 @@ namespace OpenRA.Mods.MyMod.Traits
 | `OpenRA.Game/Graphics/Viewport.cs` | Viewport used for culling and coordinate transforms. |
 | `mods/cameo/mod.yaml` | Registers `CameoSpriteSequence` as the `SpriteSequenceFormat`. |
 | `OpenRA.Mods.Cameo/Graphics/CameoSpriteSequence.cs` | Cameo tileset-specific sprite sequence resolution. |
-| `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` | World trait that tracks and decays hazard cells (radiation/tiberium/anthrax/cryo). |
-| `OpenRA.Mods.CA/Graphics/TintedCell.cs` | Per-cell `IRenderable`/`IEffect` that draws the colored overlay. |
+| `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` | World trait that tracks and decays hazard cells (radiation/tiberium/anthrax/cryo). |
+| `OpenRA.Mods.AS/Graphics/TintedCell.cs` | Per-cell `IRenderable`/`IEffect` that draws the colored overlay. |
 | `OpenRA.Mods.Cameo/Traits/Render/WithTurretSearchlight.cs` | Turret-driven searchlight that registers glows with `GlowRenderer`. |
 | `OpenRA.Mods.Cameo/Effects/TintedSpriteEffect.cs` | Short-lived effect that renders a sprite with a multiplicative tint. |
 | `OpenRA.Mods.Cameo/Graphics/UILineRenderable.cs` | Cameo UI-space annotation renderables (line and rectangle). |
@@ -8304,11 +8324,11 @@ During world load, `ReserveSprites` reads `TilesetFilenames` and `TilesetFilenam
 
 ### Hazard cell overlays (TintedCellsLayer)
 
-`TintedCellsLayer` (`OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`) is a world trait that tracks persistent cell-level hazards such as radiation, tiberium, anthrax, or cryo fields. It stores a true simulation map (`tiles`) and a separate rendered map (`renderedTiles`) that respects fog of war.
+`TintedCellsLayer` (`OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs`) is a world trait that tracks persistent cell-level hazards such as radiation, tiberium, anthrax, or cryo fields. It stores a true simulation map (`tiles`) and a separate rendered map (`renderedTiles`) that respects fog of war.
 
 - Each simulation tick, `ITick.Tick` decays cells and marks dirty cells.
 - Each render tick, `ITickRender.TickRender` synchronizes `renderedTiles` with the true map, skipping cells hidden by fog, and adds/removes the visible cells as effects via `world.Add`/`world.Remove`.
-- The per-cell visual is `TintedCell` (`OpenRA.Mods.CA/Graphics/TintedCell.cs`), which implements `IRenderable`, `IFinalizedRenderable`, and `IEffect`. In `Render()` it uses `Game.Renderer.WorldRgbaColorRenderer.FillRect` to draw a tinted quad over the cell, with alpha interpolated between `Darkest` and `Brightest` based on the cell level.
+- The per-cell visual is `TintedCell` (`OpenRA.Mods.AS/Graphics/TintedCell.cs`), which implements `IRenderable`, `IFinalizedRenderable`, and `IEffect`. In `Render()` it uses `Game.Renderer.WorldRgbaColorRenderer.FillRect` to draw a tinted quad over the cell, with alpha interpolated between `Darkest` and `Brightest` based on the cell level.
 
 Because `TintedCell` is an `IEffect`, `WorldRenderer` includes it through `GenerateRenderables` (unpartitioned effects) and `RenderableEffectsInBox` (partitioned effects). It sorts with the rest of the actor/effect layer and therefore respects the stable Z sort.
 
@@ -8506,8 +8526,8 @@ If any of the concepts above feel unclear, review the relevant section before co
 - `OpenRA.Game/Graphics/Viewport.cs` — viewport and culling.
 - `mods/cameo/mod.yaml` — mod metadata, including `SpriteSequenceFormat`.
 - `OpenRA.Mods.Cameo/Graphics/CameoSpriteSequence.cs` — Cameo tileset-specific sequences.
-- `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` — hazard cell tracking.
-- `OpenRA.Mods.CA/Graphics/TintedCell.cs` — per-cell overlay renderable.
+- `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` — hazard cell tracking.
+- `OpenRA.Mods.AS/Graphics/TintedCell.cs` — per-cell overlay renderable.
 - `OpenRA.Mods.Cameo/Traits/Render/WithTurretSearchlight.cs` — searchlight renderable.
 - `OpenRA.Mods.Cameo/Effects/TintedSpriteEffect.cs` — tinted sprite effect.
 - `OpenRA.Mods.Cameo/Graphics/UILineRenderable.cs` — UI annotation helpers.
@@ -12221,7 +12241,7 @@ After studying this chapter, you should be able to:
 - Explain the RMG pipeline from UI click to saved map.
 - Describe the `IMapGeneratorInfo` / `IEditorMapGeneratorInfo` contracts.
 - Identify the three generators Cameo exposes and the tilesets each supports.
-- Read and edit `mods/cameo/rules/map-generators.yaml` to change default options or add a new preset.
+- Read and edit `mods/cameo/rules/map_generators.yaml` to change default options or add a new preset.
 - Register a generator in YAML and wire it into the map chooser or editor.
 
 ## RMG at a glance
@@ -12262,7 +12282,7 @@ Seed + Settings
 .oramap
 ```
 
-Cameo does not add custom generator classes; it configures the upstream `ClassicMapGenerator`, `D2kMapGenerator`, and `ClearMapGenerator` through `mods/cameo/rules/map-generators.yaml`.
+Cameo does not add custom generator classes; it configures the upstream `ClassicMapGenerator`, `D2kMapGenerator`, and `ClearMapGenerator` through `mods/cameo/rules/map_generators.yaml`.
 
 ## Files
 ![Architecture diagram](images/Part_07_Chapter_01_Pipeline-architecture-diagram-showing-the-main-classes-interfaces-and-9161e6.svg)
@@ -12279,9 +12299,9 @@ Cameo does not add custom generator classes; it configures the upstream `Classic
 | `OpenRA.Mods.Common/Traits/World/ClassicMapGenerator.cs` | Standard Red Alert / Tiberian Dawn style generator. |
 | `OpenRA.Mods.D2k/Traits/World/D2kMapGenerator.cs` | Dune 2000 generator implementation. |
 | `OpenRA.Mods.Common/Traits/World/ClearMapGenerator.cs` | Minimal "clear everything to one tile" generator. |
-| `mods/cameo/rules/map-generators.yaml` | Cameo's registration and settings for all three generators. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo's registration and settings for all three generators. |
 | `mods/cameo/rules/world.yaml` | Inherits `^MapGenerators` for both `World` and `EditorWorld`. |
-| `mods/cameo/mod.yaml` | Loads `cameo\|rules/map-generators.yaml`. |
+| `mods/cameo/mod.yaml` | Loads `cameo\|rules/map_generators.yaml`. |
 | `mods/cameo/fluent/en.ftl` | Fluent labels for generator names, options, and choices. |
 | `mods/common/chrome/map-chooser.yaml` | Common map chooser generation panel chrome. |
 | `mods/common/chrome/editor.yaml` | Common editor generator tool panel chrome. |
@@ -12356,7 +12376,7 @@ Cameo's generator YAML populates these fields implicitly: the user picks a tiles
 
 ### Cameo generator registration
 
-Cameo registers three generators in `mods/cameo/rules/map-generators.yaml` under the `^MapGenerators` template:
+Cameo registers three generators in `mods/cameo/rules/map_generators.yaml` under the `^MapGenerators` template:
 
 ```yaml
 ^MapGenerators:
@@ -12405,13 +12425,13 @@ Rules:
     cameo|rules/misc.yaml
     cameo|rules/player.yaml
     cameo|rules/world.yaml
-    cameo|rules/map-generators.yaml
+    cameo|rules/map_generators.yaml
     ...
 ```
 
 ### Cameo option presets
 
-`mods/cameo/rules/map-generators.yaml` overrides upstream defaults to match Cameo's multi-franchise resource and terrain setup. Notable customizations include:
+`mods/cameo/rules/map_generators.yaml` overrides upstream defaults to match Cameo's multi-franchise resource and terrain setup. Notable customizations include:
 
 - `ResourceSpawnSeeds` mapping custom resource actors (`split2`, `splitblue`, `splitred`, `splitgold`) to resource types (`Ore`, `Gems`, `Tiberium`, `BlueTiberium`, `RedTiberium`, `GoldTiberium`).
 - `DefaultResource: Ore` for the classic generator, with weights adjusted per resource preset.
@@ -12447,11 +12467,11 @@ The following tables map generator concepts to the Cameo files that configure th
 
 | Concept | Cameo file | Notes |
 | :---- | :---- | :---- |
-| Generator registration | `mods/cameo/rules/map-generators.yaml` | Defines `classic`, `d2k`, and `clear` entries under `^MapGenerators`. |
-| Tileset lists | `mods/cameo/rules/map-generators.yaml` | Each generator's `Tilesets` field filters the UI. |
+| Generator registration | `mods/cameo/rules/map_generators.yaml` | Defines `classic`, `d2k`, and `clear` entries under `^MapGenerators`. |
+| Tileset lists | `mods/cameo/rules/map_generators.yaml` | Each generator's `Tilesets` field filters the UI. |
 | Option labels | `mods/cameo/fluent/en.ftl` | Fluent keys such as `map-generator-classic` and `label-ra-map-generator-option-seed`. |
 | World wiring | `mods/cameo/rules/world.yaml` | `Inherits@MapGenerators: ^MapGenerators` for `World` and `EditorWorld`. |
-| Manifest loading | `mods/cameo/mod.yaml` | `cameo\|rules/map-generators.yaml` listed under `Rules`. |
+| Manifest loading | `mods/cameo/mod.yaml` | `cameo\|rules/map_generators.yaml` listed under `Rules`. |
 
 ### Common `ClassicMapGenerator` settings customized by Cameo
 
@@ -12529,7 +12549,7 @@ After reading this chapter, you should understand:
 - How `CellLayer<T>` and `Matrix<T>` differ and when each is used.
 - How `MapGrid` and `Map` define the geometry and contents of a generated map.
 - Which Cameo YAML files describe tilesets, resources, and generator settings.
-- How `mods/cameo/rules/map-generators.yaml` acts as a structured database of generator parameters.
+- How `mods/cameo/rules/map_generators.yaml` acts as a structured database of generator parameters.
 
 ## Learning Objectives
 
@@ -12539,7 +12559,7 @@ After studying this chapter, you should be able to:
 - Convert between `CPos`, `MPos`, `PPos`, and `WPos` using `MapGrid` rules.
 - Describe how `Map` assembles tile, resource, height, ramp, and actor layers.
 - Identify the tileset and resource definitions that the Cameo RMG consumes.
-- Read and extend `mods/cameo/rules/map-generators.yaml` settings blocks.
+- Read and extend `mods/cameo/rules/map_generators.yaml` settings blocks.
 
 ## Files
 ![Architecture diagram](images/Part_07_Chapter_02_Data_Structures-architecture-diagram-showing-the-main-classes-interfaces-and-9161e6.svg)
@@ -12564,7 +12584,7 @@ After studying this chapter, you should be able to:
 
 | File | Role |
 |------|------|
-| `mods/cameo/rules/map-generators.yaml` | Cameo's generator registrations and option/override databases. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo's generator registrations and option/override databases. |
 | `mods/cameo/tilesets/ra_temperat.yaml` | Red Alert temperate tileset (`RA_TEMPERAT`). |
 | `mods/cameo/tilesets/ra_snow.yaml` | Red Alert snow tileset (`RA_SNOW`). |
 | `mods/cameo/tilesets/ra_desert.yaml` | Red Alert desert tileset (`RA_DESERT`). |
@@ -12629,7 +12649,7 @@ The `Id` value is what the generator's `Tilesets` field matches. The `Terrain` b
 
 ### Cameo generator settings database
 
-`mods/cameo/rules/map-generators.yaml` is a structured data file rather than an algorithm. Each generator entry contains:
+`mods/cameo/rules/map_generators.yaml` is a structured data file rather than an algorithm. Each generator entry contains:
 
 - `Type`, `Name`, and `Tilesets` metadata.
 - A `Settings` block of `MapGeneratorOption` definitions.
@@ -12679,10 +12699,10 @@ The following Cameo YAML fields are the main data inputs to the RMG:
 | :---- | :---- | :---- |
 | `Id` | `mods/cameo/tilesets/*.yaml` | Tileset identifier used in generator `Tilesets` lists. |
 | `TerrainType@*` | `mods/cameo/tilesets/*.yaml` | Logical terrain types and their colors/target types. |
-| `ResourceSpawnSeeds` | `mods/cameo/rules/map-generators.yaml` | Maps actor template names to resource types. |
-| `DefaultResource` | `mods/cameo/rules/map-generators.yaml` | Resource type used for default spawn fields. |
-| `PlayableTerrain` / `DominantTerrain` / `ZoneableTerrain` | `mods/cameo/rules/map-generators.yaml` | Terrain categories that guide generator placement. |
-| `ClearSegmentTypes` / `BeachSegmentTypes` / `CliffSegmentTypes` / `RoadSegmentTypes` | `mods/cameo/rules/map-generators.yaml` | Template segment categories used by the `Terraformer` and `MultiBrush`. |
+| `ResourceSpawnSeeds` | `mods/cameo/rules/map_generators.yaml` | Maps actor template names to resource types. |
+| `DefaultResource` | `mods/cameo/rules/map_generators.yaml` | Resource type used for default spawn fields. |
+| `PlayableTerrain` / `DominantTerrain` / `ZoneableTerrain` | `mods/cameo/rules/map_generators.yaml` | Terrain categories that guide generator placement. |
+| `ClearSegmentTypes` / `BeachSegmentTypes` / `CliffSegmentTypes` / `RoadSegmentTypes` | `mods/cameo/rules/map_generators.yaml` | Template segment categories used by the `Terraformer` and `MultiBrush`. |
 
 ## Interconnectivity
 ![Interconnectivity](images/Part_07_Chapter_02_Data_Structures-Interconnectivity.svg)
@@ -12705,7 +12725,7 @@ The following Cameo YAML fields are the main data inputs to the RMG:
 Cameo does not introduce new engine data structures for map generation. The divergence is in the *content* of the YAML databases:
 
 - Cameo maintains more tileset files than the base mods, but only registers a subset for RMG use.
-- `mods/cameo/rules/map-generators.yaml` adds resource actor mappings for Tiberium variants (`split2`, `splitblue`, `splitred`, `splitgold`) that do not exist in the base Red Alert mod.
+- `mods/cameo/rules/map_generators.yaml` adds resource actor mappings for Tiberium variants (`split2`, `splitblue`, `splitred`, `splitgold`) that do not exist in the base Red Alert mod.
 - `ClearMapGenerator` choices cover Cameo's extended tileset set, including `RA_INTERIOR`, `TEMPERAT`, and `DESERT`.
 - The `World`/`EditorWorld` rules in `mods/cameo/rules/world.yaml` define additional resource types (`BlueTiberium`, `RedTiberium`, `GoldTiberium`, `SCMinerals`, `Veins`, etc.) that are available to the editor and to custom generators, even though the upstream `ClassicMapGenerator` only uses a subset.
 
@@ -12764,7 +12784,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Common/MapGenerator/MatrixUtils.cs` | Boolean morphology, smoothing, contour/path extraction, flood fills, distance transforms. |
 | `OpenRA.Mods.Common/MapGenerator/Symmetry.cs` | Mirror and rotational-symmetry primitives. |
 | `OpenRA.Mods.Common/MapGenerator/Direction.cs` | Direction enum, masks, and adjacency helpers. |
-| `mods/cameo/rules/map-generators.yaml` | Cameo's parameter sets that feed the algorithms above. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo's parameter sets that feed the algorithms above. |
 
 ## Architecture
 ![Data flow  code path diagram](images/Part_07_Chapter_03_Algorithms-sequence-flow-diagram-tracing-the-execution-path-from-trigge-035864.svg)
@@ -12816,7 +12836,7 @@ A typical high-level generator path looks like this:
 
 ## Configuration (YAML)
 
-Cameo's `mods/cameo/rules/map-generators.yaml` maps user-visible choices to the algorithm parameters above. The following table shows the most important mappings for the `ClassicMapGenerator`.
+Cameo's `mods/cameo/rules/map_generators.yaml` maps user-visible choices to the algorithm parameters above. The following table shows the most important mappings for the `ClassicMapGenerator`.
 
 | Parameter | Typical YAML key | Cameo example | Description |
 | :---- | :---- | :---- | :---- |
@@ -12880,7 +12900,7 @@ Cameo has **no code-level divergence** in the RMG algorithm layer. All differenc
 
 ## Practical notes
 
-- To change map character without touching C#, edit the numeric parameters under `MultiChoiceOption@TerrainType` or add a new choice in `mods/cameo/rules/map-generators.yaml`.
+- To change map character without touching C#, edit the numeric parameters under `MultiChoiceOption@TerrainType` or add a new choice in `mods/cameo/rules/map_generators.yaml`.
 - `TerrainFeatureSize` is the single most powerful knob for map scale; larger values produce broader continents/lakes, smaller values produce noisy, detailed terrain.
 - `EnforceSymmetry` and the `Symmetry` mirror/rotation choices directly feed `Symmetry.RotateAndMirrorPointAround`, so multiplayer fairness is deterministic from the seed.
 
@@ -12907,7 +12927,7 @@ Cameo has **no code-level divergence** in the RMG algorithm layer. All differenc
 
 `[Terraformer](#file-appendices-Appendix_A_Glossary)` is the high-level orchestration class for OpenRA procedural map generation. While the algorithmic primitives live in `NoiseUtils`, `MatrixUtils`, and `Symmetry`, and the brush engine lives in `[MultiBrush](#file-appendices-Appendix_A_Glossary)`, the `Terraformer` is where a generator author calls those pieces together to create a playable, balanced, and visually coherent map. It provides a single mutable workspace that holds the `Map` being generated, a list of `[ActorPlan](#file-appendices-Appendix_A_Glossary)`s, symmetry settings, and convenience wrappers for terrain selection, space analysis, path tiling, resource placement, and actor placement.
 
-Cameo does not modify `Terraformer` itself; it drives the upstream class through the YAML parameters in `mods/cameo/rules/map-generators.yaml`.
+Cameo does not modify `Terraformer` itself; it drives the upstream class through the YAML parameters in `mods/cameo/rules/map_generators.yaml`.
 
 ## Learning Objectives
 
@@ -12933,7 +12953,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Common/MapGenerator/MultiBrush.cs` | Tile/actor super-brush engine used by `PaintArea`, `PaintTiling`, `PaintLoopsAndFill`, and `RepaintTiles`. |
 | `OpenRA.Mods.Common/MapGenerator/TilingPath.cs` | Path-aware tiling used by `PartitionPath` and `PaintLoopsAndFill`. |
 | `OpenRA.Mods.Common/MapGenerator/ActorPlan.cs` | Mutable actor placement plan used by `ActorPlans`, `ProjectPlaceDezoneActor`, and `ReorderPlayerSpawns`. |
-| `mods/cameo/rules/map-generators.yaml` | Cameo parameters that drive the `Terraformer` phases. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo parameters that drive the `Terraformer` phases. |
 | `mods/cameo/tilesets/ra_temperat.yaml` | Red Alert temperate tileset with `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/ra_snow.yaml` | Red Alert snow tileset with `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/ra_desert.yaml` | Red Alert desert tileset with `MultiBrushCollections/Segmented`. |
@@ -13059,7 +13079,7 @@ public void InitMap()
 
 ## Configuration (YAML)
 
-Cameo's `mods/cameo/rules/map-generators.yaml` supplies the parameter values that control the `Terraformer` phases. The following table maps `Terraformer` concepts to Cameo YAML fields.
+Cameo's `mods/cameo/rules/map_generators.yaml` supplies the parameter values that control the `Terraformer` phases. The following table maps `Terraformer` concepts to Cameo YAML fields.
 
 | `Terraformer` phase | Cameo YAML keys (Classic) | Purpose |
 | :---- | :---- | :---- |
@@ -13091,7 +13111,7 @@ The `D2kMapGenerator@d2k` entry uses a different set of keys (`Rock`, `SandCliff
 
 Cameo's `Terraformer` usage is identical to upstream. Divergence is limited to:
 
-- Different YAML parameter values in `mods/cameo/rules/map-generators.yaml`.
+- Different YAML parameter values in `mods/cameo/rules/map_generators.yaml`.
 - Different `MultiBrushCollections/Segmented` content in Cameo's tilesets.
 - Different actor and resource template names in the classic generator's `ResourceSpawnSeeds` and `BuildingWeights`.
 
@@ -13144,7 +13164,7 @@ After studying this chapter, you should be able to:
 | `mods/cameo/tilesets/ra_snow.yaml` | RA snow `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/ra_desert.yaml` | RA desert `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/arrakis.yaml` | Arrakis `MultiBrushCollections/Segmented` (RockSmooth, Sand cliff segments, etc.). |
-| `mods/cameo/rules/map-generators.yaml` | Generator settings that name the segment types used from these collections. |
+| `mods/cameo/rules/map_generators.yaml` | Generator settings that name the segment types used from these collections. |
 
 ## Architecture
 
@@ -13269,7 +13289,7 @@ MultiBrushCollections:
                 Points: 4,1, 4,2, 3,2, 2,2, 1,2, 1,3, 0,3
 ```
 
-And in `mods/cameo/rules/map-generators.yaml`:
+And in `mods/cameo/rules/map_generators.yaml`:
 
 ```yaml
 ClassicMapGenerator@classic:
@@ -13353,7 +13373,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Common/Traits/World/ClearMapGenerator.cs` | Minimal flat-map generator reference. |
 | `OpenRA.Game/Traits/TraitsInterfaces.cs` | `IMapGeneratorInfo` base interface. |
 | `OpenRA.Mods.Common/TraitsInterfaces.cs` | `IEditorMapGeneratorInfo`, `IMapGeneratorSettings`. |
-| `mods/cameo/rules/map-generators.yaml` | Cameo's registration and settings for `classic`, `d2k`, and `clear`. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo's registration and settings for `classic`, `d2k`, and `clear`. |
 | `mods/cameo/tilesets/ra_temperat.yaml` | RA temperate tileset and brushes used by `ClassicMapGenerator`. |
 | `mods/cameo/tilesets/ra_snow.yaml` | RA snow tileset and brushes. |
 | `mods/cameo/tilesets/ra_desert.yaml` | RA desert tileset and brushes. |
@@ -13457,7 +13477,7 @@ return map;
 
 ## Configuration (YAML)
 
-Cameo's `mods/cameo/rules/map-generators.yaml` registers three generators:
+Cameo's `mods/cameo/rules/map_generators.yaml` registers three generators:
 
 ```yaml
 ^MapGenerators:
@@ -13575,7 +13595,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Common/MapGenerator/MultiBrush.cs` | Paints tiles and embedded `ActorPlan`s. |
 | `OpenRA.Mods.Common/MapGenerator/CellLayerUtils.cs` | Grid conversion helpers and `PickWeighted` / `FindRandomBest` primitives. |
 | `OpenRA.Mods.Common/Traits/World/ResourceLayer.cs` | `ResourceLayerInfo` / `ResourceTypeInfo` and the `ResourceTypes` table. |
-| `mods/cameo/rules/map-generators.yaml` | Cameo resource and actor placement parameters. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo resource and actor placement parameters. |
 | `mods/cameo/rules/world.yaml` | Cameo `ResourceLayer`/`ResourceRenderer` definitions and resource types. |
 | `mods/cameo/rules/misc.yaml` | Resource-actor templates (`split*`, `mine`, `gmine`) referenced by `ResourceSpawnSeeds`. |
 
@@ -13672,7 +13692,7 @@ terraformer.ProjectPlaceDezoneActor(spawn, zoneable, SpawnReservation)
 
 ### Cameo `ResourceSpawnSeeds`
 
-`mods/cameo/rules/map-generators.yaml` maps resource-actor template names to resource types:
+`mods/cameo/rules/map_generators.yaml` maps resource-actor template names to resource types:
 
 ```yaml
 ResourceSpawnSeeds:
@@ -13779,7 +13799,7 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.Common/Traits/World/ClearMapGenerator.cs` | Minimal example of a generator and editor tool. |
 | `OpenRA.Mods.Common/Traits/World/ClassicMapGenerator.cs` | Complex generator with a full `Parameters` class and YAML settings. |
 | `OpenRA.Mods.D2k/Traits/World/D2kMapGenerator.cs` | Mod-specific generator example. |
-| `mods/cameo/rules/map-generators.yaml` | Cameo YAML registration of `classic`, `d2k`, and `clear`. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo YAML registration of `classic`, `d2k`, and `clear`. |
 | `mods/cameo/tilesets/ra_temperat.yaml` | RA temperate `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/ra_snow.yaml` | RA snow `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/ra_desert.yaml` | RA desert `MultiBrushCollections/Segmented`. |
@@ -13845,7 +13865,7 @@ Every non-trivial generator defines an inner `Parameters` class. The constructor
 4. Implement `Generate(ModData, MapGenerationArgs)` to create a `Map`, build a `Parameters`, instantiate `Terraformer`, run phases, and call `BakeMap()`.
 5. Implement `TryGenerateMetadata(...)` to return a `MapPlayers` block and any rule overrides.
 6. Implement `Create(...)` to return the `IEditorTool` instance (usually just a wrapper).
-7. Add the generator to `mods/cameo/rules/map-generators.yaml` under `^MapGenerators:`.
+7. Add the generator to `mods/cameo/rules/map_generators.yaml` under `^MapGenerators:`.
 8. Add Fluent labels for `Name`, option labels, and choice labels in `mods/cameo/fluent/en.ftl`.
 
 ### Minimal generator example: ClearMapGenerator
@@ -13856,7 +13876,7 @@ Every non-trivial generator defines an inner `Parameters` class. The constructor
 
 Because the `Parameters` class is loaded via `FieldLoader`, adding a new scalar or boolean key to a generator's YAML settings is usually enough to change behavior, provided the generator's code reads that key. In Cameo, many customizations are done this way:
 
-- Add a new `Choice@` under an existing `MultiChoiceOption@` in `mods/cameo/rules/map-generators.yaml`.
+- Add a new `Choice@` under an existing `MultiChoiceOption@` in `mods/cameo/rules/map_generators.yaml`.
 - Override numeric fields such as `TerrainFeatureSize`, `Water`, `Mountains`, `ResourcesPerPlayer`, etc.
 - Add new `MultiBrush` entries to `MultiBrushCollections/Segmented` in a tileset YAML.
 
@@ -13890,7 +13910,7 @@ Cameo has no code-level divergence in the RMG extension points. It uses the stan
 
 - Different generator `Tilesets` lists.
 - Different `MultiBrushCollections` data.
-- Different `Parameters` values in `mods/cameo/rules/map-generators.yaml`.
+- Different `Parameters` values in `mods/cameo/rules/map_generators.yaml`.
 
 ## See also
 
@@ -13959,7 +13979,7 @@ After studying this chapter, you should be able to:
 
 | File | Responsibility |
 | :---- | :---- |
-| `mods/cameo/rules/map-generators.yaml` | Cameo generator registration and parameter presets for `classic`, `d2k`, and `clear`. |
+| `mods/cameo/rules/map_generators.yaml` | Cameo generator registration and parameter presets for `classic`, `d2k`, and `clear`. |
 | `mods/cameo/rules/world.yaml` | `World`/`EditorWorld` inheritance of `^MapGenerators` and `ResourceLayer` definitions. |
 | `mods/cameo/rules/misc.yaml` | Resource-actor templates (`mine`, `gmine`, `split*`) referenced by `ResourceSpawnSeeds`. |
 | `mods/cameo/rules/civilian.yaml` | Neutral civilian buildings referenced by `BuildingWeights`. |
@@ -13969,7 +13989,7 @@ After studying this chapter, you should be able to:
 | `mods/cameo/tilesets/ra_desert.yaml` | RA desert tileset with `MultiBrushCollections/Segmented`. |
 | `mods/cameo/tilesets/arrakis.yaml` | Arrakis tileset with `MultiBrushCollections/Segmented` for the D2k generator. |
 | `mods/cameo/fluent/en.ftl` | Fluent labels for generator names, options, and choices. |
-| `mods/cameo/mod.yaml` | Loads `cameo\|rules/map-generators.yaml` under `Rules`. |
+| `mods/cameo/mod.yaml` | Loads `cameo\|rules/map_generators.yaml` under `Rules`. |
 
 ## Editor and UI
 
@@ -14023,7 +14043,7 @@ This chapter indexes the files that make up the OpenRA Random Map Generator as u
 
 OpenRA's [bot](#file-appendices-Appendix_A_Glossary) framework is built around the idea that **bot logic is not allowed to mutate the [world](#file-appendices-Appendix_A_Glossary) directly**. Instead, a bot is a player-level trait that observes the world, decides what [orders](#file-appendices-Appendix_A_Glossary) to issue, and queues those orders through the normal order system. Because orders go through the same lockstep pipeline as human orders, bot actions are recorded in replays and stay synchronized across clients.
 
-Cameo reuses this upstream architecture unchanged but replaces the default bot modules with its own. The engine's `ModularBot` still coordinates everything, yet the modules that make decisions are the Cameo/Combined Arms variants (`BaseBuilderBotModuleCA`, `UnitBuilderBotModuleCA`, `HarvesterBotModuleCA`, `SquadManagerBotModuleCA`) plus Cameo-specific helpers (`DeployBotModule`, `PlugSpawnerBotModuleCA`, `BotGlobalUnitBudget`, `BotLimits`). This chapter introduces the core interfaces (`IBot`, `IBotInfo`, `IBotTick`) and the modular pipeline that runs them, then explains how Cameo modules plug into that pipeline.
+Cameo reuses this upstream architecture unchanged but replaces the default bot modules with its own. The engine's `ModularBot` still coordinates everything, yet the modules that make decisions are the Cameo/Combined Arms variants (`BaseBuilderBotModuleCA`, `UnitBuilderBotModuleCA`, `HarvesterBotModuleCA`, `SquadManagerBotModuleCA`) plus Cameo-specific helpers (`PlugSpawnerBotModuleCA`, `BotGlobalUnitBudget`, `BotLimits`). This chapter introduces the core interfaces (`IBot`, `IBotInfo`, `IBotTick`) and the modular pipeline that runs them, then explains how Cameo modules plug into that pipeline.
 
 ## Learning Objectives
 ![Practical example: a bot builds a power plant diagram](images/Part_08_Chapter_01_IBot-end-to-end-worked-example-diagram-showing-the-inputs-interme-5fc6a2.svg)
@@ -14080,7 +14100,6 @@ This example shows how a bot decision becomes a sequence of normal orders that s
 | `OpenRA.Mods.CA/Traits/BotModules/UnitBuilderBotModuleCA.cs` | Cameo unit production module; implements `IBotTick`, `IBotNotifyIdleBaseUnits`, `IBotRequestUnitProduction`, `IBotAircraftBuilder`. |
 | `OpenRA.Mods.CA/Traits/BotModules/HarvesterBotModuleCA.cs` | Cameo harvester management module; implements `IBotTick`, `IWorldLoaded`. |
 | `OpenRA.Mods.CA/Traits/BotModules/SquadManagerBotModuleCA.cs` | Cameo squad management module; implements `IBotEnabled`, `IBotTick`, `IBotRespondToAttack`, `IBotPositionsUpdated`. |
-| `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs` | Cameo module that issues deploy/undeploy orders for `AutoDeployer` units. |
 | `OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs` | Cameo module that spawns building plugs on a schedule. |
 | `OpenRA.Mods.Cameo/Traits/BotGlobalUnitBudget.cs` | Cameo global unit-budget cap that pauses production when the bot's share is reached. |
 | `OpenRA.Mods.CA/Traits/BotModules/BotLimits.cs` | Difficulty-scaled limits for construction, refineries, harvesters, and attack delays. |
@@ -14165,7 +14184,6 @@ Because each module is a `ConditionalTrait<TInfo>` and implements the same engin
 
 Cameo adds three additional modules that have no upstream equivalent:
 
-* `DeployBotModule` (`OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs`) implements `IBotTick`. It is notified by `AutoDeployer` traits during the tick and, when the configured `DeployChance` succeeds, queues the deploy/undeploy orders for those units. The module itself does not mutate actor state; it only adds `Order` objects to `bot.QueueOrder`.
 * `PlugSpawnerBotModuleCA` (`OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs`) implements `IBotTick` and `IResolveOrder`. It periodically scans the bot's buildings for a `Pluggable` that accepts the configured `Plug`, then issues a `PlacePlugAI` order. The order is resolved on the same player actor by adding the plug at the end of the frame, taking cash if `IgnoreCost` is false. This is a normal order just like any other bot order; it flows through the lockstep pipeline.
 * `BotGlobalUnitBudget` (`OpenRA.Mods.Cameo/Traits/BotGlobalUnitBudget.cs`) implements `IBotRequestPauseUnitProduction`. It does **not** tick directly; instead, `UnitBuilderBotModuleCA` queries all `IBotRequestPauseUnitProduction` implementations before producing units. If the bot's current mobile combat-unit count has reached its share of a global budget (`GlobalUnitBudget / living bots`, clamped by `MaxUnitsPerBot` and `MinUnitsPerBot`), the property returns `true` and `UnitBuilderBotModuleCA` stops queuing combat units for that tick. `IgnoreHarvesters` and `IgnoredActorTypes` keep the economy from being starved by the cap. The share is recomputed only every `RecalculationInterval` ticks for performance.
 
@@ -14203,7 +14221,7 @@ public void Activate(Player p)
 }
 ```
 
-Bots are disabled during replays because replays only replay orders, not bot decision-making. In Cameo, this means `BaseBuilderBotModuleCA`, `UnitBuilderBotModuleCA`, `HarvesterBotModuleCA`, `SquadManagerBotModuleCA`, `DeployBotModule`, and `PlugSpawnerBotModuleCA` are all discovered by the same `TraitsImplementing<IBotTick>()` call, while `SquadManagerBotModuleCA` and `BaseBuilderBotModuleCA` are also discovered as `IBotRespondToAttack` modules.
+Bots are disabled during replays because replays only replay orders, not bot decision-making. In Cameo, this means `BaseBuilderBotModuleCA`, `UnitBuilderBotModuleCA`, `HarvesterBotModuleCA`, `SquadManagerBotModuleCA`, and `PlugSpawnerBotModuleCA` are all discovered by the same `TraitsImplementing<IBotTick>()` call, while `SquadManagerBotModuleCA` and `BaseBuilderBotModuleCA` are also discovered as `IBotRespondToAttack` modules.
 
 ### Per-tick decision loop
 
@@ -14231,7 +14249,7 @@ void ITick.Tick(Actor self)
 }
 ```
 
-Modules call `bot.QueueOrder(order)` to add orders. The bot issues a configurable fraction of the queue each tick to avoid network spikes and to keep the bot from looking too robotic. In Cameo, this single loop drives `BaseBuilderBotModuleCA`, `UnitBuilderBotModuleCA`, `HarvesterBotModuleCA`, `SquadManagerBotModuleCA`, `DeployBotModule`, and `PlugSpawnerBotModuleCA` simultaneously.
+Modules call `bot.QueueOrder(order)` to add orders. The bot issues a configurable fraction of the queue each tick to avoid network spikes and to keep the bot from looking too robotic. In Cameo, this single loop drives `BaseBuilderBotModuleCA`, `UnitBuilderBotModuleCA`, `HarvesterBotModuleCA`, `SquadManagerBotModuleCA`, and `PlugSpawnerBotModuleCA` simultaneously.
 
 ### Attack response
 
@@ -14309,8 +14327,6 @@ Player:
     HarvesterBotModuleCA:
         RequiresCondition: genericbot
         HarvestersPerRefinery: 3
-    DeployBotModule:
-        RequiresCondition: genericbot
     BotGlobalUnitBudget:
         GlobalUnitBudget: 600
         MaxUnitsPerBot: 300
@@ -14358,7 +14374,7 @@ Sync.RunUnsynced(Game.Settings.Debug.SyncCheckBotModuleCode, world, () =>
 });
 ```
 
-Bot code runs unsynced, so it can use random numbers, local state, and pathfinding without affecting the deterministic simulation. The only thing that crosses the sync boundary is the `Order` issued afterward. This is just as true for `PlugSpawnerBotModuleCA` and `DeployBotModule` as for the upstream modules.
+Bot code runs unsynced, so it can use random numbers, local state, and pathfinding without affecting the deterministic simulation. The only thing that crosses the sync boundary is the `Order` issued afterward. This is just as true for `PlugSpawnerBotModuleCA` as for the upstream modules.
 
 ### Difficulty scaling via `BotLimits`
 
@@ -14411,7 +14427,6 @@ If any of the concepts above feel unclear, review the relevant section before co
 - `OpenRA.Mods.CA/Traits/BotModules/UnitBuilderBotModuleCA.cs` — Cameo unit production.
 - `OpenRA.Mods.CA/Traits/BotModules/HarvesterBotModuleCA.cs` — Cameo harvester management.
 - `OpenRA.Mods.CA/Traits/BotModules/SquadManagerBotModuleCA.cs` — Cameo squad management.
-- `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs` — Cameo deploy handling.
 - `OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs` — Cameo plug spawning.
 - `OpenRA.Mods.Cameo/Traits/BotGlobalUnitBudget.cs` — global unit budget cap.
 - `OpenRA.Mods.CA/Traits/BotModules/BotLimits.cs` — difficulty-scaled limits.
@@ -14450,7 +14465,6 @@ After studying this chapter, you should be able to:
 - Describe the responsibilities of the major Cameo bot modules (base builder, unit builder, harvester, squads, capture, MCV, repair, power-down, garrison, plugs, deploy, budgets).
 - Understand how modules coordinate through shared callback interfaces and the `BotLimits` helper.
 - Trace the data flow and heuristics in `BaseBuilderBotModuleCA` and `UnitBuilderBotModuleCA`.
-- Configure bot modules in `mods/cameo/ai/ai.yaml` and `mods/cameo/ai/ai_airforce.yaml` to tune AI behavior.
 - Identify where to add a new bot module or state that integrates with Cameo's `ModularBot`.
 
 ## Files
@@ -14478,12 +14492,10 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.CA/Traits/BotModules/PowerDownBotModuleCA.cs` | Toggles power-down on buildings when low on power. |
 | `OpenRA.Mods.CA/Traits/BotModules/LoadGarrisonerBotModuleCA.cs` | Loads garrison-capable units into garrisonable structures. |
 | `OpenRA.Mods.CA/Traits/BotModules/BotLimits.cs` | Difficulty-wide limits for production, refineries, construction yards, harvesters, and delay modifiers. |
-| `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs` | Issues deploy orders for `AutoDeployer` traits. |
 | `OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs` | Spawns building plugs for the AI. |
 | `OpenRA.Mods.Cameo/Traits/BotGlobalUnitBudget.cs` | Global combat-unit budget shared across all living bots. |
 | `OpenRA.Mods.Cameo/Traits/BotInsurance.cs` | Grants a condition when the bot's stored cash is low for a duration. |
 | `mods/cameo/ai/ai.yaml` | Main AI configuration for all difficulty levels. |
-| `mods/cameo/ai/ai_airforce.yaml` | Specialized air/naval-focused AI configuration. |
 | `OpenRA.Mods.Common/Traits/BotModules/ResourceMapBotModule.cs` | Upstream resource map still used by harvester and base builder. |
 | `OpenRA.Mods.Common/Traits/BotModules/SupportPowerBotModule.cs` | Upstream support power logic, extended by AS-specific modules. |
 | `OpenRA.Mods.Common/Traits/BotModules/BotModuleLogic/SupportPowerDecision.cs` | YAML-decodable decision rules for support powers. |
@@ -14507,7 +14519,7 @@ public class UnitBuilderBotModuleCA : ConditionalTrait<UnitBuilderBotModuleCAInf
     IBotNotifyIdleBaseUnits, IBotRequestUnitProduction, IGameSaveTraitData, IBotAircraftBuilder, INotifyActorDisposing
 ```
 
-Modules are not owned by `ModularBot`; they are discovered by interface query when the bot is activated. This is why a single `Player` actor can carry many modules, each enabled or disabled by conditions such as `genericbot`, `airnavalbot`, or difficulty-specific prerequisites.
+Modules are not owned by `ModularBot`; they are discovered by interface query when the bot is activated. This is why a single `Player` actor can carry many modules, each enabled or disabled by conditions such as `genericbot` or difficulty-specific prerequisites.
 
 ### Shared data structures
 
@@ -14699,7 +14711,7 @@ This module is only active for the `genericbot` condition and disabled on the `e
 
 ### DeployBotModule
 
-`DeployBotModule` in `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs` lets the AI issue the orders that `AutoDeployer` traits would otherwise trigger automatically. Each tick it processes queued `AutoDeployer` entries, rolls against `DeployChance`, and issues the deploy order (or `PrimaryBuilding` order for primary-building deployers). This gives AI access to deployable units such as siege tanks or defensive mode infantry.
+> **Not shipped.** `DeployBotModule` is a Crystallized Nexus (`.modsdk/OpenRA.Mods.CN`) module marked absent from Cameo in `docs/research/bot-modules-survey.md`; an earlier edition of this manual imported the survey entry as if it were live code.
 
 ### PlugSpawnerBotModuleCA
 
@@ -14792,7 +14804,7 @@ BaseBuilderBotModuleCA@generic:
     PowerTypes: nuke, powr, apwr, ...
 ```
 
-`mods/cameo/ai/ai_airforce.yaml` provides a specialized `UnitBuilderBotModule@airforce` configuration that is enabled by the `airnavalbot` condition. It raises `MaxAircraft` to 48 and lists many faction-specific queues (`Infantry.GDI`, `Vehicle.GDI`, `Aircraft.GDI`, `Naval.GDI`, and so on for RA, TS, RA2, Yuri, Generals, StarCraft, Dune, Warcraft, custom factions, etc.). This lets air/naval-focused bots build a much wider aircraft mix than the generic configuration.
+> **Not shipped.** An earlier edition of this manual described `mods/cameo/ai/ai_airforce.yaml` (an `airnavalbot`-conditioned air/naval unit-builder profile). That file does not exist in this codebase — it was Crystallized Nexus research material (see `docs/research/bot-modules-survey.md`). All live bot tuning lives in `mods/cameo/ai/ai.yaml`.
 
 ## Extension Points
 
@@ -14845,12 +14857,10 @@ For build planning, `UnitCompositionsBotModule` provides a parsed composition st
 - `OpenRA.Mods.CA/Traits/BotModules/PowerDownBotModuleCA.cs`
 - `OpenRA.Mods.CA/Traits/BotModules/LoadGarrisonerBotModuleCA.cs`
 - `OpenRA.Mods.CA/Traits/BotModules/BotLimits.cs`
-- `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs`
 - `OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs`
 - `OpenRA.Mods.Cameo/Traits/BotGlobalUnitBudget.cs`
 - `OpenRA.Mods.Cameo/Traits/BotInsurance.cs`
 - `mods/cameo/ai/ai.yaml`
-- `mods/cameo/ai/ai_airforce.yaml`
 - `OpenRA.Mods.Common/Traits/BotModules/ResourceMapBotModule.cs`
 - `OpenRA.Mods.Common/Traits/BotModules/SupportPowerBotModule.cs`
 - `OpenRA.Mods.Common/Traits/BotModules/BotModuleLogic/SupportPowerDecision.cs`
@@ -14891,7 +14901,6 @@ After studying this chapter, you should be able to:
 - Understand air-squad safe pathing, anti-air avoidance, and rearm/wait bookkeeping.
 - Understand naval-squad routing via enemy naval production waypoints.
 - Understand the fuzzy logic behind `AttackOrFleeFuzzyCA` decisions.
-- Configure squad sizes, values, intervals, and unit type filters in `mods/cameo/ai/ai.yaml` and `mods/cameo/ai/ai_airforce.yaml`.
 - Implement custom squad states or behaviors in `OpenRA.Mods.CA/Traits/BotModules/Squads/States/`.
 
 ## Files
@@ -14910,7 +14919,6 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.CA/Traits/BotModules/Squads/States/NavyStatesCA.cs` | Naval squad states using naval production waypoints. |
 | `OpenRA.Mods.CA/Traits/BotModules/Squads/States/ProtectionStatesCA.cs` | Protection/defense squad states. |
 | `mods/cameo/ai/ai.yaml` | Main AI configuration, including `SquadManagerBotModuleCA@generic`. |
-| `mods/cameo/ai/ai_airforce.yaml` | Specialized air/naval unit-builder configuration that feeds the squad manager. |
 
 ## Architecture
 
@@ -15053,7 +15061,7 @@ void FindNewUnits(IBot bot)
     var guerrillaForce = GetSquadOfType(SquadCAType.Guerrilla);
     var guerrillaUpdate = guerrillaForce == null ||
         (guerrillaForce.Units.Count <= Info.MaxGuerrillaSize &&
-         (World.LocalRandom.Next(100) >= Info.JoinGuerrilla));
+         (World.LocalRandom.Next(100) < Info.JoinGuerrilla)); // Cameo: `>=` until 2026-09-27
 
     foreach (var a in newUnits)
     {
@@ -15291,7 +15299,7 @@ Key fields:
 
 ### Air/naval bot configuration
 
-`mods/cameo/ai/ai_airforce.yaml` does not redefine `SquadManagerBotModuleCA`; it inherits the `SquadManagerBotModuleCA@generic` settings from `ai.yaml`. Instead, it defines `UnitBuilderBotModule@airforce` with `RequiresCondition: airnavalbot`, a heavy aircraft production table, and `MaxAircraft: 48`. The squad manager then receives those aircraft and groups them into per-type `Air` squads using the same state machines described above.
+> **Not shipped.** `mods/cameo/ai/ai_airforce.yaml` does not exist; see the note above. Air squads are produced from the queues in `mods/cameo/ai/ai.yaml` alone.
 
 ## Interconnectivity
 ![Algorithms diagram](images/Part_08_Chapter_03_Squads-algorithm-diagram-or-pseudocode-flowchart-for-the-non-trivia-5983ed.svg)
@@ -15562,7 +15570,6 @@ If any of the concepts above feel unclear, review the relevant section before co
 - `OpenRA.Mods.CA/Traits/BotModules/Squads/States/NavyStatesCA.cs` — naval states.
 - `OpenRA.Mods.CA/Traits/BotModules/Squads/States/ProtectionStatesCA.cs` — protection states.
 - `mods/cameo/ai/ai.yaml` — main AI configuration (`SquadManagerBotModuleCA@generic`).
-- `mods/cameo/ai/ai_airforce.yaml` — air/naval-focused unit builder configuration.
 - Upstream counterparts (for comparison): `OpenRA.Mods.Common/Traits/BotModules/SquadManagerBotModule.cs`, `Squad.cs`, `StateMachine.cs`, `GroundStates.cs`, `AirStates.cs`, `ProtectionStates.cs`, and `AttackOrFleeFuzzy.cs`.
 
 
@@ -15576,7 +15583,7 @@ If any of the concepts above feel unclear, review the relevant section before co
 
 ## Purpose
 
-This chapter focuses specifically on how [ModularBot](#file-appendices-Appendix_A_Glossary) and individual bot modules construct and issue [Order](#file-appendices-Appendix_A_Glossary) objects in the Cameo mod. It covers the path from a bot module decision through `IBot.QueueOrder` and `ModularBot.Tick` to `World.IssueOrder`, plus the throttling and visual-feedback suppression that are unique to bot orders. It also covers how Cameo-specific bot modules — `BaseBuilderBotModuleCA`, `BaseBuilderQueueManagerCA`, `UnitBuilderBotModuleCA`, `SquadManagerBotModuleCA`, `DeployBotModule`, and `PlugSpawnerBotModuleCA` — construct and issue orders through the same pipeline. It intentionally does *not* re-explain the full lockstep pipeline or the complete field-by-field anatomy of an `Order`; for those, see [Part 9.1 — OrderManager and Lockstep Foundation](#file-chapters-Part_09_Chapter_01_OrderManager) and [Part 1.3 — World, OrderManager, and Orders](#file-chapters-Part_01_Chapter_03_World_Orders) respectively.
+This chapter focuses specifically on how [ModularBot](#file-appendices-Appendix_A_Glossary) and individual bot modules construct and issue [Order](#file-appendices-Appendix_A_Glossary) objects in the Cameo mod. It covers the path from a bot module decision through `IBot.QueueOrder` and `ModularBot.Tick` to `World.IssueOrder`, plus the throttling and visual-feedback suppression that are unique to bot orders. It also covers how Cameo-specific bot modules — `BaseBuilderBotModuleCA`, `BaseBuilderQueueManagerCA`, `UnitBuilderBotModuleCA`, `SquadManagerBotModuleCA`, and `PlugSpawnerBotModuleCA` — construct and issue orders through the same pipeline. It intentionally does *not* re-explain the full lockstep pipeline or the complete field-by-field anatomy of an `Order`; for those, see [Part 9.1 — OrderManager and Lockstep Foundation](#file-chapters-Part_09_Chapter_01_OrderManager) and [Part 1.3 — World, OrderManager, and Orders](#file-chapters-Part_01_Chapter_03_World_Orders) respectively.
 
 ## Learning Objectives
 
@@ -15615,7 +15622,6 @@ After studying this chapter, you should be able to:
 | `OpenRA.Mods.CA/Traits/BotModules/HarvesterBotModuleCA.cs` | Cameo harvester logic; issues `Harvest` orders. |
 | `OpenRA.Mods.CA/Traits/AutoDeployer.cs` | Defines deploy triggers and the `PrimaryProducer` order string used by deploy modules. |
 | `OpenRA.Mods.CA/Traits/Player/AutoDeployManager.cs` | Queues deploy and undeploy orders for the player actor. |
-| `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs` | Bot-specific deploy module; issues deploy/undeploy and `PrimaryProducer` orders. |
 | `OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs` | Issues `PlacePlugAI` orders directly through `World.IssueOrder`. |
 
 The `OpenRA.Game` and `OpenRA.Mods.Common` files are part of the OpenRA engine referenced by the Cameo mod; the `OpenRA.Mods.CA` and `OpenRA.Mods.Cameo` files are Cameo-specific.
@@ -15780,23 +15786,9 @@ owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, 
 
 Other states issue grouped `AttackMove` directly toward the target actor or cell, plus `Move`, `Stop`, and `Scatter` orders to handle reformation, stuck units, and danger.
 
-### Deploy orders (`DeployBotModule`)
+### Deploy orders
 
-`DeployBotModule` is triggered by `AutoDeployer` entries collected during the actor tick. For each entry, it asks the actor's deploy traits for an order and queues it:
-
-```csharp
-var orders = entry.Trait.DeployTraits
-    .Where(d => d.CanIssueDeployOrder(entry.Actor, false))
-    .Select(d => d.IssueDeployOrder(entry.Actor, false));
-
-foreach (var order in orders)
-    bot.QueueOrder(order);
-
-if (entry.Trait.PrimaryBuilding)
-    bot.QueueOrder(new Order(AutoDeployer.PrimaryBuildingOrderID, entry.Actor, false));
-```
-
-Undeploy orders are also collected and queued in the same tick. The module clears its pending lists each tick so orders are issued at most once per trigger.
+> **Not shipped.** Cameo has no `DeployBotModule` — it is a Crystallized Nexus (`.modsdk/OpenRA.Mods.CN`) module surveyed in `docs/research/bot-modules-survey.md` and marked absent from this codebase. Bot-driven deployment currently relies on the `AutoDeployer` trait's own timers; if bot-issued deploy orders are wanted, the module must first be ported through the engine pipeline.
 
 ### AI plug spawning (`PlugSpawnerBotModuleCA`)
 
@@ -15822,7 +15814,6 @@ There are no direct YAML controls for the order flow itself. However, the behavi
 - `SquadManagerBotModuleCA` parameters decide when and how many orders are generated.
 - `BaseBuilderBotModuleCA` and `UnitBuilderBotModuleCA` decide which actors are produced.
 - `SupportPowerBotModule` decides which powers are ordered and when.
-- `DeployBotModule` has no exposed YAML fields, but it inherits enable/disable behavior from `ConditionalTrait` and is driven by the `AutoDeployer` traits on individual actors.
 - `PlugSpawnerBotModuleCA` exposes `Plug`, `Pluggables`, `Interval`, and `IgnoreCost`.
 
 ## Interconnectivity
@@ -15899,7 +15890,7 @@ Set `IsImmediate = true` for orders that should not cross the lockstep pipeline 
 
 ## Summary
 
-This chapter focuses on how bot modules construct [orders](#file-appendices-Appendix_A_Glossary) and how `[ModularBot](#file-appendices-Appendix_A_Glossary)` queues, throttles, and issues them through the same `World.IssueOrder` entry point as human orders. In Cameo, the same pipeline is used by the `BaseBuilderBotModuleCA`/`BaseBuilderQueueManagerCA` building placement and production orders, `UnitBuilderBotModuleCA` unit production orders, `SquadManagerBotModuleCA`/`GroundStatesCA` squad `AttackMove` orders, `DeployBotModule` deploy and undeploy orders, and the special `PlugSpawnerBotModuleCA` `PlacePlugAI` orders. It does not cover the full field-by-field `Order` anatomy or the complete lockstep pipeline; those are the responsibilities of [Part 1.3 — World, OrderManager, and Orders](#file-chapters-Part_01_Chapter_03_World_Orders) and [Part 9.1 — OrderManager and Lockstep Foundation](#file-chapters-Part_09_Chapter_01_OrderManager) respectively.
+This chapter focuses on how bot modules construct [orders](#file-appendices-Appendix_A_Glossary) and how `[ModularBot](#file-appendices-Appendix_A_Glossary)` queues, throttles, and issues them through the same `World.IssueOrder` entry point as human orders. In Cameo, the same pipeline is used by the `BaseBuilderBotModuleCA`/`BaseBuilderQueueManagerCA` building placement and production orders, `UnitBuilderBotModuleCA` unit production orders, `SquadManagerBotModuleCA`/`GroundStatesCA` squad `AttackMove` orders, and the special `PlugSpawnerBotModuleCA` `PlacePlugAI` orders. It does not cover the full field-by-field `Order` anatomy or the complete lockstep pipeline; those are the responsibilities of [Part 1.3 — World, OrderManager, and Orders](#file-chapters-Part_01_Chapter_03_World_Orders) and [Part 9.1 — OrderManager and Lockstep Foundation](#file-chapters-Part_09_Chapter_01_OrderManager) respectively.
 
 If any of the concepts above feel unclear, review the relevant section before continuing. For source files and further reading, see the References section.
 
@@ -15923,7 +15914,6 @@ If any of the concepts above feel unclear, review the relevant section before co
 - `OpenRA.Mods.CA/Traits/BotModules/HarvesterBotModuleCA.cs` — Cameo harvest orders.
 - `OpenRA.Mods.CA/Traits/AutoDeployer.cs` — deploy triggers and `PrimaryProducer` order string.
 - `OpenRA.Mods.CA/Traits/Player/AutoDeployManager.cs` — deploy/undeploy order queue for the player actor.
-- `OpenRA.Mods.Cameo/Traits/BotModules/DeployBotModule.cs` — bot deploy/undeploy orders.
 - `OpenRA.Mods.Cameo/Traits/BotModules/PlugSpawnerBotModuleCA.cs` — direct `PlacePlugAI` order handling.
 
 
@@ -17546,7 +17536,7 @@ After studying this chapter, you should be able to:
 ![Architecture diagram](images/Part_10_Chapter_02_Online_References-architecture-diagram-showing-the-main-classes-interfaces-and-9161e6.svg)
 
 
-The core online service implementation lives in the OpenRA engine. The files below are referenced relative to the engine source tree (the `cameo-mod/OpenRA` fork pinned by `ENGINE_VERSION="7ba39d9"`).
+The core online service implementation lives in the OpenRA engine. The files below are referenced relative to the engine source tree (the `cameo-mod/OpenRA` fork pinned by `ENGINE_VERSION="462fc1fc"`).
 
 | File | Responsibility |
 | :---- | :---- |
@@ -17620,7 +17610,7 @@ The `PlayerDatabase` global mod data stores the player profile/badge URL.
 
 ### Engine baseline and default URLs
 
-Cameo does not override the `WebServices` global mod data in its `mods/cameo/mod.yaml`. The mod inherits the upstream OpenRA defaults defined in the pinned engine fork (`cameo-mod/OpenRA` at `ENGINE_VERSION="7ba39d9"`). The default endpoints are:
+Cameo does not override the `WebServices` global mod data in its `mods/cameo/mod.yaml`. The mod inherits the upstream OpenRA defaults defined in the pinned engine fork (`cameo-mod/OpenRA` at `ENGINE_VERSION="462fc1fc"`). The default endpoints are:
 
 | Endpoint | Default URL |
 | :---- | :---- |
@@ -18172,7 +18162,7 @@ Each entry also has a `Plays...Animation` boolean to choose between playing the 
 
 ### TintedCellsLayer and ContentPacks integration
 
-**`TintedCellsLayer`** (`OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs`) is a custom world layer that tracks a per-cell intensity value (used for radiation-like or other persistent cell effects) and renders it with a configurable color and fade-out. It stores:
+**`TintedCellsLayer`** (`OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs`) is a custom world layer that tracks a per-cell intensity value (used for radiation-like or other persistent cell effects) and renders it with a configurable color and fade-out. It stores:
 
 - `tiles` — the authoritative cell levels.
 - `renderedTiles` — the cells currently visible to the local player.
@@ -18224,7 +18214,7 @@ This architecture lets Cameo ship self-contained mini-mods per game/faction that
 | `OpenRA.Mods.Cameo/Traits/World/BackstabGameMode.cs` | Custom `Backstab` game mode. |
 | `OpenRA.Mods.Cameo/Traits/Player/CustomFormationsModOptions.cs` | Player trait storing custom formation/order marker configuration. |
 | `OpenRA.Mods.Cameo/Traits/Player/FactionCA.cs` | Custom faction info with a `Game` field. |
-| `OpenRA.Mods.CA/Traits/World/TintedCellsLayer.cs` | Custom world layer for cell tinting/radiation effects. |
+| `OpenRA.Mods.AS/Traits/World/TintedCellsLayer.cs` | Custom world layer for cell tinting/radiation effects. |
 | `mods/cameo/ContentPacks/TiberianDawn/GDI/content.yaml` | Example content pack manifest that overlays GDI rules and translations. |
 | `mods/cameo/rules/`, `mods/cameo/sequences/`, `mods/cameo/weapons/`, `mods/cameo/audio/` | Standard Cameo asset and YAML directories. |
 
@@ -18252,7 +18242,7 @@ If you are starting a new mod based on the Cameo model, the recommended path is 
 
 3. **Pin the engine.** In `mod.config`, set:
    ```bash
-   ENGINE_VERSION=7ba39d9
+   ENGINE_VERSION=462fc1fc
    ```
    The SDK download scripts fetch this exact engine tag and place it in a sibling directory. Pinning the version keeps your mod reproducible and makes it easy to bump the engine later by changing one value and running `make all` again.
 
@@ -18592,7 +18582,7 @@ Create `mods/<mod>-content/` with `downloads.yaml` and `installer.yaml`. Define 
 
 ### Add custom map generator
 
-Create a world trait implementing `IMapGenerator` or extend the existing random map generator. Register it in the mod's `map-generators.yaml`.
+Create a world trait implementing `IMapGenerator` or extend the existing random map generator. Register it in the mod's `map_generators.yaml`.
 
 ### Next steps
 ![Common pitfalls checklist diagram](images/Part_10_Chapter_03_Port_And_Modding-checklist-infographic-style-diagram-summarizing-the-top-pitf-fb069e.svg)
@@ -18794,7 +18784,7 @@ After studying this appendix, you should be able to:
 | **TintedCellsLayer** | World layer that tracks and renders tinted cell effects (for example, radiation) with configurable color, intensity, and fadeout. | [Part 4.2 — WorldRenderer](#file-chapters-Part_04_Chapter_02_WorldRenderer), [Part 1.6 — Combat and Damage Resolution](#file-chapters-Part_01_Chapter_06_Combat_Damage) |
 | **ReinforcementsCAGlobal** | Cameo Lua global (`ReinforcementsCA`) that sends scripted reinforcements via transport, including carryall support. | [Part 6.1 — Lua Scripting and Eluant](#file-chapters-Part_06_Chapter_01_Lua_Eluant), [Part 6.2 — ScriptContext Lifecycle and Bindings](#file-chapters-Part_06_Chapter_02_ScriptContext) |
 | **BotGlobalUnitBudget / BotLimits** | Bot economy constraints. `BotLimits` configures CA-specific AI production limits; `BotGlobalUnitBudget` caps a bot's share of a global combat-unit budget. | [Part 8.2 — Bot Modules](#file-chapters-Part_08_Chapter_02_Bot_Modules) |
-| **DeployBotModule / PlugSpawnerBotModuleCA** | Cameo AI modules that handle automatic unit deployment and plug/attachment spawning for bot players. | [Part 8.2 — Bot Modules](#file-chapters-Part_08_Chapter_02_Bot_Modules) |
+| **PlugSpawnerBotModuleCA** | Cameo AI module that handles plug/attachment spawning for bot players. | [Part 8.2 — Bot Modules](#file-chapters-Part_08_Chapter_02_Bot_Modules) |
 | **UsePointsOnProduction** | Cameo trait that spends `PlayerPromotions` points when an actor is queued for production. | [Part 2.4 — Rulesets, Actors, and Weapons](#file-chapters-Part_02_Chapter_04_Rules_Weapons), [Part 4.3 — Widgets and Chrome](#file-chapters-Part_04_Chapter_03_Widgets) |
 
 ## Coordinates
@@ -19376,7 +19366,7 @@ FileSystem: DefaultFileSystem
 
 **Why this works:** `AudioBag` is a custom package format loader in Cameo (or the engine, when enabled). Adding it to `PackageFormats` lets the `DefaultFileSystem` recognize the `.bag` extension and its companion `.idx` file. The files inside the package are then available for voice, notification, and weapon definitions just like assets from a `.mix` package.
 
-**See:** [Part 6.3 — Virtual File System](#file-chapters-Part_06_Chapter_03_VFS) and `mods/cameo/mod.yaml` lines 8 and 70.
+**See:** [Part 6.3 — Virtual File System](#file-chapters-Part_06_Chapter_03_VFS) and `mods/cameo/mod.yaml` lines 7 and ~70.
 
 ### Common Cameo inheritance patterns
 
@@ -20475,7 +20465,7 @@ Cameo traits follow the engine’s sync-safety rules. Verified examples:
 - `BackstabGameMode` does not store synced state in fields; it derives the original team composition from the lobby state and recomputes it during `WorldLoaded`.
 - Deterministic random usage:
   - `ExplodesCA` and `SpawnActorInAreaWarhead` use `world.SharedRandom` for gameplay rolls.
-  - `AnnounceOnDamageState` and `DeployBotModule` use `world.LocalRandom` for cosmetic or AI-only decisions.
+  - `AnnounceOnDamageState` uses `world.LocalRandom` for cosmetic or AI-only decisions.
   - `PlayerPromotions` uses `world.LocalRandom` when picking a random flavor-text notification, because the notification is purely client-side.
   - `DeterministicCellOffset` avoids `SharedRandom` entirely by deriving a deterministic visual offset from a cell hash.
 
@@ -21009,7 +20999,7 @@ AFA:
 
 **Files to edit:**
 - `mods/ra/rules/player.yaml`
-- `mods/ra/chrome/ingame-player.yaml`
+- `mods/ra/chrome/ingame_player.yaml`
 - `mods/ra/chrome.yaml`
 - `mods/ra/fluent/chrome.ftl` (for the tooltip text)
 
@@ -21049,7 +21039,7 @@ ClassicProductionQueue@Super:
     SpeedUp: True
 ```
 
-`chrome/ingame-player.yaml` (inside `Container@PRODUCTION_TYPES`):
+`chrome/ingame_player.yaml` (inside `Container@PRODUCTION_TYPES`):
 
 ```yaml
 ProductionTypeButton@SUPER:
@@ -21287,7 +21277,7 @@ Player:
 - `mods/cameo/mod.yaml`
 - `mods/cameo/rules/player.yaml`
 - `mods/cameo/sequences/misc.yaml` (or any file that defines the marker sequences)
-- `mods/cameo/chrome/ingame-player.yaml`
+- `mods/cameo/chrome/ingame_player.yaml`
 
 **Before:**
 
@@ -21305,7 +21295,7 @@ Player:
         ...
 ```
 
-`mods/cameo/chrome/ingame-player.yaml`:
+`mods/cameo/chrome/ingame_player.yaml`:
 
 ```yaml
 Container@COMMAND_BAR:
@@ -21396,7 +21386,7 @@ cfamoveordermarkers:
         Length: 5
 ```
 
-`mods/cameo/chrome/ingame-player.yaml`:
+`mods/cameo/chrome/ingame_player.yaml`:
 
 ```yaml
 Container@COMMAND_BAR:
@@ -21606,14 +21596,14 @@ tent:
 
 **Files to edit:**
 - `mods/cameo/mod.yaml` (Chrome section and `Assemblies:`)
-- `mods/cameo/chrome/ingame-player.yaml` (for the promotion counter and quota palette)
-- `mods/cameo/chrome/commander-tree-window.yaml` (for the commander tree window)
+- `mods/cameo/chrome/ingame_player.yaml` (for the promotion counter and quota palette)
+- `mods/cameo/chrome/commander_tree_window.yaml` (for the commander tree window)
 - `OpenRA.Mods.Cameo/Widgets/<NewWidget>Widget.cs` (only if you are creating a brand-new widget type)
 
 ### Option A — Promotion counter
 
 ```yaml
-# In mods/cameo/chrome/ingame-player.yaml
+# In mods/cameo/chrome/ingame_player.yaml
 Container@PLAYER_WIDGETS:
     Children:
         IngamePromotionCounter@PROMOTIONS:
@@ -21625,7 +21615,7 @@ The YAML key `IngamePromotionCounter` maps to the C# class `IngamePromotionCount
 
 ### Option B — Commander tree window
 
-Create or edit `mods/cameo/chrome/commander-tree-window.yaml`:
+Create or edit `mods/cameo/chrome/commander_tree_window.yaml`:
 
 ```yaml
 Container@COMMANDER_TREE_OVERLAY:
@@ -21655,7 +21645,7 @@ Container@COMMANDER_TREE_OVERLAY:
                             OwnedBorderColor: 00CC44FF
 ```
 
-Wire the open button in `mods/cameo/chrome/ingame-player.yaml`:
+Wire the open button in `mods/cameo/chrome/ingame_player.yaml`:
 
 ```yaml
 Container@PRODUCTION_BACKGROUND:
@@ -21670,7 +21660,7 @@ Container@PRODUCTION_BACKGROUND:
 Replace the upstream palette widget with the Cameo quota palette:
 
 ```yaml
-# In mods/cameo/chrome/ingame-player.yaml
+# In mods/cameo/chrome/ingame_player.yaml
 Container@PALETTE:
     Children:
         LogicTicker@PRODUCTION_TICKER:
@@ -21695,8 +21685,8 @@ Then list the new chrome files in `mods/cameo/mod.yaml`:
 Chrome:
     cameo|chrome.yaml
     ...
-    cameo|chrome/ingame-player.yaml
-    cameo|chrome/commander-tree-window.yaml
+    cameo|chrome/ingame_player.yaml
+    cameo|chrome/commander_tree_window.yaml
     ...
 ```
 
@@ -24426,9 +24416,9 @@ Cameo adds several custom widgets whose visuals are defined partly in YAML and p
 | Asset | File Format(s) | Definition YAML | Engine Loader / Class | Visual Preview | Notes |
 | :---- | :---- | :---- | :---- | :---- | :---- |
 | Custom formation marker sequences | `.shp` | `rules/player.yaml` → `CustomFormationsModOptions` | `CustomFormationsModOptions` / `CustomFormationsOrderGeneratorBase` (`OpenRA.Mods.Cameo/Traits/Player/CustomFormationsModOptions.cs`, `OpenRA.Mods.Cameo/Orders/CustomFormationsOrderGeneratorBase.cs`) | Small tile and line markers drawn along a command-line move/attack order. | The player trait defines per-order-type palette and sequence pairs (e.g., `MoveOrderTileMarkerImage`, `MoveOrderTileMarkerSequence`, `AttackMoveOrderMarkerImage`, `AssaultMoveOrderMarkerSequence`). Defaults use `cftilemarkers.shp` / `mouse4.shp` sequences such as `MoveOrder`, `AttackMoveOrder`, `AssaultMoveOrder`, and `ForceFireOrder`. |
-| Commander tree node icons | `.shp`, `.png` | `chrome/commander-tree-window.yaml` + `sequences/*.yaml` | `CommanderTreeWidget` (`OpenRA.Mods.Cameo/Widgets/CommanderTreeWidget.cs`) | Production-style icons arranged as a promotion tree. | `CommanderTreeWidget` draws production icons from the actor's `icon` sequence. Borders, group backgrounds, and ancestor highlight colors are widget properties; the window's header insignia is resolved via `AddFactionSuffixLogic`. |
-| Promotion counter | `.yaml` only | `chrome/ingame-player.yaml` → `IngamePromotionCounter@PROMOTIONS` | `IngamePromotionCounterWidget` (`OpenRA.Mods.Cameo/Widgets/IngamePromotionCounterWidget.cs`) | Three text lines (rank, available points, progress) drawn over the sidebar. | No dedicated image; uses the `Bold` font and player/white color. Text keys are `promotion-counter.rank`, `promotion-counter.points`, and `promotion-counter.progress`. |
-| Quota production palette | `.shp`, `.png` | `chrome/ingame-player.yaml` → `QuotaProductionPalette@PRODUCTION_PALETTE` | `QuotaProductionPaletteWidget` (`OpenRA.Mods.Cameo/Widgets/QuotaProductionPaletteWidget.cs`) | A production palette that shows an `alive/quota` counter in cyan on each icon. | Inherits from `ProductionPaletteCAWidget`; the icon images are normal production sequences. The overlay is rendered with the `OverlayFont` from the base widget. |
+| Commander tree node icons | `.shp`, `.png` | `chrome/commander_tree_window.yaml` + `sequences/*.yaml` | `CommanderTreeWidget` (`OpenRA.Mods.Cameo/Widgets/CommanderTreeWidget.cs`) | Production-style icons arranged as a promotion tree. | `CommanderTreeWidget` draws production icons from the actor's `icon` sequence. Borders, group backgrounds, and ancestor highlight colors are widget properties; the window's header insignia is resolved via `AddFactionSuffixLogic`. |
+| Promotion counter | `.yaml` only | `chrome/ingame_player.yaml` → `IngamePromotionCounter@PROMOTIONS` | `IngamePromotionCounterWidget` (`OpenRA.Mods.Cameo/Widgets/IngamePromotionCounterWidget.cs`) | Three text lines (rank, available points, progress) drawn over the sidebar. | No dedicated image; uses the `Bold` font and player/white color. Text keys are `promotion-counter.rank`, `promotion-counter.points`, and `promotion-counter.progress`. |
+| Quota production palette | `.shp`, `.png` | `chrome/ingame_player.yaml` → `QuotaProductionPalette@PRODUCTION_PALETTE` | `QuotaProductionPaletteWidget` (`OpenRA.Mods.Cameo/Widgets/QuotaProductionPaletteWidget.cs`) | A production palette that shows an `alive/quota` counter in cyan on each icon. | Inherits from `ProductionPaletteCAWidget`; the icon images are normal production sequences. The overlay is rendered with the `OverlayFont` from the base widget. |
 
 ### Cameo-specific loaders and formats
 
@@ -29441,11 +29431,11 @@ This appendix summarizes the ways the Cameo mod diverges from upstream OpenRA. F
 
 Cameo is a third-party OpenRA total-conversion mod. It does not modify the OpenRA engine directly; instead, it layers two custom C# assemblies and a large `mods/cameo/` data directory on top of the engine:
 
-- `OpenRA.Mods.Cameo` — 190+ class declarations covering custom traits, activities, effects, bot modules, order generators, sprite-sequence loading, file-system loaders, and UI/rendering helpers.
+- `OpenRA.Mods.Cameo` — ~335 class declarations across 184 files covering custom traits, activities, effects, bot modules, order generators, sprite-sequence loading, file-system loaders, and UI/rendering helpers.
 - `OpenRA.Mods.CA` — 370+ class declarations covering additional traits, projectiles, warheads, activities, bot modules, squad AI state machines, and Lua globals.
 - `mods/cameo/` — custom rules, weapons, sequences, audio, chrome, tilesets, translations, maps, AI definitions, and a `ContentPacks/` layer for per-game asset packs.
 
-The engine version pinned by the Cameo SDK is `ENGINE_VERSION="2949af8"`, sourced from a Cameo-maintained OpenRA fork (`https://github.com/cameo-mod/OpenRA`). The mod is therefore intentionally anchored to a specific OpenRA commit rather than tracking `bleed` continuously.
+The engine version pinned by the Cameo SDK is `ENGINE_VERSION="462fc1fc"`, sourced from a Cameo-maintained OpenRA fork (`https://github.com/cameo-mod/OpenRA`). The mod is therefore intentionally anchored to a specific OpenRA commit rather than tracking `bleed` continuously.
 
 ## 2. Custom C# code
 
@@ -29461,7 +29451,7 @@ Major additions and overrides in this assembly include:
 | **Resources / economy** | `CashBack`, `CashTransferToAllies`, `GrantConditionOnPlayerTotalCash`, `BotGlobalUnitBudget`, `BotInsurance` | Custom cash-sharing, refund, and AI economy guardrails. |
 | **Spawning / production** | `DroneSpawnerMasterCA`, `LarvaProductionQueue`, `LarvaConsumingProduction`, `PlugSpawnerBotModuleCA`, `FreeActorWithCondition` | Custom spawn, plug, and alternate production mechanics. |
 | **Combat / damage** | `ExplodesCA` (`FireWarheadsOnDeathCA`), `AnnounceOnDamageState`, `Integrity` | Extended death/damage-state behavior. |
-| **Bot modules** | `DeployBotModule`, `PlugSpawnerBotModuleCA` | AI modules that drive the custom deployment and plug mechanics. |
+| **Bot modules** | `PlugSpawnerBotModuleCA` | AI modules that drive the custom deployment and plug mechanics. |
 | **Orders / UI** | `CustomFormationsUnitOrderGenerator`, `CustomFormationsAttackMoveOrderGenerator`, `CustomFormationsOrderGeneratorBase`, `CustomFormationsModOptions` | Custom formation and attack-move order generators with mod-option integration. |
 | **Rendering / palettes** | `ColorPickerColorShift`, `PlayerColorShift`, `OverlayPlayerColorPalette`, `RenderRangeCircleCA`, `WithPhysicalStateColoredOverlay`, `TAStealthTankCloakPaletteEffect` | Custom palette shifting, color overlays, and range-circle rendering. |
 | **Sprite sequences** | `CameoSpriteSequence`, `CameoSpriteSequenceLoader` | Tileset-specific sprite-sequence variants. |
@@ -29488,7 +29478,7 @@ Major additions and overrides in this assembly include:
 | **Bot modules** | `BaseBuilderBotModuleCA`, `SquadManagerBotModuleCA`, `MCVManagerBotModuleCA`, `CaptureManagerBotModuleCA`, `HarvesterBotModuleCA`, `BuildingRepairBotModuleCA`, `PowerDownBotModuleCA`, `LoadGarrisonerBotModuleCA`, `UnitBuilderBotModuleCA`, `UnitCompositionsBotModule`, `BotLimits` | Full CA-specific AI suite, plus squad state machines (`SquadCA`, `StateMachineCA`, `StateBaseCA`, air/ground/navy/protection states). |
 | **Lua globals** | `MadTankCAGlobal`, `ReinforcementsCAGlobal` | Cameo-specific Lua mission helpers. |
 | **Effects / graphics** | `WarheadTrailProjectileEffectCA`, `TintedCell`, `MindControlArc` | Custom trail and mind-control arc effects. |
-| **Harvester / economy** | `HarvesterBalancerCA`, `HarvesterBotModuleCA` | Custom harvester balance and AI harvesting. |
+| **Harvester / economy** | `HarvesterBalancer`, `HarvesterBotModuleCA` | Custom harvester balance and AI harvesting. |
 | **Selection / rendering** | `CustomRadarColor`, `GuardsSelection`, `DoesNotBlock`, `GivesExperienceToMaster` | Radar color overrides, selection guarding, pass-through actors, and experience routing. |
 
 ## 3. Custom YAML / rules / content packs

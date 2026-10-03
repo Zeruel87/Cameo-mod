@@ -47,7 +47,7 @@ namespace OpenRA.Mods.CA.Activities
 
 		public override bool Tick(Actor self)
 		{
-			if (trackingActive && maxTargetMovement > WDist.Zero && target.Type == TargetType.Actor && (initTargetPos - target.CenterPosition).Length > maxTargetMovement.Length)
+			if (trackingActive && maxTargetMovement > WDist.Zero && target.Type == TargetType.Actor && (initTargetPos - target.CenterPosition).HorizontalLengthSquared > maxTargetMovement.LengthSquared)
 				trackingActive = false;
 
 			if (trackingActive && ((target.Type == TargetType.Actor && !target.Actor.IsDead) || (target.Type == TargetType.FrozenActor && target.FrozenActor != null)))
@@ -69,11 +69,13 @@ namespace OpenRA.Mods.CA.Activities
 			}
 
 			gm.Facing = d.Yaw;
-
 			var newPosition = self.CenterPosition + move;
-			newPosition += new WVec(0, 0, targetPos.Z - newPosition.Z);
+			var ticksToTarget = (targetPos - newPosition).HorizontalLength / gm.Info.Speed;
+			var altitudeDifference = targetPos.Z - newPosition.Z;
+			var newZ = ticksToTarget > 0 ? altitudeDifference / ticksToTarget : targetPos.Z;
+			newPosition += new WVec(0, 0, newZ);
 
-			if (newPosition.Z < gm.Info.MinAltitude.Length)
+			if (newPosition.Z < gm.Info.MinAltitude.Length && ticksToTarget > 0)
 				newPosition = new WPos(newPosition.X, newPosition.Y, gm.Info.MinAltitude.Length);
 
 			gm.SetPosition(self, newPosition);

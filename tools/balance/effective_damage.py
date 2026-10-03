@@ -33,6 +33,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/audit"))
 from cameo_model import Model  # noqa: E402
 from formula import parse_bool, parse_int32, parse_wdist  # noqa: E402
+import effective_heaviness as eh  # noqa: E402
 import percentage_damage as pd  # noqa: E402
 
 CELL = 1024.0
@@ -233,6 +234,11 @@ def model_limitations(resolved) -> list[str]:
     projectile = resolved.child("Projectile")
     projectile_type = projectile.value if projectile is not None else None
     limitations = []
+    if any(c.key.startswith("Warhead@") and c.value == "FireShrapnel"
+           for c in resolved.children):
+        # Separate scenario accounting exists, but canonical weapon pricing does
+        # not yet select a target-availability/random-hit convention for it.
+        limitations.append("unmodeled_secondary_payload:FireShrapnel")
     if projectile_type == "AreaBeam":
         # Cadence for one actor is modeled, but Width/line length and secondary
         # actors returned by FindActorsOnLine are not yet priced.
@@ -353,6 +359,35 @@ def falloff_and_radii(node, spread: int | None = None):
             raise ValueError("area warhead Range values must be nondecreasing")
     else:
         radii = [i * spread for i in range(len(fo))]
+    # Active heaviness scales the authored geometry consistently (Spread, explicit
+    # Range) for BOTH AreaDamage and its subclass AreaDamagePercentage (fields
+    # inherit; nothing is dropped for a subclass). Anchor tables remain
+    # AreaDamage-only: the subclass rejects them (folded half forbidden).
+    if node.value in ("AreaDamage", "AreaDamagePercentage"):
+        heaviness = eh.heaviness_of(node)
+        if heaviness >= 0:
+            spread = eh.scale_length(spread, heaviness)
+            if range_present:
+                scaled = [eh.scale_length(radius, heaviness) for radius in radii]
+                # ⚠ CONTROL-FLOW VERIFIED (review 2026-09-10, mirrors the C#):
+                # GetDamageFalloff uses a duplicate segment only when it is the
+                # FIRST one — later duplicates are dynamically skipped (entering
+                # segment i>=2 requires distance >= Range[i-1] while use requires
+                # distance < Range[i], impossible when equal). A zero front
+                # (0 == 0) is harmless: segment 1 is entered only when
+                # `outer > distance`, never true for outer=0 at distance>=0.
+                # Reject ONLY a POSITIVE collapsed front (authored strictly
+                # increasing positive radii truncating to an equal positive pair),
+                # which calls int2.Lerp with span 0 for every in-range victim.
+                if (len(scaled) >= 2 and radii[0] < radii[1]
+                        and scaled[0] == scaled[1] and scaled[0] > 0):
+                    raise eh.HeavinessError(
+                        "Scaled Range front collapsed to a positive duplicate "
+                        f"(authored {radii[0]} / {radii[1]}, scaled "
+                        f"{scaled[0]} / {scaled[1]}).")
+                radii = scaled
+            else:
+                radii = [i * spread for i in range(len(fo))]
     # A single effective range or one Falloff entry loads successfully, but the
     # runtime loop never enters and therefore returns zero at every distance.
     return fo, radii, len(fo) >= 2 and len(radii) >= 2
@@ -455,6 +490,25 @@ def validate_damage_warheads(resolved) -> None:
         falloff_and_radii(node)
         if node.value in {"AreaDamage", "AreaDamagePercentage"}:
             area_tick_modifiers(node)
+            # Mirror the C# RulesetLoaded heaviness / mode / anchor throws (they
+            # fire regardless of Damage or PercentageScale). The subclass
+            # inherits the heaviness fields but forbids the folded half, so its
+            # endpoints — and the SHARED mode — are rejected
+            # (AreaDamagePercentageWarhead.ValidateFields).
+            light = pd.versus_table(node, "PercentageVersusLight")
+            medium = pd.versus_table(node, "PercentageVersus")
+            heavy = pd.versus_table(node, "PercentageVersusHeavy")
+            mode, heaviness = eh.heaviness_profile_config(
+                node, light, medium, heavy,
+                subclass_twin=node.value == "AreaDamagePercentage")
+            # THE SHARED PROFILE: nonnegative Damage / PercentageScale / Shield
+            # coefficient, and the combined-fraction Int32 bound validated AT
+            # RULES LOAD — mirrored from the C# (review follow-up items 2–3).
+            eh.validate_shared_numeric(
+                mode, heaviness, medium,
+                parse_int32(node.get("Damage"), f"Warhead.Damage"),
+                parse_int32(node.get("PercentageScale"),
+                            "Warhead.PercentageScale", 0) or None)
 
 
 def area_geometry_samples(node, fo, radii, sigma: float,
@@ -465,12 +519,22 @@ def area_geometry_samples(node, fo, radii, sigma: float,
     if ticks == 0:
         return []
     final_outer = int(radii[-1])
-    max_radius = parse_wdist(node.get("MaxRadius") or 0)
-    min_radius = parse_wdist(node.get("MinRadius") or 0)
+    authored_max_radius = parse_wdist(node.get("MaxRadius") or 0)
+    authored_min_radius = parse_wdist(node.get("MinRadius") or 0)
+    # The BRANCH decision reads the AUTHORED MaxRadius: a tiny positive radius that
+    # scales/truncates to zero must stay a shockwave (rings at zero), not degrade
+    # into a static cloud. The interpolated endpoints are the effective radii.
+    max_radius = authored_max_radius
+    min_radius = authored_min_radius
+    if node.value in ("AreaDamage", "AreaDamagePercentage"):
+        heaviness = eh.heaviness_of(node)
+        if heaviness >= 0:
+            min_radius = eh.scale_length(min_radius, heaviness)
+            max_radius = eh.scale_length(max_radius, heaviness)
     samples = []
     for tick, modifier in enumerate(modifiers):
         outer = final_outer
-        if max_radius > 0 and ticks > 1:
+        if authored_max_radius > 0 and ticks > 1:
             outer = min_radius + csharp_div(
                 (max_radius - min_radius) * (tick + 1), ticks)
         scaled_outer = csharp_div(outer * int(radius_scale), 100)

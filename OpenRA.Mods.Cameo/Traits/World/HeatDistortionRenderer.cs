@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Traits;
 
@@ -58,8 +59,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		readonly IShader shader;
 		readonly IVertexBuffer<RenderPostProcessPassVertex> buffer;
 
-		readonly List<(WPos Center, float Scale)> pendingDistortions = new();
-		readonly List<(WPos Center, float Scale, float TicksRemaining, float TotalTicks, float FadeInTicks)> fadingDistortions = new();
+		readonly List<(WPos Center, float RadiusScale, float StrengthScale)> pendingDistortions = new();
+		readonly List<(WPos Center, float RadiusScale, float StrengthScale, float TicksRemaining, float TotalTicks, float FadeInTicks, float HoldTicks)> fadingDistortions = new();
 
 		readonly float[] centers = new float[MaxDistortionsPerBatch * 2];
 		readonly float[] radii = new float[MaxDistortionsPerBatch];
@@ -84,7 +85,32 @@ namespace OpenRA.Mods.Cameo.Traits
 			}, false);
 		}
 
-		public void RegisterDistortion(WPos center, float scale = 1f, int fadeFrames = 0, int fadeInFrames = 0)
+		public void RegisterDistortion(
+			WPos center,
+			float scale = 1f,
+			int fadeFrames = 0,
+			int fadeInFrames = 0)
+		{
+			RegisterDistortion(center, scale, scale, fadeFrames, fadeInFrames, 0);
+		}
+
+		public void RegisterDistortion(
+			WPos center,
+			float radiusScale,
+			float strengthScale,
+			int fadeFrames,
+			int fadeInFrames)
+		{
+			RegisterDistortion(center, radiusScale, strengthScale, fadeFrames, fadeInFrames, 0);
+		}
+
+		public void RegisterDistortion(
+			WPos center,
+			float radiusScale,
+			float strengthScale,
+			int fadeFrames,
+			int fadeInFrames,
+			int holdFrames)
 		{
 			// Render-only cosmetic state that is drained exclusively by Draw (render tick). While the window
 			// is minimized the render tick never runs, so nothing drains these lists, yet the simulation keeps
@@ -100,23 +126,26 @@ namespace OpenRA.Mods.Cameo.Traits
 			if (pendingDistortions.Count == 0 && fadingDistortions.Count == 0)
 				lastWorldTick = -1;
 
-			if (fadeFrames > 0)
+			if (fadeFrames > 0 || holdFrames > 0)
 			{
 				// Defensive bound for the render-starved (not suspended) case: drop the oldest, most-faded
 				// distortion rather than let the list grow without limit.
 				if (fadingDistortions.Count >= MaxActiveEffects)
 					fadingDistortions.RemoveAt(0);
 
-				var totalTicks = fadeFrames * FramesToTicks;
+				// Convert before adding so malformed extreme YAML values cannot overflow
+				// the integer addition and create a negative lifetime.
+				var totalTicks = fadeFrames * FramesToTicks + holdFrames * FramesToTicks;
 				var fadeInTicks = fadeInFrames * FramesToTicks;
-				fadingDistortions.Add((center, scale, totalTicks, totalTicks, fadeInTicks));
+				var holdTicks = holdFrames * FramesToTicks;
+				fadingDistortions.Add((center, radiusScale, strengthScale, totalTicks, totalTicks, fadeInTicks, holdTicks));
 				return;
 			}
 
 			if (pendingDistortions.Count >= MaxActiveEffects)
 				return;
 
-			pendingDistortions.Add((center, scale));
+			pendingDistortions.Add((center, radiusScale, strengthScale));
 		}
 
 		PostProcessPassType IRenderPostProcessPass.Type => PostProcessPassType.AfterActors;
@@ -135,16 +164,16 @@ namespace OpenRA.Mods.Cameo.Traits
 			var downscale = renderer.WorldDownscaleFactor;
 			var topLeft = wr.Viewport.TopLeft;
 
-			float2 ToFb(WPos pos)
+			Vector2 ToFb(WPos pos)
 			{
 				var screenPx = wr.ScreenPxPosition(pos);
-				return new float2(
+				return new Vector2(
 					(screenPx.X - topLeft.X) * downscale,
 					(screenPx.Y - topLeft.Y) * downscale);
 			}
 
 			// Collect all distortions for this frame into one flat list so they can be batched together.
-			var batch = new List<(WPos Center, float Scale)>(pendingDistortions.Count + fadingDistortions.Count);
+			var batch = new List<(WPos Center, float RadiusScale, float StrengthScale)>(pendingDistortions.Count + fadingDistortions.Count);
 			foreach (var d in pendingDistortions)
 				batch.Add(d);
 			pendingDistortions.Clear();
@@ -156,20 +185,22 @@ namespace OpenRA.Mods.Cameo.Traits
 				float fadeScale;
 				if (d.FadeInTicks > 0 && ticksPassed < d.FadeInTicks)
 					fadeScale = ticksPassed / d.FadeInTicks;
+				else if (ticksPassed < d.FadeInTicks + d.HoldTicks)
+					fadeScale = 1f;
 				else
 				{
-					var fadeOutTotal = d.TotalTicks - d.FadeInTicks;
+					var fadeOutTotal = d.TotalTicks - d.FadeInTicks - d.HoldTicks;
 					fadeScale = fadeOutTotal > 0 ? d.TicksRemaining / fadeOutTotal : 1f;
 				}
 
 				fadeScale = Math.Clamp(fadeScale, 0f, 1f);
-				batch.Add((d.Center, d.Scale * fadeScale));
+				batch.Add((d.Center, d.RadiusScale, d.StrengthScale * fadeScale));
 
 				var remaining = d.TicksRemaining - ticksElapsed;
 				if (remaining <= 0f)
 					fadingDistortions.RemoveAt(i);
 				else
-					fadingDistortions[i] = (d.Center, d.Scale, remaining, d.TotalTicks, d.FadeInTicks);
+					fadingDistortions[i] = (d.Center, d.RadiusScale, d.StrengthScale, remaining, d.TotalTicks, d.FadeInTicks, d.HoldTicks);
 			}
 
 			// Draw distortions in fixed-size batches. Each batch takes one framebuffer snapshot and runs
@@ -185,8 +216,8 @@ namespace OpenRA.Mods.Cameo.Traits
 
 					centers[i * 2] = p.X;
 					centers[i * 2 + 1] = p.Y;
-					radii[i] = info.DistortionRadius * d.Scale;
-					strengths[i] = info.DistortionStrength * d.Scale;
+					radii[i] = info.DistortionRadius * d.RadiusScale;
+					strengths[i] = info.DistortionStrength * d.StrengthScale;
 				}
 
 				shader.SetTexture("WorldTexture", Game.Renderer.GetRenderBufferSnapshot());

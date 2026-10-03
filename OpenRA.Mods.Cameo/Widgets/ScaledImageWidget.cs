@@ -24,7 +24,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 		public override void Draw()
 		{
-			WidgetUtils.DrawSprite(GetSprite(), RenderOrigin, RenderBounds.Size);
+			WidgetUtils.DrawSprite(GetSprite(), RenderOrigin.ToVector2(), RenderBounds.Size);
 		}
 	}
 }

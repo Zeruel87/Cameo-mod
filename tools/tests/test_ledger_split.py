@@ -114,6 +114,47 @@ class CommittedLedgerTest(unittest.TestCase):
         for path in sorted(DERIVED.glob("*.json")):
             if path.name.startswith("_"):
                 continue
+            if path.name == "reference_assignment.json":
+                # Upstream reference routing cache, not a faction's extracted ledger.
+                reference = json.loads(path.read_text(encoding="utf-8"))
+                self.assertIsInstance(reference["assignment"], dict)
+                self.assertTrue(reference["assignment"])
+                self.assertNotIn("ledger", reference)
+                self.assertNotIn("sections", reference)
+                continue
+            if path.name == "reference_distributions.json":
+                # reference_distribution.py emits a cross-game distribution,
+                # not a faction ledger. Unknown orphan sidecars still fail.
+                reference = json.loads(path.read_text(encoding="utf-8"))
+                self.assertIn("cameo", reference)
+                self.assertIsInstance(reference["cameo"], dict)
+                self.assertNotIn("ledger", reference)
+                self.assertNotIn("sections", reference)
+                continue
+            if path.name == "armament_pairing.json":
+                # Per-armament reference pairing (docs/design/ARMAMENT_PAIRING.md): which peer
+                # weapon each Cameo armament is matched against. Like the two sidecars above it is
+                # a cross-game reference artifact, not a faction's extracted ledger — and like
+                # them it must carry NO ledger payload, so a retune can never hide in here.
+                pairing = json.loads(path.read_text(encoding="utf-8"))
+                self.assertEqual(pairing["schema"], 3)
+                self.assertTrue(pairing["actors"])
+                self.assertIn("stats", pairing)
+                # The vocabulary is the maintainer's 2026-09-07 missile-role ruling; a silent
+                # change to it would repartition every pairing in this file.
+                self.assertEqual(["ground", "air", "both", "special"],
+                                 pairing["role_vocabulary"])
+                self.assertNotIn("ledger", pairing)
+                self.assertNotIn("sections", pairing)
+                continue
+            if path.name == "reference_signatures.json":
+                signatures = json.loads(path.read_text(encoding="utf-8"))
+                self.assertTrue(signatures)
+                self.assertTrue(all(isinstance(row, dict) and "signature" in row
+                                    for row in signatures.values()))
+                self.assertNotIn("ledger", signatures)
+                self.assertNotIn("sections", signatures)
+                continue
             self.assertTrue((LEDGERS / path.name).exists(),
                             f"{path.name} has no raw ledger")
 

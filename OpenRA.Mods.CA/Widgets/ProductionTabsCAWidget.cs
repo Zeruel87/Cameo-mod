@@ -245,7 +245,7 @@ namespace OpenRA.Mods.CA.Widgets
 				// Draw number label
 				var textSize = font.Measure(tab.Name);
 				var position = new int2(rect.X + (rect.Width - textSize.X) / 2, (rect.Y + (rect.Height - textSize.Y) / 2) - 1);
-				font.DrawText(tab.Name, position, tab.Queue.AllQueued().Any(i => i.Done) ? Color.Gold : Color.White);
+				font.DrawText(tab.Name, position.ToVector2(), tab.Queue.AllQueued().Any(i => i.Done) ? Color.Gold : Color.White);
 
 				tabsShown++;
 			}

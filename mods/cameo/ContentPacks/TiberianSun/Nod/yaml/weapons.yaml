@@ -26,7 +26,7 @@ TS155mmFrag:
 TSCadreGrenade:
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@proj: ^Projectile_Grenade_Light
-	Inherits@fx: ^Effect_Demolition_Light
+	Inherits@fx: ^ts_nod_set14
 	ReloadDelay: 124
 	Range: 6623
 	Report: M203.aud
@@ -37,13 +37,11 @@ TSCadreGrenade:
 		ContrailWidth: 0c32
 	Warhead@Demolition_Light:
 		Damage: 36000
-	Warhead@3Eff: CreateEffect
-		ImpactSounds: expnew13.aud
 
 TSRaiderGrenade:
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@proj: ^Projectile_Grenade_Light
-	Inherits@fx: ^Effect_Demolition_Light
+	Inherits@fx: ^ts_nod_set14
 	ReloadDelay: 52
 	Range: 4787
 	Report: M203.aud
@@ -54,17 +52,14 @@ TSRaiderGrenade:
 		ContrailWidth: 0c32
 	Warhead@Demolition_Light:
 		Damage: 36000
-	Warhead@3Eff: CreateEffect
-		ImpactSounds: expnew13.aud
 
 TSProton:
 	Inherits@collapsewh: ^Warhead_Laser_Heavy
-	Inherits@collapseextra: ^Compatibility_Laser_ExtraDamage
-	Inherits@collapseground: ^Compatibility_ProtonLaser_GroundSlice
-	-TargetActorCenter:
+	Inherits@collapseextra: ^Warhead_Laser_ExtraDamage
 	Inherits: ^TSEnergyBlast
-	Inherits@2: ^MediumFlameWeapon
 	Inherits@3: ^LaserWeapon
+	Inherits@fx: ^ts_nod_tsproton
+	-TargetActorCenter:
 	Range: 5414
 	Burst: 4
 	BurstDelays: 3
@@ -77,68 +72,87 @@ TSProton:
 		Shadow: false
 		Image: tstorpedo
 		RangeLimit: 12c0
-	Warhead@MediumFlameWeapon: AreaDamage
-		ValidRelationships: Ally, Neutral, Enemy
-		FriendlyFireDamage: 50
-		FriendlyFireSpread: 50
-		Damage: 30000
-		PhysicalStateName: Temperature
-		PhysicalStateScale: 100
 	Warhead@MediumFlameWeaponPercentage: AreaDamagePercentage
+		ValidTargets: Ground, Water, Air
 		Damage: 15
 		PhysicalStateName: Temperature
 		PhysicalStateScale: 100
-	Warhead@LaserWeapon: SpreadDamage
-		Damage: 30000
+		Spread: 375
+		Falloff: 111, 33, 11, 3
+		Versus:
+			Shield: 25
+			None: 20
+			Flak: 19
+			Plate: 18
+			Heroic: 17
+			Wood: 16
+			Concrete: 15
+			Steel: 14
+			Scout: 13
+			Light: 12
+			Medium: 11
+			Heavy: 10
+			Superheavy: 9
+			Fighter: 8
+			Bomber: 7
+			Helicopter: 6
+			Spaceship: 5
+			FlyingInfantry: 11
+			CyborgLight: 15
+			CyborgMedium: 14
+			CyborgHeavy: 13
+			CyborgHeroic: 12
+			AntiAirInfantry: 19
+			AntiAirVehicle: 11
+			AntiAirBuilding: 14
+			ShipLight: 14
+			ShipMedium: 13
+			ShipHeavy: 12
+			ShipSuperheavy: 11
+			AntiAirShip: 13
+			SubmarineLight: 11
+			SubmarineHeavy: 10
+		DamageTypes: Prone75Percent, TriggerProne, FireDeath, Incendiary
+		UpdatesUnitStatistics: false
 	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		Damage: 15
-	Warhead@2Eff: CreateEffect
-		Explosions: small_frag
 
-	-Warhead@MediumFlameWeapon:
 	-Warhead@LaserWeapon:
 	-Warhead@LaserExtraDamage:
 	Warhead@Laser_Heavy:
 		ValidTargets: Ground, Water, Air
-		Damage: 29000
+		Damage: 60000
 		PercentageScale: 0
+	InvalidTargets: wall
+	TargetActorCenter: true
+	Warhead@GroundFire: SpawnActor
+		Actors: groundfire
+		Range: 1
+		ForceGround: true
+		OwnerType: InternalName
+		InternalOwner: Neutral
 
 TSTibBazooka:
 	Inherits@wh: ^Warhead_MissileChem_Light
 	Inherits@proj: ^Projectile_Missile_Light
-	Inherits@fx: ^Effect_MissileAP_Light
+	Inherits@fx: ^ts_nod_tstibbazooka
 	Report: rketinf1.aud
 	ReloadDelay: 52
 	Range: 6694
 	ValidTargets: Ground, Water, Air
 	Projectile: Missile
+		VerticalRateOfTurn: 20
 		TrailImage: spittrail
 	Warhead@MissileChem_Light:
 		Damage: 30000
 		FriendlyFireDamage: 90
-	Warhead@Effect: CreateEffect
-		Explosions: small_poof
-		ImpactSounds: xplos.aud
-		ValidTargets: Ground, Water
-	Warhead@EffectAir: CreateEffect
-		Explosions: med_explosion_air
-		ImpactSounds: xplos.aud
-		ValidTargets: Air
-		ImpactActors: false
 	Warhead@ShieldHit: GrantExternalCondition
 		Condition: shieldhit
 		Duration: 6
 		Range: 1250
 		ValidTargets: Shielded
-	Warhead@Concrete: DamagesConcrete
-		Damage: 100
-	Warhead@ShieldHitEffect: CreateEffect
-		ImpactSounds: shielded_shell_hit1.wav, shielded_shell_hit2.wav, shielded_shell_hit3.wav, shielded_shell_hit4.wav
-		ValidTargets: Shielded
 TSStankTusk:
-	Inherits@finalmain: ^Compatibility_MissileHE_MediumFlat
-	Inherits@wh: ^Warhead_CannonHE_Medium
-	Inherits@wh2: ^Warhead_MissileHE_Medium
+	Inherits@missilerole: ^Warhead_MissileAP_Medium
 	Inherits@proj: ^Projectile_Missile_Medium
 	Inherits@fx: ^Effect_MissileHE_Medium
 	Range: 6385
@@ -147,24 +161,21 @@ TSStankTusk:
 	ReloadDelay: 60
 	Report: misl1.aud
 	Projectile: Missile
+		VerticalRateOfTurn: 16
 		MinimumLaunchAngle: 75
 		MaximumLaunchAngle: 75
-	Warhead@MissileHE_Medium:
-		Damage: 10000
-		ValidTargets: Ground, Water, Air
-	Warhead@CannonHE_Medium:
-		Damage: 10000
-		ValidTargets: Ground, Water, Air
-	-Warhead@CannonHE_Medium:
-	-Warhead@MissileHE_Medium:
-	Warhead@MissileHE_MediumFlatCompatibility:
+	Warhead@MissileAP_Medium: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
 		ValidTargets: Ground, Water, Air
 		Damage: 20000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
 		PercentageScale: 9995
+		PercentageSpread: 50
+
 TSSBoatTusk:
-	Inherits@finalmain: ^Compatibility_MissileHE_MediumFlat
-	Inherits@wh: ^Warhead_CannonHE_Medium
-	Inherits@wh2: ^Warhead_MissileHE_Medium
+	Inherits@missilerole: ^Warhead_MissileAP_Medium
 	Inherits@proj: ^Projectile_Missile_Medium
 	Inherits@fx: ^Effect_MissileHE_Medium
 	Range: 6385
@@ -173,76 +184,147 @@ TSSBoatTusk:
 	ReloadDelay: 60
 	Report: misl1.aud
 	Projectile: Missile
+		VerticalRateOfTurn: 16
 		MinimumLaunchAngle: 75
 		MaximumLaunchAngle: 75
-	Warhead@MissileHE_Medium:
-		PercentageScale: 11111
-		Damage: 9000
-		ValidTargets: Ground, Water, Air
-	Warhead@CannonHE_Medium:
-		PercentageScale: 11111
-		Damage: 9000
-		ValidTargets: Ground, Water, Air
-	-Warhead@CannonHE_Medium:
-	-Warhead@MissileHE_Medium:
-	Warhead@MissileHE_MediumFlatCompatibility:
-		ValidTargets: Ground, Water, Air
-		Damage: 18000
-		PercentageScale: 11106
-TSStankTibTusk:
-	Inherits@collapseflat: ^Compatibility_MissileAP_MediumFlat
-	Inherits: ^Warhead_CannonHE_Medium
-	Inherits@2: ^Projectile_Shell_Medium
-	Inherits@3: ^Effect_CannonHE_Medium
-	Inherits@4: ^MediumChemicalWeapon
-	Inherits@5: ^MediumMissile
-	Range: 6385
-	Burst: 2
-	BurstDelays: 2
-	ReloadDelay: 60
-	Report: misl1.aud
-	Projectile: Missile
-		MinimumLaunchAngle: 75
-		MaximumLaunchAngle: 75
-		TrailImage: spittrail
-	Warhead@MediumMissile: SpreadDamage
-		Damage: 10000
-		ValidTargets: Ground, Water, Air
-	Warhead@MediumMissilePercentage: AreaDamagePercentage
-		Damage: 5
-		ValidTargets: Ground, Water, Air
-	Warhead@MediumChemicalWeapon: AreaDamage
+	Warhead@MissileAP_Medium: AreaDamage
 		ValidRelationships: Ally, Neutral, Enemy
 		FriendlyFireDamage: 50
 		FriendlyFireSpread: 50
-		Damage: 10000
 		ValidTargets: Ground, Water, Air
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
+		Damage: 18000
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 11106
+		PercentageSpread: 50
+
+TSStankTibTusk:
+	Inherits@collapseflat: ^Warhead_MissileAP_Medium_Flat
+	ValidTargets: Ground, Water, Air
+	ReloadDelay: 60
+	Range: 6385
+	TargetActorCenter: true
+	Inherits@2: ^Projectile_Shell_Medium
+	Inherits@fx: ^ts_nod_tsstanktibtusk
+	Burst: 2
+	BurstDelays: 2
+	Report: misl1.aud
+	Projectile: Missile
+		VerticalRateOfTurn: 16
+		MinimumLaunchAngle: 75
+		MaximumLaunchAngle: 75
+		TrailImage: spittrail
+		Image: DRAGON
+		Speed: 500
+		Arm: 0
+		Blockable: false
+		AllowSnapping: true
+		Inaccuracy: 100
+		HorizontalRateOfTurn: 30
+		TrailInterval: 1
+		ContrailLength: 0
+		MaximumLaunchSpeed: 250
+		MinimumLaunchSpeed: 250
+		CloseEnough: 500
+		Acceleration: 3
+		HomingActivationDelay: 2
+		RangeLimit: 25000
+		PointDefenseTypes: Missile
+	Warhead@MediumMissilePercentage: AreaDamagePercentage
+		Damage: 5
+		ValidTargets: Ground, Water, Air
+		Spread: 200
+		Versus:
+			Shield: 25
+			Superheavy: 20
+			Spaceship: 19
+			Heavy: 18
+			Helicopter: 17
+			Steel: 16
+			Medium: 15
+			Bomber: 14
+			Concrete: 13
+			Light: 12
+			Fighter: 11
+			Wood: 10
+			Scout: 9
+			Plate: 8
+			Flak: 7
+			None: 6
+			Heroic: 5
+			FlyingInfantry: 10
+			CyborgLight: 8
+			CyborgMedium: 10
+			CyborgHeavy: 12
+			CyborgHeroic: 10
+			AntiAirInfantry: 6
+			AntiAirVehicle: 13
+			AntiAirBuilding: 14
+			ShipLight: 11
+			ShipMedium: 14
+			ShipHeavy: 17
+			ShipSuperheavy: 18
+			AntiAirShip: 12
+			SubmarineLight: 16
+			SubmarineHeavy: 18
+		DamageTypes: Prone75Percent, TriggerProne, SmallExplosionDeath
+		UpdatesUnitStatistics: false
 	Warhead@MediumChemicalWeaponPercentage: AreaDamagePercentage
 		Damage: 5
 		ValidTargets: Ground, Water, Air
-		PhysicalStateName: Corrosion
-		PhysicalStateScale: 100
-	Warhead@CannonHE_Medium:
-		Damage: 10000
-		ValidTargets: Ground, Water, Air
-	Warhead@MediumCannonFriendlyFire: SpreadDamage
-		Damage: 5000
-		ValidTargets: Ground, Water, Air
-	-Warhead@MediumChemicalWeapon:
-	-Warhead@MediumMissile:
-	-Warhead@MediumCannonFriendlyFire:
-	Warhead@MissileAP_MediumFlatCompatibility:
+		Spread: 350
+		Falloff: 99, 66, 33
+		Versus:
+			Shield: 25
+			Superheavy: 20
+			Plate: 19
+			Heavy: 18
+			Flak: 17
+			Medium: 16
+			None: 15
+			Light: 14
+			Heroic: 13
+			Scout: 12
+			Steel: 11
+			Concrete: 10
+			Wood: 9
+			Spaceship: 8
+			Helicopter: 7
+			Bomber: 6
+			Fighter: 5
+			FlyingInfantry: 11
+			CyborgLight: 14
+			CyborgMedium: 16
+			CyborgHeavy: 18
+			CyborgHeroic: 16
+			AntiAirInfantry: 16
+			AntiAirVehicle: 15
+			AntiAirBuilding: 10
+			ShipLight: 11
+			ShipMedium: 13
+			ShipHeavy: 14
+			ShipSuperheavy: 15
+			AntiAirShip: 12
+			SubmarineLight: 15
+			SubmarineHeavy: 17
+		DamageTypes: Prone75Percent, TriggerProne, TiberiumDeath
+		UpdatesUnitStatistics: false
+		PhysicalStates:
+			Corrosion: 100
+	Warhead@MissileAP_Medium_Flat:
 		ValidTargets: Ground, Water, Air
 		Damage: 35000
 		PercentageScale: 2855
-	-Warhead@CannonHE_Medium:
+	InvalidTargets: wall
+	Warhead@ShieldHit:
+		Condition: shieldhit
+		Range: 1250
+		ValidTargets: Shielded
+		Duration: 8
 
 TSNODRedEye:
-	Inherits@wh: ^Warhead_MissileAP_Heavy
+	Inherits@missilerole: ^Warhead_MissileAA_Heavy
 	Inherits@proj: ^Projectile_Missile_Heavy
-	Inherits@fx: ^Effect_MissileAP_Heavy
+	Inherits@fx: ^ts_nod_tsnodredeye
 	ReloadDelay: 50
 	Range: 13176
 	Report: rocket2.aud
@@ -252,25 +334,49 @@ TSNODRedEye:
 	Projectile: Missile
 		Speed: 500
 		HorizontalRateOfTurn: 25
-		VerticalRateOfTurn: 25
+		VerticalRateOfTurn: 12
 		MinimumLaunchAngle: 75
 		Acceleration: 5
 		AllowSnapping: true
 		CloseEnough: 500
-	Warhead@MissileAP_Heavy:
+	Warhead@MissileAA_Heavy: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
 		Damage: 12000
-		Spread: 500
-	Warhead@2Eff: CreateEffect
-		ImpactSounds: expnew13.aud
-		ImpactActors: false
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 10000
+		PercentageSpread: 50
 
 TSNODTibRedEye:
-	Inherits: TSNODRedEye
+	Inherits@w71: ^Warhead_MissileAA_Heavy
+	Inherits@w72: ^Projectile_Missile_Heavy
+	Inherits@w73: ^ts_nod_tsnodredeye
 	Projectile: Missile
+		VerticalRateOfTurn: 12
 		TrailImage: spittrail
-	Warhead@MissileAP_Heavy:
+		Speed: 500
+		Acceleration: 5
+		HorizontalRateOfTurn: 25
+		CloseEnough: 500
+		MinimumLaunchAngle: 75
+	Warhead@MissileAA_Heavy: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Air
 		Damage: 18000
-		Spread: 500
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 10000
+		PercentageSpread: 50
+
+	BurstDelays: 2
+	Report: rocket2.aud
+	ValidTargets: Air
+	ReloadDelay: 50
+	Range: 13176
+	Burst: 3
 TSFireballLauncher:
 	Inherits@wh: ^Warhead_Flame_Medium
 	Inherits@proj: ^Projectile_Flame_Medium
@@ -289,8 +395,7 @@ TSFireballLauncher:
 	Warhead@Flame_Medium:
 		Damage: 8000
 TSLasergun:
-	Inherits@roleflat: ^Compatibility_Laser_HeavyFlat
-	Inherits@wh: ^Warhead_Bullet_Light
+	Inherits@roleflat: ^Warhead_Laser_Heavy_Flat
 	Inherits@wh2: ^Warhead_Laser_Heavy
 	Inherits@proj: ^Projectile_Laser_Heavy
 	Inherits@fx: ^Effect_Laser_Heavy
@@ -302,101 +407,377 @@ TSLasergun:
 	ReloadDelay: 18
 	Range: 4062
 	Report: infgun3.aud, gostgun1.aud, slvkgun1.aud
-	Warhead@Bullet_Light:
-		Damage: 2000
-	Warhead@Laser_Heavy:
-		Damage: 2000
-	-Warhead@Bullet_Light:
 	-Warhead@Laser_Heavy:
-	Warhead@Laser_HeavyFlatCompatibility:
+	Warhead@Laser_Heavy_Flat:
 		ValidTargets: Ground, Water, Air
 		Damage: 4000
 		PercentageScale: 9975
 TSCommandoShotgun:
 	Inherits: ^Warhead_CannonHE_Medium
 	Inherits@2: ^Projectile_Shell_Medium
-	Inherits@3: ^Effect_CannonHE_Medium
-	Inherits@4: ^Grenade
-	Inherits@5: ^ShrapnelWeapon
-	Inherits@6: ^TankDestroyerCannon
-	Inherits@7: ^SmallArms
-	Inherits@8: ^Chaingun
-	Inherits@compat: ^ShotgunCannonHEMediumCompatibility
+	Inherits@fx: ^ts_nod_tscommandoshotgun
 	ReloadDelay: 20
 	Range: 4146
 	Report: DSDSHTGN.wav
 	ValidTargets: Ground, Water
-	-Warhead@Grenade:
-	-Warhead@GrenadeFriendlyFire:
 	Warhead@GrenadePercentage: AreaDamagePercentage
+		InvalidTargets: Air
 		Damage: 4
-	-Warhead@ShrapnelWeapon:
-	-Warhead@ShrapnelWeaponFriendlyFire:
+		ValidTargets: Ground, Water
+		Spread: 200
+		Falloff: 100, 50, 33, 25, 20
+		Versus:
+			Shield: 17
+			Scout: 16
+			Wood: 15
+			Light: 14
+			Concrete: 13
+			Medium: 12
+			Steel: 11
+			Heavy: 10
+			None: 9
+			Superheavy: 8
+			Flak: 7
+			Plate: 6
+			Heroic: 5
+			Fighter: 4
+			Bomber: 3
+			Helicopter: 2
+			Spaceship: 1
+			FlyingInfantry: 6
+			CyborgLight: 11
+			CyborgMedium: 9
+			CyborgHeavy: 8
+			CyborgHeroic: 6
+			AntiAirInfantry: 8
+			AntiAirVehicle: 13
+			AntiAirBuilding: 12
+			ShipLight: 14
+			ShipMedium: 12
+			ShipHeavy: 10
+			ShipSuperheavy: 9
+			AntiAirShip: 13
+			SubmarineLight: 11
+			SubmarineHeavy: 9
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		UpdatesUnitStatistics: false
 	Warhead@ShrapnelWeaponPercentage: AreaDamagePercentage
+		InvalidTargets: Air
 		Damage: 4
-	-Warhead@TankDestroyerCannon:
+		ValidTargets: Ground, Water
+		Spread: 300
+		Falloff: 100, 75, 50, 25
+		Versus:
+			Shield: 25
+			Scout: 20
+			None: 19
+			Wood: 18
+			Light: 17
+			Flak: 16
+			Concrete: 15
+			Medium: 14
+			Plate: 13
+			Steel: 12
+			Heavy: 11
+			Heroic: 10
+			Superheavy: 9
+			Fighter: 8
+			Bomber: 7
+			Helicopter: 6
+			Spaceship: 5
+			FlyingInfantry: 12
+			CyborgLight: 18
+			CyborgMedium: 15
+			CyborgHeavy: 12
+			CyborgHeroic: 9
+			AntiAirInfantry: 17
+			AntiAirVehicle: 15
+			AntiAirBuilding: 13
+			ShipLight: 17
+			ShipMedium: 14
+			ShipHeavy: 11
+			ShipSuperheavy: 10
+			AntiAirShip: 15
+			SubmarineLight: 12
+			SubmarineHeavy: 10
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		UpdatesUnitStatistics: false
 	Warhead@TankDestroyerCannonPercentage: AreaDamagePercentage
+		InvalidTargets: Air
 		Damage: 4
+		ValidTargets: Ground, Water
+		Spread: 75
+		Versus:
+			Shield: 17
+			Superheavy: 16
+			Heavy: 15
+			Medium: 14
+			Light: 13
+			Scout: 12
+			Steel: 11
+			Concrete: 10
+			Wood: 9
+			Plate: 8
+			Flak: 7
+			None: 6
+			Heroic: 5
+			Spaceship: 4
+			Helicopter: 3
+			Bomber: 2
+			Fighter: 1
+			FlyingInfantry: 6
+			CyborgLight: 9
+			CyborgMedium: 10
+			CyborgHeavy: 11
+			CyborgHeroic: 9
+			AntiAirInfantry: 6
+			AntiAirVehicle: 13
+			AntiAirBuilding: 10
+			ShipLight: 11
+			ShipMedium: 12
+			ShipHeavy: 13
+			ShipSuperheavy: 13
+			AntiAirShip: 11
+			SubmarineLight: 13
+			SubmarineHeavy: 14
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		UpdatesUnitStatistics: false
 	Warhead@CannonHE_Medium:
-		Damage: 8000
-	-Warhead@SmallArms:
+		InvalidTargets: Air
+		Damage: 48000
 	Warhead@SmallArmsPercentage: AreaDamagePercentage
+		InvalidTargets: Air
 		Damage: 4
-	-Warhead@Chaingun:
+		ValidTargets: Ground, Water, Air
+		Spread: 50
+		Versus:
+			Shield: 17
+			None: 16
+			Flak: 15
+			Plate: 14
+			Heroic: 13
+			Scout: 12
+			Fighter: 11
+			Wood: 10
+			Light: 9
+			Bomber: 8
+			Steel: 7
+			Medium: 6
+			Helicopter: 5
+			Concrete: 4
+			Heavy: 3
+			Spaceship: 2
+			Superheavy: 1
+			FlyingInfantry: 10
+			CyborgLight: 12
+			CyborgMedium: 9
+			CyborgHeavy: 6
+			CyborgHeroic: 4
+			AntiAirInfantry: 15
+			AntiAirVehicle: 7
+			AntiAirBuilding: 5
+			ShipLight: 9
+			ShipMedium: 5
+			ShipHeavy: 5
+			ShipSuperheavy: 3
+			AntiAirShip: 7
+			SubmarineLight: 4
+			SubmarineHeavy: 2
+		DamageTypes: Prone75Percent, TriggerProne, BulletDeath
+		UpdatesUnitStatistics: false
 	Warhead@ChaingunPercentage: AreaDamagePercentage
+		InvalidTargets: Air
 		Damage: 4
-	Warhead@ShotgunGrenadeEnemy:
-		Damage: 8000
-	Warhead@ShotgunGrenadeAlly:
+		ValidTargets: Ground, Water, Air
+		Spread: 100
+		Versus:
+			Shield: 25
+			None: 20
+			Flak: 19
+			Plate: 18
+			Heroic: 17
+			Scout: 16
+			Fighter: 15
+			Wood: 14
+			Light: 13
+			Bomber: 12
+			Concrete: 11
+			Medium: 10
+			Helicopter: 9
+			Steel: 8
+			Heavy: 7
+			Spaceship: 6
+			Superheavy: 5
+			FlyingInfantry: 14
+			CyborgLight: 16
+			CyborgMedium: 14
+			CyborgHeavy: 11
+			CyborgHeroic: 9
+			AntiAirInfantry: 19
+			AntiAirVehicle: 11
+			AntiAirBuilding: 9
+			ShipLight: 13
+			ShipMedium: 10
+			ShipHeavy: 7
+			ShipSuperheavy: 6
+			AntiAirShip: 11
+			SubmarineLight: 8
+			SubmarineHeavy: 6
+		DamageTypes: Prone75Percent, TriggerProne, RippedApartDeath
+		UpdatesUnitStatistics: false
+	Warhead@ShotgunGrenadeAlly: AreaDamage
+		InvalidTargets: Air
 		Damage: 4000
-	Warhead@ShotgunShrapnelEnemy:
-		Damage: 16000
-		PercentageScale: 0
-	Warhead@ShotgunShrapnelAlly:
+		ValidRelationships: Ally
+		ValidTargets: Ground, Water
+		Spread: 300
+		Falloff: 100, 50, 20, 0
+		Versus:
+			HAZMAT: 71
+			COMPOSITE: 99
+			BLAST: 40
+			REFLECTOR: 69
+			ARMOR: 70
+			Shield: 147
+			Wood: 150
+			Scout: 144
+			Light: 129
+			Medium: 128
+			None: 127
+			Heavy: 111
+			Steel: 107
+			Fighter: 98
+			Concrete: 92
+			Superheavy: 90
+			Flak: 87
+			Plate: 79
+			Heroic: 76
+			Bomber: 75
+			Helicopter: 64
+			Spaceship: 41
+			FlyingInfantry: 93
+			CyborgLight: 128
+			CyborgMedium: 106
+			CyborgHeavy: 94
+			CyborgHeroic: 83
+			AntiAirInfantry: 105
+			AntiAirVehicle: 128
+			AntiAirBuilding: 99
+			ShipLight: 139
+			ShipMedium: 109
+			ShipHeavy: 109
+			ShipSuperheavy: 98
+			AntiAirShip: 123
+			SubmarineLight: 110
+			SubmarineHeavy: 99
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		UpdatesUnitStatistics: false
+	Warhead@ShotgunShrapnelAlly: AreaDamage
+		InvalidTargets: Air
 		Damage: 4000
-	Warhead@ShotgunTankDestroyer:
-		Damage: 8000
-	Warhead@ShotgunSmallArms:
-		Damage: 8000
-	Warhead@ShotgunChaingun:
-		Damage: 8000
-	-Warhead@ShotgunGrenadeEnemy:
-
+		ValidRelationships: Ally
+		ValidTargets: Ground, Water
+		Spread: 300
+		Falloff: 100, 50, 20, 0
+		Versus:
+			HAZMAT: 71
+			COMPOSITE: 99
+			BLAST: 40
+			REFLECTOR: 69
+			ARMOR: 70
+			Shield: 147
+			Wood: 150
+			Scout: 144
+			Light: 129
+			Medium: 128
+			None: 127
+			Heavy: 111
+			Steel: 107
+			Fighter: 98
+			Concrete: 92
+			Superheavy: 90
+			Flak: 87
+			Plate: 79
+			Heroic: 76
+			Bomber: 75
+			Helicopter: 64
+			Spaceship: 41
+			FlyingInfantry: 93
+			CyborgLight: 128
+			CyborgMedium: 106
+			CyborgHeavy: 94
+			CyborgHeroic: 83
+			AntiAirInfantry: 105
+			AntiAirVehicle: 128
+			AntiAirBuilding: 99
+			ShipLight: 139
+			ShipMedium: 109
+			ShipHeavy: 109
+			ShipSuperheavy: 98
+			AntiAirShip: 123
+			SubmarineLight: 110
+			SubmarineHeavy: 99
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		UpdatesUnitStatistics: false
+	Warhead@ShieldHit:
+		Condition: shieldhit
+		Duration: 4
+		Range: 1250
+		ValidTargets: Shielded
+		InvalidTargets: Air
+	Projectile: Bullet
+		Image: 50CAL
+		Speed: 4000
+		Blockable: false
+		LaunchAngle: 66
+		Inaccuracy: 200
+		ContrailZOffset: 4000
+		ContrailStartColor: EECCAA88
+		ContrailEndColor: 88664422
+		ContrailStartWidth: 40
+		ContrailEndWidth: 80
+		ContrailLength: 8
+	Warhead@Concrete:
+		Damage: 25
+	Warhead@Glow:
+		Scale: 0.8
+		FadeFrames: 15
+	Warhead@ShieldHitEffect:
+		ImpactSounds: shielded_bullet_hit1.wav, shielded_bullet_hit2.wav, shielded_bullet_hit3.wav, shielded_bullet_hit4.wav
 elitecadregun:
-	Inherits@finalmain: ^Compatibility_Bullet_MediumFlat
-	Inherits@wh: ^Warhead_Bullet_Light
-	Inherits@wh2: ^Warhead_Bullet_Medium
+	Inherits@finalmain: ^Warhead_Bullet_Medium_Flat
+	ValidTargets: Ground, Air
+	ReloadDelay: 52
+	Range: 6217
+	TargetActorCenter: true
 	Inherits@proj: ^Projectile_Bullet_Medium
 	Inherits@fx: ^Effect_Bullet_Medium
-	ReloadDelay: 52
 	Burst: 5
 	BurstDelays: 2
 	Report: cygun1.aud
-	Range: 6217
-	ValidTargets: Ground, Air
-	Warhead@Bullet_Light:
-		PercentageScale: 2500
-		Damage: 8000
-	Warhead@Bullet_Medium:
-		PercentageScale: 2500
-		Damage: 8000
-	-Warhead@Bullet_Light:
-	-Warhead@Bullet_Medium:
-	Warhead@Bullet_MediumFlatCompatibility:
+	Warhead@Bullet_Medium_Flat:
 		ValidTargets: Ground, Water, Air
 		Damage: 16000
 		PercentageScale: 2494
 laserelitecadregun:
 	Inherits@wh: ^Warhead_Laser_Heavy
-	Inherits: ^SmallArms
-	Inherits@2: ^Chaingun
 	Inherits@3: ^LaserWeapon
 	Inherits@4: ^TSLaserEffect
-	Inherits@legacychip: ^LegacyLaserChipCompatibility
+	Inherits@fx: ^ts_nod_laserelitecadregun
+
 	Projectile: LaserZap
 		Width: 36
 		Duration: 8
 		SecondaryBeamWidth: 18
+		ContrailEndColor: 88664422
+		ContrailEndWidth: 80
+		ContrailLength: 8
+		ContrailStartColor: EECCAA88
+		ContrailStartWidth: 40
+		ContrailZOffset: 4000
+		Image: 50CAL
+		Inaccuracy: 200
+		Speed: 4000
 	ReloadDelay: 50
 	Burst: 5
 	BurstDelays: 2
@@ -404,21 +785,99 @@ laserelitecadregun:
 	Range: 6677
 	ValidTargets: Ground, Air
 	TargetActorCenter: false
-	-Warhead@SmallArms:
 	Warhead@SmallArmsPercentage: AreaDamagePercentage
 		Damage: 1
-	-Warhead@Chaingun:
+		DamageTypes: Prone75Percent, TriggerProne, BulletDeath
+		Spread: 50
+		UpdatesUnitStatistics: false
+		ValidTargets: Ground, Water, Air
+		Versus:
+			Bomber: 8
+			Concrete: 4
+			Fighter: 11
+			Flak: 15
+			Heavy: 3
+			Helicopter: 5
+			Heroic: 13
+			Light: 9
+			Medium: 6
+			None: 16
+			Plate: 14
+			Scout: 12
+			Shield: 17
+			Spaceship: 2
+			Steel: 7
+			Superheavy: 1
+			Wood: 10
+			FlyingInfantry: 10
+			CyborgLight: 12
+			CyborgMedium: 9
+			CyborgHeavy: 6
+			CyborgHeroic: 4
+			AntiAirInfantry: 15
+			AntiAirVehicle: 7
+			AntiAirBuilding: 5
+			ShipLight: 9
+			ShipMedium: 5
+			ShipHeavy: 5
+			ShipSuperheavy: 3
+			AntiAirShip: 7
+			SubmarineLight: 4
+			SubmarineHeavy: 2
 	Warhead@ChaingunPercentage: AreaDamagePercentage
 		Damage: 1
+		DamageTypes: Prone75Percent, TriggerProne, RippedApartDeath
+		Spread: 100
+		UpdatesUnitStatistics: false
+		ValidTargets: Ground, Water, Air
+		Versus:
+			Bomber: 12
+			Concrete: 11
+			Fighter: 15
+			Flak: 19
+			Heavy: 7
+			Helicopter: 9
+			Heroic: 17
+			Light: 13
+			Medium: 10
+			None: 20
+			Plate: 18
+			Scout: 16
+			Shield: 25
+			Spaceship: 6
+			Steel: 8
+			Superheavy: 5
+			Wood: 14
+			FlyingInfantry: 14
+			CyborgLight: 16
+			CyborgMedium: 14
+			CyborgHeavy: 11
+			CyborgHeroic: 9
+			AntiAirInfantry: 19
+			AntiAirVehicle: 11
+			AntiAirBuilding: 9
+			ShipLight: 13
+			ShipMedium: 10
+			ShipHeavy: 7
+			ShipSuperheavy: 6
+			AntiAirShip: 11
+			SubmarineLight: 8
+			SubmarineHeavy: 6
 	-Warhead@LaserWeapon:
 	-Warhead@LaserExtraDamage:
 	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		Damage: 1
 	Warhead@Laser_Heavy:
-		Damage: 6000
+		Damage: 6600
 		PercentageScale: 0
 	-Warhead@Laser_Heavy_ExtraDamage:
-
+	Warhead@ShieldHit:
+		Condition: shieldhit
+		Range: 1250
+		ValidTargets: Shielded
+		Duration: 10
+	Warhead@ShieldHitEffect:
+		ImpactSounds: shielded_shell_hit1.wav, shielded_shell_hit2.wav, shielded_shell_hit3.wav, shielded_shell_hit4.wav
 ChamBlade:
 	Inherits@wh: ^Warhead_Sniper_Light
 	Inherits@proj: ^Projectile_Sniper_Light
@@ -480,10 +939,8 @@ TSShadowTeamBomb:
 		ValidTargets: demolishable
 		Spread: 1000
 		Damage: 100
-	Warhead@2Eff: CreateEffect
-		Explosions: self_destruct
-		ImpactSounds: gexpcraa.wav
 
+	Inherits@fx: ^ts_nod_tsshadowteambomb
 TSShadowTeamTargeting:
 	ReloadDelay: 500
 	Range: 12000
@@ -528,7 +985,9 @@ TSHarpyClaw:
 		Damage: 4000
 		ValidTargets: Ground, Air
 TSHarpyMultiClaw:
-	Inherits: TSHarpyClaw
+	Inherits@w71: ^Warhead_Bullet_Medium
+	Inherits@w72: ^Projectile_Bullet_Medium
+	Inherits@w73: ^Effect_Bullet_Medium
 	Burst: 4
 	BurstDelays: 0
 	TargetActorCenter: true
@@ -538,14 +997,29 @@ TSHarpyMultiClaw:
 	Warhead@Bullet_Medium: AreaDamage
 		Damage: 0
 		ValidTargets: Ground, Air
+	Report: cygun1.aud
+	ValidTargets: Ground, Air
+	SoundVolume: 0.25
+	ReloadDelay: 24
+	Range: 4882
 TSHarpyAOEClaw:
-	Inherits: TSHarpyClaw
+	Inherits@w71: ^Warhead_Bullet_Medium
+	Inherits@w72: ^Projectile_Bullet_Medium
+	Inherits@w73: ^Effect_Bullet_Medium
 	Warhead@Bullet_Medium: AreaDamage
 		Spread: 300
 		Falloff: 100, 50, 25
+		Damage: 4000
+		ValidTargets: Ground, Air
+	BurstDelays: 0
+	Report: cygun1.aud
+	ValidTargets: Ground, Air
+	SoundVolume: 0.25
+	ReloadDelay: 24
+	Range: 4882
+	Burst: 5
 TSLaserHarpyClaw:
-	Inherits@roleflat: ^Compatibility_Laser_HeavyFlat
-	Inherits: ^Warhead_Bullet_Medium
+	Inherits@roleflat: ^Warhead_Laser_Heavy_Flat
 	Inherits@2: ^Warhead_Laser_Heavy
 	Inherits@3: ^Projectile_Laser_Heavy
 	Inherits@4: ^TSLaserEffect
@@ -561,18 +1035,12 @@ TSLaserHarpyClaw:
 	Report: cygun1.aud
 	SoundVolume: 0.25
 	ValidTargets: Ground, Air
-	Warhead@Bullet_Medium:
-		Damage: 4000
-		ValidTargets: Ground, Air
-	Warhead@Laser_Heavy:
-		Damage: 4000
-		ValidTargets: Ground, Air
-	-Warhead@Bullet_Medium:
 	-Warhead@Laser_Heavy:
-	Warhead@Laser_HeavyFlatCompatibility:
+	Warhead@Laser_Heavy_Flat:
 		ValidTargets: Ground, Air
 		Damage: 8000
 		PercentageScale: 9988
+
 TSLaserHarpyMultiClaw:
 	Inherits: TSLaserHarpyClaw
 	Burst: 4
@@ -581,34 +1049,26 @@ TSLaserHarpyMultiClaw:
 	Projectile: LaserZap
 		Inaccuracy: 1024
 		TrackTarget: false
-	Warhead@Bullet_Medium: AreaDamage
-		Damage: 0
-		ValidTargets: Ground, Air
 	Warhead@LaserWeapon: SpreadDamage
 		Damage: 0
 		ValidTargets: Ground, Air
 	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		Damage: 0
 		ValidTargets: Ground, Air
-	-Warhead@Bullet_Medium:
-	Warhead@Laser_HeavyFlatCompatibility:
+	Warhead@Laser_Heavy_Flat:
 		ValidTargets: Ground, Air
 		Damage: 4000
 		PercentageScale: 9975
 
 TSLaserHarpyAOEClaw:
 	Inherits: TSLaserHarpyClaw
-	Warhead@Bullet_Medium: AreaDamage
-		Spread: 300
-		Falloff: 100, 50, 25
 	Warhead@LaserWeapon: SpreadDamage
 		Spread: 300
 		Falloff: 100, 50, 25
 	Warhead@LaserWeaponPercentage: AreaDamagePercentage
 		Spread: 300
 		Falloff: 100, 50, 25
-	-Warhead@Bullet_Medium:
-	Warhead@Laser_HeavyFlatCompatibility:
+	Warhead@Laser_Heavy_Flat:
 		Spread: 300
 		Falloff: 100, 50, 25
 		ValidTargets: Ground, Air

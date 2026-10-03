@@ -39,7 +39,7 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Maximum ticks into the game the compositon can be selected.")]
 		public readonly int MaxTime = 0;
 
-		[Desc("Maximum ticks into the game the compositon can be selected.")]
+		[Desc("Minimum ticks between two selections of this compositon.")]
 		public readonly int MinInterval = 7500;
 
 		[Desc("Percentage chance this composition will be available to a given bot (determinated at the start of the game).")]
@@ -103,8 +103,7 @@ namespace OpenRA.Mods.CA.Traits
 
 			foreach (var unit in UnitCompositions.SelectMany(c => c.UnitsToBuild.Keys).Distinct())
 			{
-				var unitInfo = self.World.Map.Rules.Actors[unit];
-				if (unitInfo == null)
+				if (!self.World.Map.Rules.Actors.TryGetValue(unit, out var unitInfo))
 					throw new Exception($"Unit {unit} in UnitCompositionsBotModule does not exist.");
 
 				var buildable = unitInfo.TraitInfoOrDefault<BuildableInfo>();

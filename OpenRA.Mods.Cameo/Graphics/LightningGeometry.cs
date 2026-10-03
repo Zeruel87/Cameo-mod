@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using OpenRA.Support;
 
 namespace OpenRA.Mods.Cameo.Graphics
@@ -23,10 +24,10 @@ namespace OpenRA.Mods.Cameo.Graphics
 		// = self-similar fractal detail). The displacement shrinks by 'roughness' each generation; the
 		// endpoints are never moved, so the bolt stays pinned to the firing point and the target.
 		// Passing a fresh MersenneTwister(seed) yields a deterministic (frozen, non-flickering) shape.
-		public static List<float3> MidpointPath(in float3 src, in float3 tgt, float maxDev,
+		public static List<Vector3> MidpointPath(in Vector3 src, in Vector3 tgt, float maxDev,
 			int generations, float roughness, MersenneTwister rnd)
 		{
-			var points = new List<float3> { src, tgt };
+			var points = new List<Vector3> { src, tgt };
 			if (maxDev < 0.5f)
 				return points;
 
@@ -34,7 +35,7 @@ namespace OpenRA.Mods.Cameo.Graphics
 			var gens = Math.Clamp(generations, 1, 8);
 			for (var g = 0; g < gens; g++)
 			{
-				var next = new List<float3>(points.Count * 2) { points[0] };
+				var next = new List<Vector3>(points.Count * 2) { points[0] };
 				for (var k = 0; k < points.Count - 1; k++)
 				{
 					var a = points[k];
@@ -55,7 +56,7 @@ namespace OpenRA.Mods.Cameo.Graphics
 						my += py * disp;
 					}
 
-					next.Add(new float3(mx, my, mz));
+					next.Add(new Vector3(mx, my, mz));
 					next.Add(b);
 				}
 

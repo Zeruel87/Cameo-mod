@@ -204,12 +204,12 @@ RA_SOVIETS_LEGACY = {
     "sub": "ra1_soviets_submarine",
     "ss": "ra1_soviets_submarine",
     "msub": "ra1_soviets_missilesubmarine",
-    "fact": "ra1_soviets_sovietconstructionyard",
-    "barr": "ra1_soviets_sovietbarracks",
-    "weap": "ra1_soviets_sovietwarfactory",
+    "fact": "ra1_soviets_constructionyard",
+    "barr": "ra1_soviets_barracks",
+    "weap": "ra1_soviets_warfactory",
     "spen": "ra1_soviets_sovietsubpen",
     "powr": "ra1_soviets_powerplant",
-    "proc": "ra1_soviets_sovietorerefinery",
+    "proc": "ra1_soviets_orerefinery",
     "silo": "ra1_soviets_oresilo",
     "hpad": "ra1_soviets_soviethelipad",
     "stek": "ra1_soviets_soviettechnologycenter",
@@ -220,7 +220,7 @@ RA_SOVIETS_LEGACY = {
     "sam": "ra1_soviets_samsite",
     "agun": "ra1_soviets_flakcannon",
     "ftur": "ra1_soviets_flameturret",
-    "mcv": "ra1_soviets_sovietmobileconstructionvehicle",
+    "mcv": "ra1_soviets_mobileconstructionvehicle",
 }
 
 

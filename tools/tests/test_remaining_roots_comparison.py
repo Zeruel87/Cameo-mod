@@ -15,14 +15,14 @@ from miniyaml import Ruleset
 # keeps the allowlist compact while ensuring that any weapon, armor modifier,
 # target mask, relationship, physical state, or blast-profile drift fails.
 ACCEPTED = {
-    "ValidTargets": (2, "816375580ed2ffbcde2b1630ee4e6cf60826d42a2ef28a9ed1210167e38d2926"),
-    "blast_shape": (158, "375f96fa9a8da98f549c0edabb6758f6caa1be7a8defe79e196a0e4319e542af"),
+    "ValidTargets": (2, "10e2904ec42a59cca1eb5c12f4e00dde43dbb366a4903a367a1d4d8b7684bba5"),
+    "blast_shape": (158, "d8e607c9f266cd2a9793b876948463870038469d8bf8299df721e37a97f0589a"),
     "invalid_target_damage": (123, "d36c35346063ca036fc82e06351210a32f798ed0ab0b63ad9c468d7913e202f3"),
-    "percentage_warheads": (2, "a360115afe1608c01734d0b4705cc650c0e6e69ff7c485fa12d46428395d61bc"),
+    "percentage_warheads": (2, "55ea6fb28aab629d5f1da7de4a1b7688d2390ede69ac69389230044b9c691ded"),
     "physical_state_bindings": (115, "29c1593c98fa87d23c7011a3cbd56ebb93e1c5ad459d8a2076c935c90613c99e"),
-    "relationship_stat_damage": (158, "a8b352c8b1c75c38726bc7f640d3243970fc54c6e9fd01e41ef4278dd84cfc85"),
-    "top_level": (2, "f49f82f093f13cb3fae8c900f354245866286f8620f51f31d01aee0d82ead6bf"),
-    "valid_target_damage": (95, "607521d2e10efbaa8b278fc57e89389d1eace2685e455ce123c17529a43daabe"),
+    "relationship_stat_damage": (158, "2cf4426632e2d013f2217236da816a6fecc54cc471b83765a86282dfdea783b3"),
+    "top_level": (2, "4630208ae74eae8fa6dfc5933b05cbf2396d90adedb9536e332959f88b36e049"),
+    "valid_target_damage": (95, "c600c441925a75d9fc747e8720a671400b5d743e502b97f0fcde613a636b9604"),
 }
 
 
@@ -49,7 +49,7 @@ class RemainingRootsComparisonTests(unittest.TestCase):
             self.assertEqual(expected_hash, hashlib.sha256(payload).hexdigest(), kind)
 
     def test_direct_weapon_contract_changes_are_only_the_approved_goliath_split(self):
-        expected = {"GoliathMk2MG", "GoliathMk2Rockets"}
+        expected = {"GoliathMk2MG", "GoliathMk2Rockets_AA"}
         self.assertEqual(expected, set(self.by_kind["ValidTargets"]))
         self.assertEqual(expected, set(self.by_kind["top_level"]))
         self.assertEqual(expected, set(self.by_kind["percentage_warheads"]))

@@ -108,7 +108,7 @@ def use_ruleset(rs: Ruleset) -> None:
     global _INJECTED
     _INJECTED = rs
     for fn in (_ruleset, _scan, armor_census, hp_by_macro, armor_weights,
-               measured_reference_hp):
+               measured_reference_hp, shield_damage_share, pseudo_armor_mean):
         fn.cache_clear()
 
 
@@ -373,6 +373,124 @@ def measured_reference_hp() -> int:
 # not here.
 PSEUDO_ARMOR_ROWS = ("Shield",)
 
+# The warhead types that actually apply damage. Anything else (LeaveSmudge, CreateEffect,
+# GrantExternalCondition ...) carries no damage profile and never votes on a mean.
+DAMAGE_WARHEAD_TYPES = frozenset({
+    "SpreadDamage", "HealthPercentageDamage", "AreaDamage", "AreaDamagePercentage",
+    "TargetDamage",
+})
+
+
+def is_damage_inert(node) -> bool:
+    """Is this template a STRUCTURAL MIGRATION HELPER rather than a damage profile?
+
+    ⛔ THE SEMANTIC TEST, AND IT REPLACES A NAME TEST THAT BROKE THE MOMENT A RENAME LANDED.
+    A helper declares damage-typed warheads and gives every one of them `Damage: 0`: it exists
+    to carry a `Versus` shape through a migration, it applies no damage, and it therefore has no
+    business in any average of damage profiles.
+
+    ⚠ THIS IS THE DEFECT `pseudo_armor_mean`'s OWN DOCSTRING ALREADY WARNED ABOUT. It says, of a
+    different filter three lines further down, *"Filtered on the warhead's TYPE, not on its key
+    name ... The type is authoritative; the naming convention is not."* — and then excluded these
+    helpers with `name.startswith("^Compatibility_")`. R12 renamed all 34 of them to
+    `^Warhead_*_Flat`, the prefix stopped matching, and they walked into the shield mean:
+
+        shield mean 180.28 -> 181.44      shield_hp_factor 0.5547 -> 0.5511
+        design_weapon_class changed on 33 weapons
+
+    ⛔ AND A RE-EXTRACT MADE `audit_balance_drift` GREEN WHILE PRESERVING ALL OF IT, because the
+    ledger faithfully recorded the new (wrong) numbers. A green guard after a rename proves the
+    ledger matches the yaml, never that the model is right. Caught by Astra on PR #372.
+
+    ⚠ AND THE NAME TEST IS WRONG IN THE OTHER DIRECTION TOO, which is the real argument for
+    semantics: `^Warhead_TankBusterBeam_Unscoped_Flat` ends in `_Flat` and is a REAL template
+    (`Damage: 8000`). Any `_Flat` suffix rule would have silently dropped a live profile.
+    Measured: this predicate selects 33 templates, exactly the migration cohort, and restores the
+    mean to 180.2842. Guarded by `tools/tests/test_shield_class_invariance.py`.
+    """
+    saw_damage_warhead = False
+    for child in node.children:
+        if not child.key.startswith("Warhead@"):
+            continue
+        if str(child.value or "") not in DAMAGE_WARHEAD_TYPES:
+            continue
+        raw = child.get("Damage")
+        if raw is None:
+            return False
+        try:
+            if float(raw) != 0:
+                return False
+        except (TypeError, ValueError):
+            return False
+        saw_damage_warhead = True
+    return saw_damage_warhead
+
+
+def is_supplementary_template(node) -> bool:
+    """Does this template carry ONLY supplementary twins — never a standalone damage profile?
+
+    ⭐ THE SECOND COHORT OF THE SAME R12 REGRESSION, and it surfaced only because the first fix
+    was checked against the pre-rename ledger instead of being declared done. After restoring the
+    zero-damage helpers, 4 of 2,310 weapon classes still disagreed, and all four had newly
+    collected `^Warhead_Railgun_ExtraDamage` — which was `^Compatibility_Railgun_ExtraDamage`
+    until R12 renamed it.
+
+    An `ExtraDamage` / `FriendlyFire` twin is a supplement to a main warhead: it adds damage
+    alongside one, it is never the weapon's class. `pseudo_armor_mean` has always skipped these
+    at the WARHEAD level; `extract_stats.warheads` never did, because before the rename they did
+    not start with `^Warhead_` and were filtered out by accident of naming.
+
+    ⚠ The test is on the warhead KEY because that is the convention this repo already enforces in
+    `pseudo_armor_mean` — one rule, applied in both places, rather than a second invention. These
+    twins are also marked `UpdatesUnitStatistics: false`, which is suggestive but not a contract.
+    """
+    saw = False
+    for child in node.children:
+        if not child.key.startswith("Warhead@"):
+            continue
+        if str(child.value or "") not in DAMAGE_WARHEAD_TYPES:
+            continue
+        if "ExtraDamage" not in child.key and "FriendlyFire" not in child.key:
+            return False
+        saw = True
+    return saw
+
+
+def is_class_bearing(node) -> bool:
+    """May this template speak for a weapon's CLASS? Neither a migration helper nor a twin may."""
+    return not (is_damage_inert(node) or is_supplementary_template(node))
+
+
+_INERT_CACHE: dict[int, frozenset] = {}
+_NONCLASS_CACHE: dict[int, frozenset] = {}
+
+
+def non_class_templates(rs=None) -> frozenset:
+    """Templates that must never enter `weapon_class_from_types` — helpers and twins alike."""
+    rs = rs if rs is not None else _ruleset()
+    key = id(rs)
+    hit = _NONCLASS_CACHE.get(key)
+    if hit is None:
+        hit = frozenset(name for name, node in rs.weapons.items()
+                        if name.startswith("^") and not is_class_bearing(node))
+        _NONCLASS_CACHE[key] = hit
+    return hit
+
+
+def damage_inert_templates(rs=None) -> frozenset:
+    """Names of every `^`-template `is_damage_inert` selects, for the live or a given ruleset.
+
+    Cached per ruleset object: `extract_stats` asks once per weapon and there are 2,000+ of them.
+    """
+    rs = rs if rs is not None else _ruleset()
+    key = id(rs)
+    hit = _INERT_CACHE.get(key)
+    if hit is None:
+        hit = frozenset(name for name, node in rs.weapons.items()
+                        if name.startswith("^") and is_damage_inert(node))
+        _INERT_CACHE[key] = hit
+    return hit
+
 
 @functools.lru_cache(maxsize=8)
 def pseudo_armor_mean(row: str = "Shield") -> float:
@@ -390,10 +508,11 @@ def pseudo_armor_mean(row: str = "Shield") -> float:
     """
     values: list[float] = []
     for name, node in _ruleset().weapons.items():
-        # Percentage-inert compatibility slices are structural migration helpers,
-        # not standalone damage profiles. Counting their template rows would move
-        # the global shield model even though no weapon behavior changed.
-        if name.startswith("^Compatibility_"):
+        # Structural migration helpers are not standalone damage profiles: counting their
+        # template rows moves the global shield model even though no weapon behaviour changed.
+        # ⛔ SELECTED BY SEMANTICS (every damage warhead at `Damage: 0`), NOT by a name prefix —
+        # see `is_damage_inert` for the rename that broke the prefix version.
+        if is_damage_inert(node):
             continue
         for child in node.children:
             if not child.key.startswith("Warhead@"):
@@ -401,6 +520,12 @@ def pseudo_armor_mean(row: str = "Shield") -> float:
             wtype = str(child.value or "")
             if "Percentage" in wtype or "ExtraDamage" in child.key \
                     or "FriendlyFire" in child.key:
+                continue
+            # A zero-damage warhead inside an otherwise live template applies nothing either.
+            try:
+                if float(child.get("Damage") or 0) == 0:
+                    continue
+            except (TypeError, ValueError):
                 continue
             versus = None
             for grand in child.children:
@@ -422,7 +547,7 @@ def pseudo_armor_mean(row: str = "Shield") -> float:
 
 
 def shield_hp_factor() -> float:
-    """What ONE point of shield strength is worth as HP (see above). ~0.476 today."""
+    """What ONE point of shield strength is worth as HP (see above). ~0.555 today."""
     mean = pseudo_armor_mean("Shield")
     return 100.0 / mean if mean > 0 else 1.0
 

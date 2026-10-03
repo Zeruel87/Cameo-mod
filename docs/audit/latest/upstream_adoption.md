@@ -1,13 +1,13 @@
 # audit_upstream_adoption — upstream mod types Cameo already has, and what is new
 
-Cameo resolves **1101** yaml-visible type names across 7 assemblies.
+Cameo resolves **1156** yaml-visible type names across 7 assemblies.
 
 | mod | types | already in Cameo | same mechanic, other name | candidates | of the candidates |
 |---|--:|--:|--:|--:|---|
 | Romanov's Vengeance | 26 | 11 | 8 | 7 | 6 used in its own yaml |
 | Shattered Paradise | 46 | 7 | 7 | 32 | 31 used in its own yaml |
-| Crystallized Nexus | 107 | 5 | 2 | 100 | 90 used in its own yaml |
-| Combined Arms | 348 | 182 | 35 | 131 | 119 used in its own yaml |
+| Crystallized Nexus | 107 | 7 | 5 | 95 | 85 used in its own yaml |
+| Combined Arms | 350 | 183 | 37 | 130 | 118 used in its own yaml |
 | Generals Alpha | 23 | 2 | 1 | 20 | 20 used in its own yaml |
 
 ## Romanov's Vengeance — `OpenRA.Mods.RA2`
@@ -101,9 +101,12 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | upstream type | Cameo already has | evidence |
 |---|---|---|
 | `CNBaseBuilderBotModule` | `BaseBuilderBotModule, BaseBuilderBotModuleCA` | identical `[Desc]` text |
+| `CNBridgeRepairBotModule` | `BridgeRepairBotModule` | identical `[Desc]` text |
 | `CNMcvExpansionManagerBotModule` | `McvExpansionManagerBotModule` | identical `[Desc]` text |
+| `CNRepairManagerBotModule` | `UnitRepairBotModule` | identical `[Desc]` text |
+| `CNTacticalMapBotModule` | `TacticalMapBotModule` | identical `[Desc]` text |
 
-**90 of 100** candidates are used by the mod's own rules (the rest are dead code there too, and are not worth porting first).
+**85 of 95** candidates are used by the mod's own rules (the rest are dead code there too, and are not worth porting first).
 
 | type | file | uses in its yaml |
 |---|---|--:|
@@ -149,7 +152,6 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `BloomGlowEffect` | `Traits/World/BloomGlowEffect.cs` | 1 |
 | `BotPlayerNames` | `Traits/Player/BotPlayerNames.cs` | 1 |
 | `CNBaseOverlay` | `Traits/CNBaseOverlay.cs` | 1 |
-| `CNBridgeRepairBotModule` | `Traits/BotModules/CNBridgeRepairBotModule.cs` | 1 |
 | `CNCliffDemolitionBotModule` | `Traits/BotModules/CNCliffDemolitionBotModule.cs` | 1 |
 | `CNCombatSignalReporter` | `Traits/CNCombatSignalReporter.cs` | 1 |
 | `CNDestroyableCliffLayer` | `Traits/World/CNDestroyableCliffLayer.cs` | 1 |
@@ -164,17 +166,13 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `CNOffsetSpriteSequenceShadow` | `Traits/Render/CNOffsetSpriteSequenceShadow.cs` | 1 |
 | `CNProductionQueueFromSelection` | `Traits/Player/CNProductionQueueFromSelection.cs` | 1 |
 | `CNRegionManagerBotModule` | `Traits/BotModules/CNRegionManagerBotModule.cs` | 1 |
-| `CNRepairManagerBotModule` | `Traits/BotModules/CNRepairManagerBotModule.cs` | 1 |
 | `CNResourceMapBotModule` | `Traits/BotModules/CNResourceMapBotModule.cs` | 1 |
-| `CNTacticalMapBotModule` | `Traits/BotModules/CNTacticalMapBotModule.cs` | 1 |
 | `CNTacticalMapOverlay` | `Traits/CNTacticalMapOverlay.cs` | 1 |
 | `CNVeinholeAssaultBotModule` | `Traits/BotModules/CNVeinholeAssaultBotModule.cs` | 1 |
 | `CNWindSway` | `Traits/Render/CNWindSway.cs` | 1 |
 | `CNWithVoxelWalkerBody` | `Traits/Render/CNWithVoxelWalkerBody.cs` | 1 |
-| `CombatAnalysisBotModule` | `Traits/BotModules/CombatAnalysisBotModule.cs` | 1 |
 | `CombatChatter` | `Traits/CombatChatter.cs` | 1 |
 | `DayNightCycle` | `Traits/World/DayNightCycle.cs` | 1 |
-| `DeployBotModule` | `Traits/BotModules/DeployBotModule.cs` | 1 |
 | `ExploresMapOnOwnerChange` | `Traits/ExploresMapOnOwnerChange.cs` | 1 |
 | `FaceTurretOnOrder` | `Traits/FaceTurretOnOrder.cs` | 1 |
 | `FadeOut` | `Traits/FadeOut.cs` | 1 |
@@ -231,7 +229,9 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `GrantPrerequisiteChargeDrainPowerCA` | `GrantPrerequisiteChargeDrainPower` | identical `[Desc]` text |
 | `HealthPercentageSpreadDamage` | `SpreadDamage` | identical `[Desc]` text |
 | `Infiltrate` | `Dummy` | identical `[Desc]` text |
+| `McvManagerBotModuleCA` | `McvManagerBotModule` | identical `[Desc]` text |
 | `PeriodicExplosionOnSlaves` | `PeriodicExplosion` | identical `[Desc]` text |
+| `PowerDownBotModuleCA` | `PowerDownBotModule` | identical `[Desc]` text |
 | `ProduceActorPowerCA` | `ProduceActorPower, PeriodicProducer, PeriodicProducerCA` | identical `[Desc]` text |
 | `ProximityExternalConditionCA` | `ProximityExternalCondition` | identical `[Desc]` text |
 | `RailgunCA` | `Railgun` | identical `[Desc]` text |
@@ -252,19 +252,19 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `WithReloadBar` | `WithDisguiseTargetPalette` | identical `[Desc]` text |
 | `WithUnitConverterCountDecoration` | `WithTextDecoration` | identical `[Desc]` text |
 
-**119 of 131** candidates are used by the mod's own rules (the rest are dead code there too, and are not worth porting first).
+**118 of 130** candidates are used by the mod's own rules (the rest are dead code there too, and are not worth porting first).
 
 | type | file | uses in its yaml |
 |---|---|--:|
 | `EncyclopediaExtras` | `Traits/EncyclopediaExtras.cs` | 364 |
-| `MissileCA` | `Projectiles/MissileCA.cs` | 103 |
-| `LobbyMissionInfo` | `Traits/World/LobbyMissionInfo.cs` | 58 |
+| `MissileCA` | `Projectiles/MissileCA.cs` | 104 |
+| `LobbyMissionInfo` | `Traits/World/LobbyMissionInfo.cs` | 64 |
 | `Upgradeable` | `Traits/Upgradeable.cs` | 48 |
-| `AirstrikePowerCA` | `Traits/SupportPowers/AirstrikePowerCA.cs` | 39 |
+| `AirstrikePowerCA` | `Traits/SupportPowers/AirstrikePowerCA.cs` | 43 |
 | `InfiltrateToCreateProxyActor` | `Traits/Infiltration/InfiltrateToCreateProxyActor.cs` | 35 |
-| `ParatroopersPowerCA` | `Traits/SupportPowers/ParatroopersPowerCA.cs` | 26 |
-| `DummyConditionConsumer` | `Traits/Conditions/DummyConditionConsumer.cs` | 23 |
-| `GpsRadarDot` | `Traits/GPSRadarDot.cs` | 21 |
+| `ParatroopersPowerCA` | `Traits/SupportPowers/ParatroopersPowerCA.cs` | 30 |
+| `GpsRadarDot` | `Traits/GPSRadarDot.cs` | 22 |
+| `DummyConditionConsumer` | `Traits/Conditions/DummyConditionConsumer.cs` | 21 |
 | `ImmobileMultiCell` | `Traits/ImmobileMultiCell.cs` | 21 |
 | `GivesExperienceCA` | `Traits/GivesExperienceCA.cs` | 18 |
 | `Upgrade` | `Traits/Player/UpgradesManager.cs` | 17 |
@@ -278,23 +278,24 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `Convertible` | `Traits/Convertible.cs` | 10 |
 | `DummyConditionGranter` | `Traits/Conditions/DummyConditionGranter.cs` | 10 |
 | `GrantConditionIfOwnerIsNeutral` | `Traits/Conditions/GrantConditionIfOwnerIsNeutral.cs` | 10 |
+| `WithRadiatingCircle` | `Traits/Render/WithRadiatingCircle.cs` | 10 |
 | `SpawnActorAbility` | `Traits/SpawnActorAbility.cs` | 9 |
 | `UpdatesSupportPowerTimer` | `Traits/UpdatesSupportPowerTimer.cs` | 9 |
 | `WithPreviewDecoration` | `Traits/Render/WithPreviewDecoration.cs` | 9 |
-| `WithRadiatingCircle` | `Traits/Render/WithRadiatingCircle.cs` | 9 |
+| `AttackOrderPowerCA` | `Traits/SupportPowers/AttackOrderPowerCA.cs` | 8 |
 | `CreateProxyActorForAllies` | `Traits/CreateProxyActorForAllies.cs` | 8 |
 | `FlatHealthDamageMultiplier` | `Traits/Multipliers/FlatHealthDamageMultiplier.cs` | 8 |
 | `GrantConditionToAttached` | `Traits/Conditions/GrantConditionToAttached.cs` | 7 |
 | `ArmamentBurstCounter` | `Traits/ArmamentBurstCounter.cs` | 6 |
-| `AttackOrderPowerCA` | `Traits/SupportPowers/AttackOrderPowerCA.cs` | 6 |
+| `CargoCloner` | `Traits/CargoCloner.cs` | 6 |
 | `DummyGpsPower` | `Traits/SupportPowers/DummyGpsPower.cs` | 6 |
 | `AreaBeamCA` | `Projectiles/AreaBeamCA.cs` | 5 |
 | `ReclaimsExperience` | `Traits/ReclaimsExperience.cs` | 5 |
 | `TargetedLeapAbility` | `Traits/TargetedLeapAbility.cs` | 5 |
-| `CargoCloner` | `Traits/CargoCloner.cs` | 4 |
 | `DamagedByTerrainCA` | `Traits/DamagedByTerrainCA.cs` | 4 |
 | `GrantConditionOnResupply` | `Traits/Conditions/GrantConditionOnResupply.cs` | 4 |
 | `GrantConditionOnResupplying` | `Traits/Conditions/GrantConditionOnResupplying.cs` | 4 |
+| `ProvidesPrerequisiteIfAlliesExist` | `Traits/Player/ProvidesPrerequisiteIfAlliesExist.cs` | 4 |
 | `TimedConditionBarCA` | `Traits/Render/TimedConditionBarCA.cs` | 4 |
 | `ValueScalingFirepowerMultiplier` | `Traits/Multipliers/ValueScalingFirepowerMultiplier.cs` | 4 |
 | `WithFlashEffect` | `Traits/Render/WithFlashEffect.cs` | 4 |
@@ -305,10 +306,8 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `EncyclopediaColorPalette` | `Traits/Palettes/EncyclopediaColorPalette.cs` | 3 |
 | `InterceptorPower` | `Traits/SupportPowers/InterceptorPower.cs` | 3 |
 | `LaysMinefield` | `Traits/LaysMinefield.cs` | 3 |
-| `MeteorPower` | `Traits/SupportPowers/MeteorPower.cs` | 3 |
 | `OverlayColorPickerPalette` | `Traits/Palettes/OverlayColorPickerPalette.cs` | 3 |
 | `ParachuteCargoOnCondition` | `Traits/Conditions/ParachuteCargoOnCondition.cs` | 3 |
-| `ProvidesPrerequisitesOnCount` | `Traits/Player/ProvidesPrerequisitesOnCount.cs` | 3 |
 | `ProvidesPrerequisitesOnTimeline` | `Traits/Player/ProvidesPrerequisitesOnTimeline.cs` | 3 |
 | `RevealActorsPower` | `Traits/SupportPowers/RevealActorsPower.cs` | 3 |
 | `SendCashPower` | `Traits/SupportPowers/SendCashPower.cs` | 3 |
@@ -316,15 +315,17 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `WithLinkedRangeCirclePreview` | `Traits/Render/WithLinkedRangeCirclePreview.cs` | 3 |
 | `AirReinforcementsPower` | `Traits/SupportPowers/AirReinforcementsPower.cs` | 2 |
 | `AttachActor` | `Warheads/AttachActorWarhead.cs` | 2 |
+| `ConvertsResources` | `Traits/ConvertsResources.cs` | 2 |
 | `DropPodsPowerCA` | `Traits/SupportPowers/DropPodsPowerCA.cs` | 2 |
 | `GivesPlayerExperienceOnCapture` | `Traits/GivesPlayerExperienceOnCapture.cs` | 2 |
 | `GpsRadarProvider` | `Traits/SupportPowers/GpsRadarProvider.cs` | 2 |
 | `IgnoreOutOfRangeAttackOrders` | `Traits/Attack/IgnoreOutOfRangeAttackOrders.cs` | 2 |
 | `ImmobilePositionable` | `Traits/ImmobilePositionable.cs` | 2 |
 | `InfiltrateForTimedCondition` | `Traits/Infiltration/InfiltrateForTimedCondition.cs` | 2 |
-| `LinkedProducerSource` | `Traits/LinkedProducerSource.cs` | 2 |
+| `MeteorPower` | `Traits/SupportPowers/MeteorPower.cs` | 2 |
 | `MissileStrikePower` | `Traits/SupportPowers/MissileStrikePower.cs` | 2 |
 | `ProjectileHusk` | `Projectiles/ProjectileHusk.cs` | 2 |
+| `ProvidesPrerequisitesOnCount` | `Traits/Player/ProvidesPrerequisitesOnCount.cs` | 2 |
 | `ProvidesUpgrade` | `Traits/ProvidesUpgrade.cs` | 2 |
 | `ReturnsToBaseOnAmmoDepleted` | `Traits/ReturnsToBaseOnAmmoDepleted.cs` | 2 |
 | `SeedsResourceMultiplier` | `Traits/Multipliers/SeedsResourceMultiplier.cs` | 2 |
@@ -332,6 +333,7 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `SpeedCapSpeedMultiplier` | `Traits/Multipliers/SpeedCapSpeedMultiplier.cs` | 2 |
 | `TriggersProductionDoorOverlay` | `Traits/Render/TriggersProductionDoorOverlay.cs` | 2 |
 | `WeatherPaletteEffect` | `Traits/PaletteEffects/WeatherPaletteEffect.cs` | 2 |
+| `WithDistortionHalo` | `Traits/Render/WithDistortionHalo.cs` | 2 |
 | `WithDockingAnimationCA` | `Traits/Render/WithDockingAnimationCA.cs` | 2 |
 | `AddsToReclaimableValue` | `Traits/AddsToReclaimableValue.cs` | 1 |
 | `AdvancesTimeline` | `Traits/AdvancesTimeline.cs` | 1 |
@@ -340,25 +342,23 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `CampaignProgressTracker` | `Traits/Player/CampaignProgressTracker.cs` | 1 |
 | `CancelActivityOnPickup` | `Traits/CancelActivityOnPickup.cs` | 1 |
 | `CashHackPower` | `Traits/SupportPowers/CashHackPower.cs` | 1 |
-| `ConvertsResources` | `Traits/ConvertsResources.cs` | 1 |
 | `CreateFacingEffect` | `Warheads/CreateFacingEffectWarhead.cs` | 1 |
 | `FallsDownAndTransforms` | `Traits/Air/FallsDownAndTransforms.cs` | 1 |
 | `GpsRadarWatcher` | `Traits/GpsRadarWatcher.cs` | 1 |
+| `GrantConditionOnEnemiesNearby` | `Traits/Conditions/GrantConditionOnEnemiesNearby.cs` | 1 |
 | `GrantConditionOnPlayerFunds` | `Traits/Conditions/GrantConditionOnPlayerFunds.cs` | 1 |
+| `GrantPrerequisiteResourceDrainPower` | `Traits/SupportPowers/GrantPrerequisiteResourceDrainPower.cs` | 1 |
 | `GrantTimedConditionOnPointDefenseHit` | `Traits/Conditions/GrantTimedConditionOnPointDefenseHit.cs` | 1 |
 | `HealthCapDamageMultiplier` | `Traits/Multipliers/HealthCapDamageMultiplier.cs` | 1 |
 | `InfiltratePower` | `Traits/SupportPowers/InfiltratePower.cs` | 1 |
 | `InheritsExperienceLevelOfMaster` | `Traits/InheritsExperienceLevelOfMaster.cs` | 1 |
 | `Interceptor` | `Traits/Air/Interceptor.cs` | 1 |
-| `LinkedProducerTarget` | `Traits/LinkedProducerTarget.cs` | 1 |
 | `NotificationManager` | `Traits/Player/NotificationManager.cs` | 1 |
 | `NotificationOnDamage` | `Traits/NotificationOnDamage.cs` | 1 |
 | `PassengerBlocked` | `Traits/PassengerBlocked.cs` | 1 |
 | `PlayerBountyPool` | `Traits/Player/PlayerBountyPool.cs` | 1 |
 | `PlayerConnectionStatus` | `Traits/Player/PlayerConnectionStatus.cs` | 1 |
 | `PlayerExperienceLevels` | `Traits/Player/PlayerExperienceLevels.cs` | 1 |
-| `PopController` | `Traits/Player/PopController.cs` | 1 |
-| `ProvidesPrerequisiteIfAlliesExist` | `Traits/Player/ProvidesPrerequisiteIfAlliesExist.cs` | 1 |
 | `ReclaimableExperiencePool` | `Traits/Player/ReclaimableExperiencePool.cs` | 1 |
 | `ReclaimableValueProducer` | `Traits/Player/ReclaimableValueProducer.cs` | 1 |
 | `ScriptTriggersCA` | `Scripting/ScriptTriggersCA.cs` | 1 |
@@ -371,7 +371,6 @@ A `[Desc]` match is EVIDENCE, not proof, and it misleads in both directions. `Le
 | `UndeployOnStop` | `Traits/UndeployOnStop.cs` | 1 |
 | `UpgradesManager` | `Traits/Player/UpgradesManager.cs` | 1 |
 | `WarheadDebugOverlayCA` | `Traits/WarheadDebugOverlayCA.cs` | 1 |
-| `WithDistortionHalo` | `Traits/Render/WithDistortionHalo.cs` | 1 |
 | `WithHarvestAnimationCA` | `Traits/Render/WithHarvestAnimationCA.cs` | 1 |
 | `WithPrismLinkVisualization` | `Traits/Render/WithPrismLinkVisualization.cs` | 1 |
 | `WithSpawnedActorIdentifier` | `Traits/Render/WithSpawnedActorIdentifier.cs` | 1 |

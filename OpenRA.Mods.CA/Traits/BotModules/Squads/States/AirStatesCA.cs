@@ -60,6 +60,91 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			return missileUnitsCount / StaticAntiAirMultiplier;
 		}
 
+		// CA-5: the farthest this unit's air-valid weapons reach. Zero = not AA.
+		protected static WDist AntiAirRange(Actor unit)
+		{
+			var range = WDist.Zero;
+			foreach (var ab in unit.TraitsImplementing<AttackBase>())
+			{
+				if (ab.IsTraitDisabled || ab.IsTraitPaused)
+					continue;
+
+				foreach (var a in ab.Armaments)
+					if (a.Weapon.IsValidTarget(AirTargetTypes) && a.Weapon.Range > range)
+						range = a.Weapon.Range;
+			}
+
+			return range;
+		}
+
+		// CA-5: same weighting as CountAntiAirUnits, but an enemy only counts when
+		// its air weapons actually reach `loc` - a SAM site beyond its range is
+		// scenery, and a long-range one outside DangerScanRadius still threatens.
+		protected static int CountAntiAirUnitsInRange(IEnumerable<Actor> units, WPos loc, SquadCA owner)
+		{
+			if (!units.Any())
+				return 0;
+
+			var missileUnitsCount = 0;
+			foreach (var unit in units)
+			{
+				if (unit == null || unit.IsDead)
+					continue;
+
+				var range = AntiAirRange(unit);
+				if (range == WDist.Zero || (unit.CenterPosition - loc).HorizontalLength > range.Length)
+					continue;
+
+				// LC6: a unit counted toward the gate IS consumed by the decision -
+				// an unseen AA must never move this count.
+				owner.SquadManager.CanaryObserved(unit, "aa-gate");
+
+				missileUnitsCount += owner.SquadManager.Info.StaticAntiAirTypes.Contains(unit.Info.Name)
+					? StaticAntiAirMultiplier
+					: 1;
+			}
+
+			return missileUnitsCount / StaticAntiAirMultiplier;
+		}
+
+		// CA-5: NearToPosSafely with per-unit AA ranges for the doctrine states.
+		// One wider sweep covers long-range AA; targets are still judged inside
+		// DangerScanRadius so target selection matches the generic air wing.
+		protected static bool NearToPosSafelyAircraft(SquadCA owner, WPos loc)
+		{
+			return NearToPosSafelyAircraft(owner, loc, out _);
+		}
+
+		protected static bool NearToPosSafelyAircraft(SquadCA owner, WPos loc, out Actor detectedEnemyTarget)
+		{
+			detectedEnemyTarget = null;
+			var dangerRadius = owner.SquadManager.Info.DangerScanRadius;
+
+			var nearby = owner.World.FindActorsInCircle(loc, WDist.FromCells(dangerRadius * 2))
+				.Where(a => owner.SquadManager.IsPreferredObservedEnemyUnit(a))
+				.ToList();
+
+			if (nearby.Count == 0)
+				return true;
+
+			if (CountAntiAirUnitsInRange(nearby, loc, owner) >= owner.Units.Count)
+				return false;
+
+			var dangerRadiusLength = WDist.FromCells(dangerRadius).Length;
+			var possibleTargets = nearby
+				.Where(a => (a.CenterPosition - loc).HorizontalLength <= dangerRadiusLength
+					&& owner.SquadManager.IsAirSquadTargetType(a, owner))
+				.ToList();
+
+			if (possibleTargets.Count > 0)
+			{
+				possibleTargets = owner.SquadManager.PreferSquadTargets(possibleTargets, owner, owner.SquadManager.TagsOf);
+				detectedEnemyTarget = possibleTargets.Random(owner.Random);
+			}
+
+			return true;
+		}
+
 		protected static bool IsPathSafe(SquadCA owner, WPos start, WPos end)
 		{
 			var map = owner.World.Map;
@@ -148,9 +233,15 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 		{
 			var target = FindAirTarget(owner);
 			if (target != null)
+			{
+				owner.SquadManager.CanaryObserved(target, "air-target");
 				return target;
+			}
 
 			FindSafePlace(owner, out target, true);
+			if (target != null)
+				owner.SquadManager.CanaryObserved(target, "air-safescan");
+
 			return target;
 		}
 
@@ -187,7 +278,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			detectedEnemyTarget = null;
 			var dangerRadius = owner.SquadManager.Info.DangerScanRadius;
 			var unitsAroundPos = owner.World.FindActorsInCircle(loc, WDist.FromCells(dangerRadius))
-				.Where(a => owner.SquadManager.IsPreferredEnemyUnit(a));
+				.Where(a => owner.SquadManager.IsPreferredObservedEnemyUnit(a));
 
 			if (!unitsAroundPos.Any())
 				return true;
@@ -198,7 +289,10 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (CountAntiAirUnits(possibleAntiAir, owner) < owner.Units.Count)
 			{
 				if (possibleTargets.Count > 0)
+				{
+					possibleTargets = owner.SquadManager.PreferSquadTargets(possibleTargets, owner, owner.SquadManager.TagsOf);
 					detectedEnemyTarget = possibleTargets.Random(owner.Random);
+				}
 
 				return true;
 			}
@@ -211,6 +305,16 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 		{
 			return ShouldFlee(owner, enemies => CountAntiAirUnits(enemies, owner) > owner.Units.Count);
 		}
+
+		// CA-5 (12.8): the idle state an air-family squad returns to after fleeing.
+		// Doctrine squads keep their role behaviour; generic Air squads keep theirs.
+		protected static IState IdleStateFor(SquadCA owner) => owner.Type switch
+		{
+			SquadCAType.Fighter => new FighterIdleStateCA(),
+			SquadCAType.Gunship => new GunshipCASStateCA(),
+			SquadCAType.Bomber => new BomberIdleStateCA(),
+			_ => new AirIdleStateCA(),
+		};
 	}
 
 	class AirIdleStateCA : AirStateBaseCA, IState
@@ -241,6 +345,11 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 	class AirAttackStateCA : AirStateBaseCA, IState
 	{
+		// Set after the strike route is attempted for the current target —
+		// the state may be entered with a valid target (AirIdle already
+		// picked one), where newTarget never fires but routing still applies.
+		bool routedCurrentTarget;
+
 		public void Activate(SquadCA owner) { }
 
 		public void Tick(SquadCA owner)
@@ -259,7 +368,9 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 					var a = owner.Units.Random(owner.Random).Actor;
 
 					// copied from FindClosestEnemy() so that non-air squads don't check IsAirSquadTargetType unnecessarily
-					var units = a.World.Actors.Where(t => owner.SquadManager.IsPreferredEnemyUnit(t) && owner.SquadManager.IsAirSquadTargetType(t, owner));
+					var units = owner.SquadManager.PreferSquadTargets(
+						a.World.Actors.Where(t => owner.SquadManager.IsPreferredObservedEnemyUnit(t) && owner.SquadManager.IsAirSquadTargetType(t, owner)).ToList(),
+						owner, owner.SquadManager.TagsOf);
 					closestEnemy = units.Where(owner.SquadManager.IsNotHiddenUnit).ClosestToIgnoringPath(a.CenterPosition) ?? units.ClosestToIgnoringPath(a.CenterPosition);
 				}
 
@@ -284,7 +395,21 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			var leader = owner.Units.FirstOrDefault().Actor;
 			var buildableInfo = leader.Info.TraitInfoOrDefault<BuildableInfo>();
 			var limitOne = buildableInfo != null && buildableInfo.BuildLimit == 1;
-			var canBuildMoreOfAircraft = leader != null ? !limitOne && owner.SquadManager.CanBuildMoreOfAircraft(leader.Info) : false;
+
+			// CA-5 (AI_ARCHITECTURE §12.8): on a fresh target, transit through
+			// waypoints that skirt remembered anti-air coverage instead of
+			// beelining. The router picks the threat read by leader domain —
+			// aircraft pay remembered AntiAir, ground pays Army+Defence.
+			var needRoute = newTarget || !routedCurrentTarget;
+			var strikeRoute = needRoute && leader != null
+				? owner.SquadManager.RouteAroundThreat(leader, owner.World.Map.CellContaining(owner.TargetActor.CenterPosition))
+				: null;
+
+			if (needRoute)
+				routedCurrentTarget = true;
+
+			// CA F2p2 (71754fc06): evaluated lazily - the limit check is only needed when the squad would otherwise keep waiting.
+			System.Func<bool> canBuildMoreOfAircraft = () => leader != null && !limitOne && owner.SquadManager.CanBuildMoreOfAircraft(leader.Info);
 			var waitingCount = owner.WaitingUnits.Count();
 
 			var waitingPatience = 99;
@@ -341,10 +466,21 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 						continue;
 					}
 
-					// target switched or not attacking, attack the target
-					if ((newTarget || activityType != typeof(FlyAttack)) && CanAttackTarget(a.Actor, owner.TargetActor))
+					// target switched or not attacking, attack the target. A unit
+					// mid-Fly is transiting the strike route's waypoints — its
+					// queued Attack takes over on arrival, so leave it alone.
+					if ((newTarget || (activityType != typeof(FlyAttack) && activityType != typeof(Fly))) && CanAttackTarget(a.Actor, owner.TargetActor))
 					{
-						owner.Bot.QueueOrder(new Order("Attack", a.Actor, Target.FromActor(owner.TargetActor), false));
+						if (strikeRoute != null && strikeRoute.Count > 0)
+						{
+							for (var i = 0; i < strikeRoute.Count; i++)
+								owner.Bot.QueueOrder(new Order("Move", a.Actor, Target.FromCell(owner.World, strikeRoute[i]), i != 0));
+
+							owner.Bot.QueueOrder(new Order("Attack", a.Actor, Target.FromActor(owner.TargetActor), true));
+						}
+						else
+							owner.Bot.QueueOrder(new Order("Attack", a.Actor, Target.FromActor(owner.TargetActor), false));
+
 						continue;
 					}
 					else if (activityType == typeof(FlyIdle))
@@ -357,7 +493,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 					owner.WaitingUnits.Add(a.Actor);
 			}
 
-			if ((!canBuildMoreOfAircraft || noPatience) && owner.WaitingUnits.Count > 0 && owner.WaitingUnits.Count >= owner.RearmingUnits.Count)
+			if (owner.WaitingUnits.Count > 0 && owner.WaitingUnits.Count >= owner.RearmingUnits.Count && (noPatience || !canBuildMoreOfAircraft()))
 			{
 				foreach (var a in owner.WaitingUnits)
 					if (CanAttackTarget(a, owner.TargetActor))
@@ -381,7 +517,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 			Retreat(owner, flee: false, rearm: true, repair: true);
 
-			owner.FuzzyStateMachine.ChangeState(owner, new AirIdleStateCA(), true);
+			owner.FuzzyStateMachine.ChangeState(owner, IdleStateFor(owner), true);
 		}
 
 		public void Deactivate(SquadCA owner) { }

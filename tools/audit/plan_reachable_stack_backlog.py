@@ -84,8 +84,11 @@ def flags(nodes):
     }
 
 
-def build():
-    rules = Ruleset(ROOT)
+def build(rules=None):
+    # Callers doing another live audit can reuse one resolved ruleset instead of
+    # retaining two complete actor/weapon inheritance caches concurrently.
+    if rules is None:
+        rules = Ruleset(ROOT)
     survey = inventory(rules)
     selected = set(survey["sets"]["direct_actor_armament"])
     selected.update(survey["sets"]["indirect_weapon_graph"])

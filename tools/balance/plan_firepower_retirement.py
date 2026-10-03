@@ -135,6 +135,14 @@ def render(rows: list[dict], s: dict) -> str:
         f"- need a damage DECISION: **{s['dirty']}** "
         f"({', '.join(s['dirty_actors']) or 'none'})",
         "",
+        "## Static disposition",
+        "",
+        f"All **{s['rows']}** rows are within the {FOLD_TOLERANCE:.0%} fold tolerance; "
+        f"**{s['exact']}** land exactly on the damage grid and the remaining "
+        f"rows differ only by grid snapping. This is a candidate for a separate, "
+        "explicitly authorized set-B content batch. The report does not edit "
+        "YAML, remove a trait or claim runtime certification.",
+        "",
         "## Needs a decision (fold error > "
         f"{FOLD_TOLERANCE:.0%})",
         "",

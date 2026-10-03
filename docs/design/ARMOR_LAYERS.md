@@ -1,5 +1,7 @@
 # The layered defence stack — shields, Integrity, plating, and how damage lands
 
+> **Numeric evidence refresh — 2026-09-10, combined `839cdced4` plus reopened tooling.** `meters_filling_before_death` = **322**; `physical_state_fired_weapons` = **537**. Measured on this combined tree; predicates and tolerances are unchanged. The flat-health denominator correction changes diagnostics, not live weapons or prices. Earlier branch-specific snapshots remain historical. **2026-09-23b (post-#456/#457 wave): `meters_filling_before_death` = 318; `physical_state_fired_weapons` = 533; Shield Versus mean = 162.19 → shield_hp_factor = 0.617** (the reference lane's family adoptions moved the Shield ladder). **2026-09-24 (post-#476/#478): `physical_state_fired_weapons` = 542** — W7's Resonance feeds put meter warheads back on fired weapons (+9). **2026-09-24b (post-#490 merge wave): `physical_state_fired_weapons` = 544; `shield_versus_mean` = 88.08 → `shield_hp_factor` = 1.135; `shield_damage_share` = 0.0171; `unconverted_template_inheritors` = 385; `cameo_family_labelled_weapons` = 1210; `percentage_denominator_unset` = 417.** **2026-09-26 (master `afb66c9b5` resync): `meters_filling_before_death` = 320; `physical_state_fired_weapons` = 548; `shield_versus_mean` = 91.16 → `shield_hp_factor` = 1.097; `shield_damage_share` = 0.0179; `unconverted_template_inheritors` = 390; `cameo_family_labelled_weapons` = 1291; `percentage_denominator_unset` = 423.** **2026-09-27 (`devin/nova/w7-packs` post-merge resync): `meters_filling_before_death` = 328; `shield_versus_mean` = 92.27 → `shield_hp_factor` = 1.084; `unconverted_template_inheritors` = 394; `cameo_family_labelled_weapons` = 1512; `percentage_denominator_unset` = 436** — the W7 chain-collapse inlines parent bodies locally, which raises direct `^Template`/`^Warhead_<Family>_<Level>` declarations (labelled +221, unconverted +4, PercentageDenominator +13) without changing any resolved payload; `w24_multi_main_fed` = 221 (folds moved weapons off multi-main). **2026-09-27 (DAWN stack merge onto `8f3d0a564`): `shield_versus_mean` = 94.68 → `shield_hp_factor` = 1.056; `unconverted_template_inheritors` = 391; `cameo_family_labelled_weapons` = 1345.** **2026-09-28 (post-#252 Scrin pack, `5d7bbd6bd`): `meters_filling_before_death` = 329; `physical_state_fired_weapons` = 549.** **2026-10-01 (post-dupkey-collapse `3e14d9b4a`): `shield_versus_mean` = 184.71 → `shield_hp_factor` = 0.541; `shield_damage_share` = 0.0161 — the earlier ~97 mean counted ~293 dead duplicate `Warhead@*` sibling blocks (miniyaml enumerated what RESOLVE never gave the engine); this is a measurement-population fix, no live versus value moved.**
+
 **One document for the whole defence stack.** It replaces five separate analyses that each
 covered one slice and repeated the others' premises. `BALANCE_PROGRAM_PLAN.md` had already
 cited a `docs/design/ARMOR_LAYERS.md` that never existed; this is it.
@@ -56,7 +58,7 @@ questions and became the plating layer. What is LIVE, with the binding summary i
 | 5 platings `HAZMAT` `COMPOSITE` `BLAST` `REFLECTOR` `ARMOR`, ALL CAPS, full columns in all 94 templates | §D-bis, §G, §H |
 | LAYER SELECTION — a plating replaces the class armor | `AreaDamageWarhead.DamageVersus` |
 | the column law: every plating averages **70** | §I |
-| `effective_HP = HP + shield x 0.529`, measured live | §I |
+| `effective_HP = HP + shield x 0.555`, measured live | §I |
 | 4 upgrades retagged; the generic ones stay multipliers | §G |
 | guards `audit_armor_upgrade_harm.py` + `audit_plating_exclusivity.py` | §F, run_all.sh |
 | `Waveforce` IntegrityScale deleted (could never fire) | §B, §D-bis |
@@ -87,11 +89,14 @@ Plus the general question: **what is the balance formula still not seeing?**
 Every claim here was read out of the code or counted in the resolved ruleset. Several
 contradict what the design docs assume, so the numbers matter.
 
-#### A1 — Multiple armor types AVERAGE (they do not multiply)
+#### A1 — Multiple CLASS armor types take their GEOMETRIC MEAN (they do not multiply)
 
 `AreaDamageWarhead.DamageVersus` overrides the engine's product with
-`MultiArmorCombination`, default **Average** (the W21 ruling). An actor carrying a base
-armor plus an overlay takes `avg(Versus[base], Versus[overlay])`.
+`MultiArmorCombination`, default **Geometric** (maintainer 2026-09-25; it was the arithmetic
+`Average` under the W21 ruling from 2026-08-15). An actor carrying two class armors takes
+`sqrt(Versus[a] x Versus[b])` (n-th root of the product for n armors), so 88 and 10 give 30
+where the arithmetic average gave 49, and 200 and 50 give exactly 100. A PLATING is not a class
+armor: it is a layer that MULTIPLIES the combined class row (layer rule, 2026-08-17).
 
 #### A2 — ⚠ A MISSING row is EXCLUDED from the average, NOT treated as 100
 
@@ -111,7 +116,12 @@ everywhere" and "add it only where it means something" are genuinely different d
 (For a SINGLE-armor actor the two coincide: an empty armor list returns 100. That is why
 "a missing row resolves to 100" was true in the W23 retrofit and is false here.)
 
-#### A3 — An overlay armor can never cut damage by more than ~50%
+#### A3 — (HISTORICAL) Under the arithmetic average an overlay armor could never cut damage by more than ~50%
+
+⚠ **Superseded twice.** Platings stopped being averaged on 2026-08-17 (they multiply the class
+row as a layer), and class armors combine GEOMETRICALLY since 2026-09-25, where a second armor
+at the window floor gives `sqrt(base x 10)` — base 100 -> 32, a 3.2x cut — so the ~2x bound
+below no longer holds for either. Kept as the record of why the arithmetic rule was replaced.
 
 With averaging, `effective = (base + overlay) / 2`. Even at the window floor
 (`overlay = 10`) the result is `(base + 10) / 2` — just over half. **The whole HAZMAT /
@@ -617,13 +627,14 @@ Two families were credited to the wrong counter in the first draft:
 
 | layer | column mean | 1 point is worth | maintainer's estimate |
 |---|--:|--:|---|
-| `Shield` | **189.09** | **0.529 HP** | "200% shield ≈ 100% extra HP" — i.e. 0.5. **Confirmed to 9%.** |
+| `Shield` | **92.27** (was 162.19 pre-#490) | **1.084 HP** | "200% shield ≈ 100% extra HP" — i.e. 0.5. Post-#490 the measured factor overshoots: a shield point is now worth *more* than an HP point. |
+| `Shield` | **94.68** (was 91.16 pre-stack, 162.19 pre-#490) | **1.056 HP** | "200% shield ≈ 100% extra HP" — i.e. 0.5. Post-#490 the measured factor overshoots: a shield point is now worth *more* than an HP point. |
 | all five platings | **100.0** | **1.000 HP** | "it evens out" — **confirmed exactly**, by construction |
 
 So the pricing rule is:
 
 ```
-effective_HP = HP + shield_strength x (100 / mean_versus_shield)      # x0.529 today
+effective_HP = HP + shield_strength x (100 / mean_versus_shield)      # **x0.541 measured 2026-10-01 (post-dupkey-collapse `3e14d9b4a`; x1.024 on 2026-09-27 counted dead duplicate `Warhead@*` blocks)** — x0.617 pre-#490
 ```
 
 and a plating contributes **nothing** to effective HP on average — it redistributes only.
@@ -660,7 +671,7 @@ Measured against `formula.py`, `weapon_efficiency.py` and `target_model.py`.
 
 | # | gap | why it matters | severity |
 |---|---|---|---|
-| **E1** | ✅ **FIXED 2026-08-17 (both halves).** Weapon side: `armor_weights()` now carries a 17th `Shield` row at its measured damage share, and `weighted_versus` iterates the weights instead of `ARMORS`. Unit side: `extract_stats.survivability()` publishes `effective_hp` for actors that SPAWN with a pool. | ⚠ **The "51% of the roster" figure was wrong** — it counted the 1592 actors carrying `Shielded`, but 1318 of those hold an EMPTY capacity behind `shieldgen >= 1`. Only **58** spawn with a pool, so baseline Shield exposure is **1.432%**, and the weapon-side correction is +0.65% (Bullet) to +3.47% (Tesla), not a repricing. The real hole is the unit side: those 58 carry **+57.8% effective HP at zero cost**. Report: `audit_survivability_pricing.py`. | ~~high~~ **done** |
+| **E1** | ✅ **FIXED 2026-08-17 (both halves).** Weapon side: `armor_weights()` now carries a 17th `Shield` row at its measured damage share, and `weighted_versus` iterates the weights instead of `ARMORS`. Unit side: `extract_stats.survivability()` publishes `effective_hp` for actors that SPAWN with a pool. | ⚠ **The "51% of the roster" figure was wrong** — it counted the 1592 actors carrying `Shielded`, but 1318 of those hold an EMPTY capacity behind `shieldgen >= 1`. Only **58** spawn with a pool, so baseline Shield exposure is **1.444%**, and the weapon-side correction is +0.65% (Bullet) to +3.47% (Tesla), not a repricing. The real hole is the unit side: those 58 carry **+57.8% effective HP at zero cost**. Report: `audit_survivability_pricing.py`. | ~~high~~ **done** |
 | **E2** | `PhysicalState` (heat / cold / corrosion) is priced at zero — `extract_stats` contains **0** references to it. | ⚠ **"~89 live bindings" was wrong by 8×. Measured 2026-08-18: 722 bindings on 453 weapons, of which 367 are actually FIRED, carried by 578 armaments** — roughly a quarter of the damaging roster delivers a status meter for free. It is also TWO mechanisms, not one (see below), and the earlier count saw only part of one. Design work exists, the extractor does not. | **high** |
 | **E3** | `IntegrityScale` is priced at zero. | 1233 actors carry the pool; a disable at 50% HP is worth real money. | medium |
 | **E4** | ✅ **CORRECTED 2026-08-25 — percentage damage has two shapes.** Standalone percentage warheads are absolute at the reference HP; folded `PercentageScale` damage derives from the main Damage and is scalable. The first E4 fix recognized only specially named standalone twins and missed most standalone nodes plus every folded hit. | The model now discovers percentage applications by warhead type. `k_flat_context` includes flat, chip and folded damage; `pct_absolute_context`/`dps_floor` contain standalone damage only; folded basis-point rounding is a separate current-shot residual. Full burst cadence also includes every inter-shot delay and the engine default. Guard: `audit_k_linearity.py`; fixtures: `test_percentage_damage_model.py`. | ~~high~~ **done** |
@@ -834,6 +845,14 @@ units; its C# type has no denominator field. Legacy `AreaDamagePercentage` defau
 basis points. Folded `AreaDamage.PercentageScale` defaults to denominator 10000 and uses
 the engine's rounded derived units. The shared evaluator reads each form directly; no tag
 spelling or global denominator guess is allowed.
+
+Authored-field inventory, 2026-09-22: **401** raw `PercentageDenominator`
+occurrences in active weapon files, up from the 2026-09-05 snapshot of 183.
+The added Freedom elite explicit companion preserves its prior percentage route.
+The registry's historical `percentage_denominator_unset` name does not mean
+unset fields or resolved applications; this occurrence count does not establish
+a global unit rebase or change the per-node semantics above.
+
 
 ---
 
@@ -1471,7 +1490,7 @@ though they are in the same kinetic family right? But you need to use your best 
 reasoning for this to get it right!"* … *"I want all weapon families to be a bit more unique so
 don't put 3 energy weapons exactly on the same versus value but slightly different"*
 
-**STATUS: DONE** — shipped in `e7fa2d57b`. **46 emitted families** (`plating_families`, re-measured 2026-08-23). ⚠ The matrix below still lists 37 rows — the families added since (the Cryo cells among them) have no row yet; `audit_doc_claims` holds this red until the table is regenerated. Four groups
+**STATUS: DONE** — shipped in `e7fa2d57b`. **52 emitted families** (`plating_families`, re-measured 2026-09-22). ⚠ The matrix below still lists 37 rows — the families added since (the Cryo cells among them) have no row yet; `audit_doc_claims` holds this red until the table is regenerated. Four groups
 of ties are gone: `Laser/Prism/Tesla`, `Chemical/Cryo/Flame/Toxic`, `Concussion/Demolition`, and
 `Arrow/Bullet/CannonAP/Melee`. Pinned by `tools/tests/test_plating_composition.py`.
 
@@ -1721,7 +1740,7 @@ Agreed on the outcome, but these are **two different mechanisms** and only one o
 | | mechanism | where it happens | rule |
 |---|---|---|---|
 | `Heroic = Plate × Scout / peak`, `Airborne = Helicopter × Scout / peak` | a **DERIVED Versus COLUMN**, computed once per warhead by the generator | `gen_weapon_template`, DESIGN §12.0b | already a product; `MultiArmorCombination` never sees it |
-| CABAL cyborgs / droids carrying **two Armor traits** | runtime multi-armor | `AreaDamageWarhead.MultiArmorCombination` | **Average** — keep |
+| CABAL cyborgs / droids carrying **two Armor traits** | runtime multi-armor | `AreaDamageWarhead.MultiArmorCombination` | **Geometric** (was Average until 2026-09-25) — keep |
 | a **plating** over the class armor | runtime, one plating at a time | same field | **Multiply** — the change |
 
 So: **Heroic and Airborne are not affected by this decision at all** — they are columns, not
@@ -1810,7 +1829,7 @@ Versus[Shield] = 2 x Versus[the building's armor row]
 `(H/2) x 100/V_c` for the health plus `H x 100/V_s` for the pool. Setting them equal gives
 `0.5/V_c + 1/V_s = 1/V_c`, i.e. `V_s = 2 V_c`.
 
-⭐ This is the same fact as the **189.1% break-even pool** (`100 / shield_hp_factor`): both say
+⭐ This is the same fact as the **369.4% break-even pool** (`200 / shield_hp_factor`, factor 0.541 measured 2026-10-01 — the older 182.3% figure rode the dupkey-polluted mean): both say
 that converting HP into an equal-value shield means undoing exactly the Shield row's average
 penalty. AtomicCore has `Shield 155` against `Concrete 100`, i.e. 1.55x where neutrality needs
 2.0x — which is precisely why the converted building came out *tougher*.

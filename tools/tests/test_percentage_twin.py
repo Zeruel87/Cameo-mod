@@ -75,14 +75,15 @@ class PercentageTwinTest(unittest.TestCase):
 
 
 class PercentageGranularityTest(unittest.TestCase):
-    """The 20x regrid (maintainer 2026-08-11/12): flat damage in steps of 100,
-    percentage damage in basis points, and one sentence tying them together —
-    **100 flat damage == 0.01% of max health**."""
+    """The percentage law (maintainer 2026-08-11/12, grid retired 2026-09-12):
+    the flat grid is retired (DAMAGE_STEP = 1 — every integer legal), while the
+    percentage ratio stands — **100 flat damage == 0.01% of max health**."""
 
     def test_the_law_in_one_line(self):
-        """One flat step IS one basis point, so the twin is literally Damage/100
-        and can never drift from the weapon it belongs to."""
-        self.assertEqual(formula.DAMAGE_STEP, 100)
+        """The twin is literally Damage/100 in basis points and can never drift
+        from the weapon it belongs to; at step 1 the one-step==one-unit
+        identity holds via the never-zero floor, not the ratio."""
+        self.assertEqual(formula.DAMAGE_STEP, 1)
         self.assertEqual(
             formula.percentage_twin(formula.DAMAGE_STEP, formula.BASIS_POINT_DENOMINATOR), 1)
         for damage in (100, 2500, 16000, 123_400):

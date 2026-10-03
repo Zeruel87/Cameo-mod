@@ -51,8 +51,8 @@ class ParsesTheRealShellScript(unittest.TestCase):
     def test_the_advisory_list_is_the_scheduled_family(self):
         # Maintainer ruling 2026-08-24: the periodic.json scans must not gate the per-commit run.
         self.assertEqual(sorted(self.advisory),
-                         ["code_duplication", "error_handling", "recent_changes",
-                          "security", "test_coverage"])
+                         ["code_duplication", "drain_status", "error_handling",
+                          "recent_changes", "security", "test_coverage"])
 
     def test_advisory_and_gating_do_not_overlap(self):
         self.assertEqual(set(self.gating) & set(self.advisory), set())

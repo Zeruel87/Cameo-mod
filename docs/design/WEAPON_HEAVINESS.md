@@ -829,11 +829,11 @@ compressed ladder, not a normal armor), as are the five ALL-CAPS platings (§12.
 | 1 | Fix the 9 broken level ladders | ✅ **retired, not fixed** — see below |
 | 2 | Every family into the 2x-8x spread band (§9.4) | ✅ **already done 2026-08-22** |
 | 3 | Rule the armor x-axis (§9.5) | ✅ ruled 2026-08-24 — one global 13-slot scale, §9.5b |
-| 4 | Rule §9.3: does heaviness affect price? | ✅ ruled — no, price via `Damage` |
+| 4 | Rule §9.3: does heaviness affect price? | clarified 2026-09-10: no extra surcharge; actual weighted Versus, percentage damage and splash enter normal pricing (DESIGN §12.0i law 2) |
 | 4b | Rule `mu`, `LO`, `sigma` | ✅ ruled 2026-08-24 — blend, 0.667, 0.75 |
-| 5 | Implement the bell in `gen_weapon_template`, then `AreaDamageWarhead` | ▶ **next** |
-| 6 | Verify no family inverts; verify the weighted mean is invariant | ✅ `audit_heaviness_bell` |
-| 7 | Collapse to one template per family; set `h` by the §3.3 rule | |
+| 5 | Implement the bell in `gen_weapon_template`, then `AreaDamageWarhead` | Endpoint checkpoint passed137 C# tests and a six-lane game probe. The subsequently approved shared percentage/Shield mode is being validated separately; earlier results are not proof of the new mode. Trace/Super remain outside scope |
+| 6 | Verify family ordering and arithmetic normalization; measure weighted effectiveness | Endpoint pilot full suite1416 tests retained14 failures/8 errors/45 skips with baseline signatures. Arithmetic normalization does not imply roster-weighted price invariance |
+| 7 | Collapse to one template per family; set `h` by the §3.3 rule | Five CannonAP pilot definitions use the new base; legacy level templates remain for all unmigrated consumers. Whole-roster migration is unfinished |
 
 **Step 1 was never a real blocker.** The ladder audit measured the *effective damage* of the
 weapons on each rung, but 145 of the `^Warhead_*` templates carry only a placeholder `Damage: 2000`
@@ -846,7 +846,14 @@ damage ladder is orthogonal to the bell. The maintainer ruled the monotonic chec
 in `audit_versus_profile.py`, cleared by `fit_band_floor` in `gen_weapon_template.py` on
 2026-08-22: **46 families in band**, with only `Sonic` and `Magic` excluded as flat by design.
 
-So the next action is step 5 — implementation — with every parameter now fixed:
+The next action is to validate the approved shared-profile mode and its five-weapon
+pilot. At03:17 on10September, the maintainer approved one Versus table, base
+100Damage->0.01% maxHP before armor/heaviness, percentage magnitude times h/2,
+and Shield coefficient times1+h/2. See DESIGN §12.0i for field units and rounding.
+The earlier endpoint implementation remains legacy-compatible, but no further
+endpoint-based migration is planned. New family bases must be unique at equal h,
+while retained legacy duplicates remain visible in raw reports (DESIGN §12.0c).
+Current bell constants:
 
     x(armor)      = the global 13-slot scale, §9.5b / DESIGN §12.0i
     mu(family, h) = ( h + centre_of_mass(base_profile) ) / 2

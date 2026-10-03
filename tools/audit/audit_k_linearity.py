@@ -49,6 +49,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 import weapon_efficiency as we  # noqa: E402
 import percentage_damage as pd  # noqa: E402
+import effective_heaviness as eh  # noqa: E402
 from formula import parse_int32  # noqa: E402
 from miniyaml import Ruleset  # noqa: E402
 
@@ -85,12 +86,28 @@ def runtime_percentage_inventory(node) -> Counter:
         if not child.key.startswith("Warhead"):
             continue
         tag = child.key.split("@", 1)[1] if "@" in child.key else child.key
+        mode, heaviness = eh.MODE_LEGACY, -1
+        if child.value in {"AreaDamage", "AreaDamagePercentage"}:
+            # Validate before filtering non-positive damage. Enumeration below
+            # remains independent of percentage_applications and its type list.
+            mode, heaviness = eh.heaviness_profile_config(
+                child, pd.versus_table(child, "PercentageVersusLight"),
+                pd.versus_table(child, "PercentageVersus"),
+                pd.versus_table(child, "PercentageVersusHeavy"),
+                subclass_twin=child.value == "AreaDamagePercentage")
+            if mode == eh.MODE_SHARED:
+                eh.validate_shared_numeric(
+                    mode, heaviness, pd.versus_table(child),
+                    parse_int32(child.get("Damage"), default=0),
+                    parse_int32(child.get("PercentageScale"), default=0))
         damage = _positive_int(child.get("Damage"))
         if damage is None:
             continue
         if child.value == "HealthPercentageDamage":
             # This C# type always uses whole-percent units and owns no
-            # PercentageDenominator field.
+            # PercentageDenominator field. Its runtime divisor is 100 and its
+            # continuous units are damage/100, so a positive Damage is a
+            # modeled standalone application.
             found[(pd.PCT_STANDALONE, tag)] += 1
         elif child.value == "AreaDamagePercentage":
             denominator = _positive_int(
@@ -106,7 +123,20 @@ def runtime_percentage_inventory(node) -> Counter:
             denominator = _positive_int(
                 child.get("PercentageDenominator"), pd.FOLDED_DEFAULT_DENOMINATOR)
             if scale is not None and denominator is not None:
-                found[(pd.PCT_FOLDED, tag)] += 1
+                if mode == eh.MODE_SHARED:
+                    # THE SHARED PROFILE (DESIGN §12.0j, maintainer 2026-09-26): the folded
+                    # magnitude is Damage x Scale x growth(h) / 200000, with growth x0.8 at
+                    # h = 0, x1.0 at h = 1, x1.25 at h = 2 — the C#'s exact integers
+                    # (4000 + H) / 5000 up to H = 1000, (3000 + H) / 4000 above. Computed
+                    # HERE, not through percentage_damage, so this inventory stays independent.
+                    # ⚠ The retired rule was h/2, which made h = 0 an ACTIVE ZERO; this check
+                    # kept encoding it after the growth ruling and flagged all 21 CannonAP
+                    # pilot weapons (h = 0) as "unexpected" hits the runtime really deals.
+                    growth_num = 4000 + heaviness if heaviness <= 1000 else 3000 + heaviness
+                    if growth_num > 0:
+                        found[(pd.PCT_FOLDED, tag)] += 1
+                else:
+                    found[(pd.PCT_FOLDED, tag)] += 1
     return found
 
 

@@ -1,14 +1,28 @@
 # WEAPON 3-WAY SPLIT — warhead / projectile / effect layers (2026-08-02)
 
-> ⚠ **SUPERSEDED (W15/W17, 2026-08-15).** The grid is now `formula.DAMAGE_STEP` = **100**, the `%`-twin comes from `formula.percentage_twin()` (not `damage // 2000`), and `FirepowerMultiplier` is retired as a fine-tuning knob — `apply_balance` cannot write it and `decompose_dps` always solves at `fp = 1.0`. Read every "multiple of 2000" mention below as history.
-> The split itself is unaffected — it preserves `Damage` verbatim either way.
+> **Numeric evidence refresh — 2026-09-10, combined `839cdced4` plus reopened tooling.** `w24_multi_main_fed` = **290**. **2026-09-22 (DAWN lane-3): `w24_multi_main_fed` = 274** — one meter-fed multi-main folded; the rest of the drop is the W24 lanes landing. **2026-09-23b (post-#456/#457): = 269.** **2026-09-26 (master `afb66c9b5` resync): `w24_multi_main_fed` = 260.** **2026-09-27 (`devin/nova/w7-packs` post-merge): `w24_multi_main_fed` = 221** (ratchet direction — down). Measured on this combined tree; predicates and tolerances are unchanged. The flat-health denominator correction changes diagnostics, not live weapons or prices. Earlier branch-specific snapshots remain historical. **2026-09-27 (DAWN stack merge): `w24_multi_main_fed` = 256.** **2026-09-27b (#534+#516 combined tree): = 217.** **2026-09-27 (#534+#516 merged tree): `w24_multi_main_fed` = 217.**
+
+> **Current authority (2026-09-06):** [DESIGN §11b.1](../DESIGN.md#11b1-tightened-and-enforced-binding-maintainer-2026-09-06)
+> replaces this document's older two-warhead/four-inherit model. Use one main
+> warhead and the current three-layer policy, including its narrow mechanic/twin
+> exceptions and informational treatment of legitimately absent layers. The model,
+> migration batches and open proposals below are historical implementation context,
+> not instructions to restore two mains, the 2,000 grid or actor firepower tuning.
+> Current damage-grid and pricing authority is [FORMULA_V2.md](FORMULA_V2.md).
+> Use [TASK_INDEX.md](../TASK_INDEX.md) for current tools and gates; remeasure dated
+> counts. The historical conversion plans below do not authorize a new collapse.
+
+> ⚠ **SUPERSEDED (W15/W17, 2026-08-15).** The grid is now `formula.DAMAGE_STEP` = **10** (100 until the maintainer regridded it on 2026-09-11), the `%`-twin comes from `formula.percentage_twin()` (not `damage // 2000`), and `FirepowerMultiplier` is retired as a fine-tuning knob — `apply_balance` cannot write it and `decompose_dps` always solves at `fp = 1.0`. Read every "multiple of 2000" mention below as history.
+> Current collapse-value authority is DESIGN §11b.1: preserve total resolved main
+> output and check the shipped-release baseline. Verbatim applies when only one
+> resolved main exists; it is not a general rule for discarding stacked damage.
 
 _The repoint architecture. Maintainer decision 2026-08-02: "do the full split
 now." Supersedes the naive "reparent onto warhead-only templates" plan (which
 would orphan 392/437 override keys + strip FX). Companion to
 `WEAPON_TYPE_SYSTEM.md` (warhead layer) + `ARMOR_SYSTEM.md` (Versus law)._
 
-## The model — up to 4 inherits per weapon
+## Historical model — up to 4 inherits per weapon (superseded)
 
 The **2-inherit cap is on WARHEADS**, not total inherits. A weapon composes ONE
 of each layer (warhead may be 1–2):
@@ -333,10 +347,19 @@ then `HeatRayBeam1/2/3/4` were fully 3-way split with `^Warhead_Inferno_Heavy` +
 `tools/audit/phase_b_survey.py` for the live work-list; the next group is at the top of
 `docs/audit/latest/phase_b_survey.md`.
 
-**ENERGY LAST** (Laser/Railgun/Tesla/TeslaCharged — BLOCKED on the ExtraDamage decision below).
+**ENERGY LAST** (Laser/Railgun/Tesla/TeslaCharged — the ExtraDamage ruling below now applies: fold into the main warhead).
 Standard self-check after each: 0 orphaned old keys, 0 layer conflicts, 0 Damage changes, boots.
 
-## OPEN DESIGN #1 — ExtraDamage rework (maintainer wants suggestions first)
+## RESOLVED DESIGN #1 — ExtraDamage rework (ruled 2026-09-25)
+**Ruling: `ExtraDamage` no longer exists as a separate mechanic.** Once `SpreadDamage` was
+converted to `AreaDamage`, the maintainer ruled that every leftover `*ExtraDamage` node must be
+folded into the weapon's main damage warhead — its damage added to the main hit. The sole
+exception is the sniper `OpenToppedDamage` node: it damages *passengers/garrisoners* via
+`DamagePassengers` (never the target actor), so it cannot fold into `AreaDamage` without losing
+the mechanic; it stays as a distinct node (renamed off the `*ExtraDamage` pattern eventually).
+Also ruled: no flat damage warheads — every warhead carries a min/max Versus table in the
+2x–10x spread band. The options below are the pre-ruling design space, kept for history.
+
 ExtraDamage = the compensation energy weapons get for their very small spread (~100, single-target)
 vs AoE weapons' large spread (multi-target). The current old-template values are ad-hoc (Tesla Shield
 300/heavy-favoring; Laser Shield 100/else-1). Needs a principled scaling. **My 3 options:**

@@ -1,44 +1,166 @@
-# ai.yaml — Asian faction AI configuration
+# AI configuration owned by this ContentPack (RedAlert2Mod/AsianAlliance).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (10 entries for asianalliance) ---
-# 			asianalliance_asianorerefinery: 10
-# 			asianalliance_asianbarracks: 10
-# 			asianalliance_asianwarfactory: 10
-# 			asianalliance_asianairforcecommand: 10
-# 			asianalliance_militaryacademy: 1
-# 			asianalliance_asianbattlelab: 2
-# 			asianalliance_asianradar: 1
-# 			asianalliance_asianservicedepot: 1
-# 			asianalliance_advancedcommunicationcenter: 1
-# 			asianalliance_chaosstorminductor: 1
-#
-# --- UnitLimits (3 entries for asianalliance) ---
-# 			asianalliance_droneminer: 25
-# 			asianalliance_shinobi: 1
-# 			asianalliance_oiltruck: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	SquadManagerBotModuleCA@rush:
+		AirSquadTargetTypes:
+			asianalliance_pelican: Aircraft, Ground, Naval
+			asianalliance_phoenix: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@turtle:
+		AirSquadTargetTypes:
+			asianalliance_pelican: Aircraft, Ground, Naval
+			asianalliance_phoenix: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@tech:
+		AirSquadTargetTypes:
+			asianalliance_pelican: Aircraft, Ground, Naval
+			asianalliance_phoenix: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@expansion:
+		AirSquadTargetTypes:
+			asianalliance_pelican: Aircraft, Ground, Naval
+			asianalliance_phoenix: Aircraft, Building, Epic, Naval
+	SquadManagerBotModuleCA@steamroller:
+		AirSquadTargetTypes:
+			asianalliance_pelican: Aircraft, Ground, Naval
+			asianalliance_phoenix: Aircraft, Building, Epic, Naval
+	SendUnitToAttackBotModule:
+		ActorTypesAndAttackOptions:
+			asianalliance_shinobi:
+				AttackDesireOfEach: 100
+				AttackOrderName: Infiltrate
+				TryGetHealed: false
+	LoadCargoBotModule@Infantry:
+		TransportTypesAndLoadRequirement:
+			asianalliance_dragonfly: All
+			asianalliance_warturtle: All
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			asianalliance_orerefinery: 1500
+			asianalliance_barracks: 1500
+			asianalliance_warfactory: 1500
+			asianalliance_airforcecommand: 1500
+		BuildingDelays:
+			asianalliance_servicedepot: 4500
+			asianalliance_radar: 3000
+			asianalliance_battlelab: 6000
+			asianalliance_advancedcommunicationcenter: 9000
+			asianalliance_chaosstorminductor: 9000
+		BuildingLimits:
+			asianalliance_orerefinery: 10
+			asianalliance_barracks: 10
+			asianalliance_cgyard: 10
+			asianalliance_warfactory: 10
+			asianalliance_airforcecommand: 10
+			asianalliance_militaryacademy: 1
+			asianalliance_battlelab: 2
+			asianalliance_radar: 1
+			asianalliance_servicedepot: 1
+			asianalliance_advancedcommunicationcenter: 1
+			asianalliance_chaosstorminductor: 1
+		BuildingFractions:
+			asianalliance_constructionyard: 5
+			asianalliance_airforcecommand: 15
+			asianalliance_orerefinery: 15
+			asianalliance_barracks: 15
+			asianalliance_warfactory: 15
+			asianalliance_cgyard: 1
+			asianalliance_tankreactor: 1
+			asianalliance_radar: 1
+			asianalliance_battlelab: 5
+			asianalliance_militaryacademy: 1
+			asianalliance_servicedepot: 1
+			asianalliance_advancedcommunicationcenter: 1
+			asianalliance_chaosstorminductor: 1
+			asianalliance_cgpnch: 10
+			asianalliance_sentryflamer: 10
+			asianalliance_pulsar: 10
+			asianalliance_railtower: 10
+			asianalliance_hyperionprojector: 10
+			asianalliance_chaostower: 10
+			asianalliance_plasmacannon: 10
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			asianalliance_mobileconstructionvehicle: 5000
+		UnitIntervals:
+			asianalliance_mobileconstructionvehicle: 2500
+		UnitsToBuild:
+			asianalliance_ksub: 5
+			asianalliance_gunb: 10
+			asianalliance_lsub: 10
+			asianalliance_quasfrig: 10
+			asianalliance_karrier: 10
+			asianalliance_tsun: 10
+			asianalliance_droneminer: 10
+			asianalliance_alligator: 1
+			asianalliance_militia: 3
+			asianalliance_flametrooper: 3
+			asianalliance_tankkiller: 5
+			asianalliance_plasmatrooper: 5
+			asianalliance_fanatic: 3
+			asianalliance_japanesesamurai: 3
+			asianalliance_veteranarcher: 5
+			asianalliance_shinobi: 1
+			asianalliance_engineer: 1
+			asianalliance_asdf: 5
+			asianalliance_commando: 1
+			asianalliance_oiltruck: 1
+			asianalliance_dragonfly: 1
+			asianalliance_quasar: 3
+			asianalliance_lynxtank: 5
+			asianalliance_pulverizer: 3
+			asianalliance_pulverizermecha: 5
+			asianalliance_ptnk: 5
+			asianalliance_viper: 3
+			asianalliance_flametank: 3
+			asianalliance_howitzer: 3
+			asianalliance_railguntank: 3
+			asianalliance_heavyrailguntank: 5
+			asianalliance_pelican: 5
+			asianalliance_phoenix: 3
+			asianalliance_harbinger: 3
+			asianalliance_warturtle: 5
+			asianalliance_type89mlrs: 5
+			asianalliance_promotion_veteranarchers: 1
+			asianalliance_promotion_samurai: 1
+			asianalliance_promotion_asdf: 1
+			asianalliance_promotion_warturtle: 1
+			asianalliance_promotion_fanatic: 1
+			asianalliance_promotion_mlrs: 1
+			asianalliance_promotion_pulverizermecha: 1
+			asianalliance_promotion_heavyrailguntank: 1
+			asianalliance_promotion_flametank: 1
+			asianalliance_promotion_plasmatrooper: 1
+			asianalliance_promotion_plasmatank: 1
+			asianalliance_promotion_howitzer: 1
+			asianalliance_upgrade_tsunami: 1
+			asianalliance_upgrade_massparadrop: 1
+			asianalliance_upgrade_clusterbombs: 1
+			asianalliance_upgrade_chaosbombs: 1
+			asianalliance_doctrine_modernizedinfantryequipment: 1
+			asianalliance_doctrine_heavypulverizerweapons: 1
+			asianalliance_doctrine_asianphalanx: 1
+			asianalliance_upgrade_dragonfire: 1
+			asianalliance_upgrade_banzaimode: 1
+			asianalliance_upgrade_wayofthedragon: 1
+			asianalliance_upgrade_asiandiplomacy: 1
+		UnitLimits:
+			asianalliance_ksub: 5
+			asianalliance_gunb: 10
+			asianalliance_lsub: 10
+			asianalliance_quasfrig: 10
+			asianalliance_karrier: 10
+			asianalliance_tsun: 10
+			asianalliance_droneminer: 25
+			asianalliance_shinobi: 1
+			asianalliance_oiltruck: 1
+	SquadManagerBotModuleCA@classic:
+		AirSquadTargetTypes:
+			asianalliance_pelican: Aircraft, Ground, Naval
+			asianalliance_phoenix: Aircraft, Building, Epic, Naval

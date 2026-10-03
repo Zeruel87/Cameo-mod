@@ -30,8 +30,8 @@ class UpgradeDirectionContractTests(unittest.TestCase):
                     recipients[actor] = int(trait.get("Modifier"))
 
         self.assertEqual({
-            "nodlasercorvette": 115,
             "td_nod_lasercommando": 115,
+            "td_nod_lasercorvette": 115,
             "td_nod_lasertrooper": 115,
             "td_nod_laserturret": 115,
             "td_nod_lighttankmkii": 115,
@@ -43,16 +43,27 @@ class UpgradeDirectionContractTests(unittest.TestCase):
             load_intent(self.model.root)["td_nod_upgrade_elitecapacitors"]["drawbacks"],
         )
 
-    def test_cybernetic_damage_amplification_is_an_authored_tradeoff(self):
+    def test_cybernetic_upgrades_are_armour_not_hidden_multipliers(self):
+        # Maintainer ruling 2026-09-26: the 200% DamageMultiplier drawback is gone (W26/R1);
+        # Upgrade 1 is permanent Medium armour, Upgrade 2 a COMPOSITE plating bar.
         intent = load_intent(self.model.root)
-        self.assertEqual(
-            "damagemultiplier",
-            intent["td_nod_upgrade_cyberneticmodifications"]["drawbacks"],
-        )
+        self.assertNotIn(
+            "drawbacks", intent["td_nod_upgrade_cyberneticmodifications"])
         template = self.rules.resolve("^CyberneticModifications")
-        damage = template.child(
-            "DamageMultiplier@td_nod_upgrade_cyberneticmodifications")
-        self.assertEqual("200", damage.get("Modifier"))
+        keys = [c.key for c in template.children]
+        self.assertNotIn(
+            "DamageMultiplier@td_nod_upgrade_cyberneticmodifications", keys)
+        self.assertNotIn("Shielded", keys)
+        medium = template.child("Armor@td_nod_upgrade_cyberneticmodifications")
+        self.assertEqual("Medium", medium.get("Type"))
+        self.assertEqual("td_nod_upgrade_cyberneticmodifications && !shielded",
+                         medium.get("RequiresCondition"))
+        plating = template.child("ArmorPlating@td_nod_upgrade_cyberneticarmor")
+        self.assertEqual("50", plating.get("MaxPercentageStrength"))
+        composite = template.child("Armor@td_nod_upgrade_cyberneticarmor")
+        self.assertEqual("COMPOSITE", composite.get("Type"))
+        self.assertEqual("cyberneticarmor_up && !shielded",
+                         composite.get("RequiresCondition"))
 
     def test_reviewed_multi_payload_and_armor_tradeoffs_are_declared(self):
         intent = load_intent(self.model.root)

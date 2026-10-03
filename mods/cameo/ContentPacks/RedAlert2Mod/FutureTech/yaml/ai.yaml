@@ -1,37 +1,114 @@
-# ai.yaml — Future Tech faction AI configuration
+# AI configuration owned by this ContentPack (RedAlert2Mod/FutureTech).
 #
-# ARCHITECTURE NOTE
-# =================
-# All AI bot modules (BaseBuilderBotModuleCA, UnitBuilderBotModuleCA,
-# SquadManagerBotModuleCA, SupportPowerBotASModule, etc.) are defined
-# as single trait instances on the Player: actor in the global
-# mods/cameo/ai/ai.yaml. Their sub-sections (BuildingLimits,
-# BuildingFractions, UnitsToBuild, UnitLimits) contain ALL faction
-# data in single dictionaries that CANNOT be split across files —
-# OpenRA's YAML merge replaces trait instances with the same @name,
-# it does not deep-merge their sub-sections.
+# Why this file exists: a faction's AI must ship inside its own pack, so that a game which does
+# not load this faction carries no AI rows naming its actors (docs/MIGRATION.md, "Why
+# ContentPacks"). Rows here are MERGED into the bot modules that mods/cameo/ai/ai.yaml declares:
+# a pack can ADD dictionary rows (they union), but it can never override or remove a key the
+# central file sets (docs/design/AI_ARCHITECTURE.md §1.2). Lists of actor ids cannot be
+# appended from a pack and stay central until §2.8 lands.
 #
-# This file is loaded as a Rules: entry but contains no traits —
-# it is a placeholder ready for future per-faction bot module
-# splitting (see ROADMAP Phase E backlog).
-#
-# REFERENCE DATA (from global ai.yaml)
-# ====================================
-#
-# --- BuildingLimits (8 entries for futuretech) ---
-# 			futuretech_refinery: 10
-# 			futuretech_troopgate: 10
-# 			futuretech_warpgate: 10
-# 			futuretech_launchpad: 10
-# 			futuretech_robotcontrolcenter: 1
-# 			futuretech_transmissioncenter: 1
-# 			futuretech_battlelab: 2
-# 			futuretech_hypercore: 1
+# Moved from the central file by tools/packs/split_ai_rows.py. Edit rows HERE, never there.
 
-# Player: actor — no traits defined yet.
-# When the engine supports per-faction bot conditions, move the
-# faction-specific BuildingLimits/BuildingFractions/UnitsToBuild
-# entries here as a BaseBuilderBotModuleCA@<faction> /
-# UnitBuilderBotModuleCA@<faction> trait with RequiresCondition.
 Player:
-
+	SendUnitToAttackBotModule:
+		ActorTypesAndAttackOptions:
+			futuretech_spyfutu:
+				AttackDesireOfEach: 100
+				TryDisguise: true
+				AttackOrderName: Infiltrate
+				AttackRequires: Disguised
+				TryGetHealed: false
+	SendUnitToAttackBotModule@chrono:
+		ActorTypesAndAttackOptions:
+			futuretech_phalanxwip:
+				AttackDesireOfEach: 100
+				MoveToOrderName: PortableChronoTeleport
+				AttackOrderName: AssaultMove
+				MoveBackOrderName: PortableChronoTeleport
+	LoadCargoBotModule@Infantry:
+		TransportTypesAndLoadRequirement:
+			futuretech_salamanderifv: All
+			futuretech_multiturretsystem: All
+	BaseBuilderBotModuleCA@generic:
+		BuildingIntervals:
+			futuretech_refinery: 1500
+			futuretech_troopgate: 1500
+			futuretech_warpgate: 1500
+			futuretech_launchpad: 1500
+		BuildingDelays:
+			futuretech_transmissioncenter: 3000
+			futuretech_battlelab: 6000
+		BuildingLimits:
+			futuretech_refinery: 10
+			futuretech_troopgate: 10
+			futuretech_warpgate: 10
+			futuretech_launchpad: 10
+			futuretech_robotcontrolcenter: 1
+			futuretech_transmissioncenter: 1
+			futuretech_battlelab: 2
+			futuretech_hypercore: 1
+		BuildingFractions:
+			futuretech_constructionyard: 5
+			futuretech_refinery: 15
+			futuretech_troopgate: 15
+			futuretech_warpgate: 15
+			futuretech_launchpad: 15
+			futuretech_robotcontrolcenter: 1
+			futuretech_transmissioncenter: 1
+			futuretech_battlelab: 5
+			futuretech_hypercore: 1
+			futuretech_frostbiteturret: 20
+			futuretech_multiturretsystem: 40
+	UnitBuilderBotModuleCA@generic:
+		UnitDelays:
+			futuretech_mobileconstructionvehicle: 5000
+		UnitIntervals:
+			futuretech_mobileconstructionvehicle: 2500
+		UnitsToBuild:
+			futuretech_prospector: 10
+			futuretech_prospectormk2: 10
+			futuretech_cannondroid: 1
+			futuretech_missiledroid: 1
+			futuretech_shotgundroid: 1
+			futuretech_enforcer: 1
+			futuretech_javelinsoldier: 1
+			futuretech_scoutdroid: 1
+			futuretech_spyfutu: 1
+			futuretech_cryolegionnaire: 1
+			futuretech_blackwidow: 3
+			futuretech_engineer: 1
+			futuretech_repairdroid: 1
+			futuretech_gunstrider: 1
+			futuretech_plasmastrider: 1
+			futuretech_salamanderifv: 1
+			futuretech_guardiantank: 1
+			futuretech_robottank: 1
+			futuretech_riptideacv: 1
+			futuretech_phalanxwip: 1
+			futuretech_beehivedronecarrier: 1
+			futuretech_athenacannon: 1
+			futuretech_energizer: 1
+			futuretech_futuretank: 1
+			futuretech_oriontank: 1
+			futuretech_twister: 1
+			futuretech_cryocopter: 1
+			futuretech_harbingergunship: 1
+			futuretech_doctrine_equalizerx1: 1
+			futuretech_doctrine_equalizerx2: 1
+			futuretech_doctrine_equalizerx3: 1
+			futuretech_promotion_shotgundroid: 1
+			futuretech_promotion_cannondroid: 1
+			futuretech_promotion_missiledroid: 1
+			futuretech_promotion_cryolegionnaire: 1
+			futuretech_promotion_salamanderifv: 1
+			futuretech_promotion_robottank: 1
+			futuretech_promotion_oriontank: 1
+			futuretech_promotion_futuretank: 1
+			futuretech_promotion_prospectormk2: 1
+			futuretech_promotion_blackwidow: 1
+			futuretech_promotion_cryocopter: 1
+			futuretech_promotion_harbingergunship: 1
+		UnitLimits:
+			futuretech_prospector: 20
+			futuretech_prospectormk2: 20
+			futuretech_spyfutu: 1

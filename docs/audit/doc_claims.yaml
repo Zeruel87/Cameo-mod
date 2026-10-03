@@ -28,11 +28,50 @@
 #    how the `Shield = top + floor` duplication survived for weeks.
 
 claims:
+  - id: ai_contract_distinct_module_types
+    value: 68
+    tolerance: 0
+    what: Distinct active Player/World decision-module and coordination/provider types in AI_ARCHITECTURE section 10.2; conditional instances count as loaded, not enabled.
+    docs: [docs/design/AI_ARCHITECTURE.md]
+    measure: |
+      import sys, pathlib
+      sys.path.insert(0, 'tools/audit')
+      from miniyaml import Ruleset
+      rs = Ruleset(pathlib.Path('.').resolve())
+      included = lambda key: 'BotModule' in key.split('@')[0] or key.split('@')[0] in {'SupportPowerBotASModule', 'ExternalBotOrdersManager', 'BotLimits', 'BotGlobalUnitBudget'}
+      print(len({n.key.split('@')[0] for actor in ('player', 'world') for n in rs.resolve(actor).children if included(n.key)}))
+
+  - id: ai_contract_player_module_instances
+    value: 93
+    tolerance: 0
+    what: Active resolved Player instances in the section 10.2 module/provider scope, including all ten conditional BotLimits instances.
+    docs: [docs/design/AI_ARCHITECTURE.md]
+    measure: |
+      import sys, pathlib
+      sys.path.insert(0, 'tools/audit')
+      from miniyaml import Ruleset
+      rs = Ruleset(pathlib.Path('.').resolve())
+      included = lambda key: 'BotModule' in key.split('@')[0] or key.split('@')[0] in {'SupportPowerBotASModule', 'ExternalBotOrdersManager', 'BotLimits', 'BotGlobalUnitBudget'}
+      print(sum(included(n.key) for n in rs.resolve('player').children))
+
+  - id: ai_contract_world_module_instances
+    value: 1
+    tolerance: 0
+    what: Active resolved World instances in the same section 10.2 module/provider scope; currently the composition singleton.
+    docs: [docs/design/AI_ARCHITECTURE.md]
+    measure: |
+      import sys, pathlib
+      sys.path.insert(0, 'tools/audit')
+      from miniyaml import Ruleset
+      rs = Ruleset(pathlib.Path('.').resolve())
+      included = lambda key: 'BotModule' in key.split('@')[0] or key.split('@')[0] in {'SupportPowerBotASModule', 'ExternalBotOrdersManager', 'BotLimits', 'BotGlobalUnitBudget'}
+      print(sum(included(n.key) for n in rs.resolve('world').children))
+
   - id: shield_versus_mean
-    value: 189.088
+    value: 184.71
     tolerance: 0.01
     what: Mean Versus-vs-Shield across all main flat warheads. Drives shield_hp_factor.
-    docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md, docs/design/ARMOR_LAYERS.md]
+    docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md]
     measure: |
       import sys, pathlib
       sys.path[:0] = ['tools/audit', 'tools/balance']
@@ -40,7 +79,7 @@ claims:
       print(tm.pseudo_armor_mean('Shield'))
 
   - id: shield_hp_factor
-    value: 0.528855
+    value: 0.541389
     tolerance: 0.01
     what: What one shield point is worth as HP (100 / mean Versus vs Shield).
     docs: [docs/DESIGN.md, docs/design/ARMOR_LAYERS.md]
@@ -51,7 +90,7 @@ claims:
       print(tm.shield_hp_factor())
 
   - id: shield_damage_share
-    value: 0.01432
+    value: 0.0160276
     tolerance: 0.05
     what: >
       Fraction of roster raw damage landing on the Shield row at BASELINE. The claim that
@@ -135,7 +174,7 @@ claims:
       print(n)
 
   - id: live_damage_multipliers
-    value: 354
+    value: 326
     tolerance: 0
     what: >
       DamageMultiplier declarations in LIVE files (mod.yaml's Rules list). The tree holds 683;
@@ -158,11 +197,27 @@ claims:
       print(n)
 
   - id: multi_main_fired_weapons
-    value: 243
+    value: 1
     tolerance: 0
     what: >
       Direct actor-armament weapons carrying MORE THAN ONE damage main under the unified W24
       predicate — W24's scope, and the reason pricing must wait for the weapon rebuild.
+      Updated 2026-09-06: intentional_composites exemption repealed; all multi-main weapons
+      now count as debt (was 192 with exemption filter, 856 without).
+      Updated 2026-09-22: DAWN lane-3 folded the last 27 non-RA weapons (outpost2 x10,
+      D2k packs x8, TiberianDawn x3, StarCraft x2, TiberianSun x4). The 27 remaining
+      are Nova's RA-family lane (26) + DRPlasmaTankWeapon (Claude) + the documented
+      tesla_bomb verbatim exception.
+      Updated 2026-09-23: NOVA batch-1 (#439/#447) landed — JapanMaidenBowEnergized +
+      teslayak tesla_bomb folded, 27→25. NOVA batch-2 PR #452 covers the 22 RA2Mod
+      weapons; post-#452 residual is DRPlasmaTankWeapon (Claude) alone at 1.
+      2026-09-23 (maintainer): that 1 is DARK REIGN content and is PARKED, not debt. Dark
+      Reign's rules/weapons/sequences are commented out of mod.yaml; the weapon survives only
+      in the central weapons.yaml, listed by ^IFVConditions `Armament@plasma`
+      (RequiresCondition: ifv-plasma), and `ifv-plasma` is granted nowhere - the whole
+      PassengerConditions block is commented out. It cannot fire on any of the seven IFVs
+      that inherit the template. "This is something for way later": no fold, no exemption
+      (exemptions stay retired); the count stays 1 until Dark Reign is mounted.
     docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
     measure: |
       import sys, pathlib
@@ -173,11 +228,14 @@ claims:
       print(inventory(rs)['counts']['stacked_main_direct_actor_armament'])
 
   - id: percentage_denominator_unset
-    value: 0
+    value: 423
     tolerance: 0
     what: >
-      W18 has NOT landed. Any nonzero here means the basis-point rebase shipped and every
-      pct_absolute / dps_floor figure in the docs is stale.
+      Raw authored PercentageDenominator occurrences in active weapon files, despite
+      the historical claim id: this is not an unset or resolved-application count.
+      The 2026-09-05 snapshot measured 183 after origin/master merge 4fd9937f3.
+      The 2026-09-10 Freedom elite explicit companion adds one occurrence, giving 184;
+      it preserves that route's units and does not introduce a global unit rebase.
     docs: [docs/design/ARMOR_LAYERS.md, docs/design/BALANCE_PROGRAM_PLAN.md]
     measure: |
       import pathlib, sys
@@ -191,7 +249,7 @@ claims:
       print(n)
 
   - id: unmigrated_scout_damage_multiplier
-    value: 15
+    value: 0
     tolerance: 0
     what: >
       Scouts still resolving `DamageMultiplier@ScoutInfantryBuff: 50` — i.e. taking HALF damage,
@@ -216,12 +274,12 @@ claims:
       print(n)
 
   - id: meters_filling_before_death
-    value: 137
+    value: 329
     tolerance: 0
     what: >
       Weapon/meter bindings on FIRED weapons whose meter reaches FULL effect while the target
       still has 25% HP left — the maintainer's condition for pricing a meter at all ("it is
-      able to completely freeze a unit BEFORE it dies"). **118 of 549.**
+      able to completely freeze a unit BEFORE it dies"). **322 bindings in the combined tree (2026-09-23, post-#438), after excluding concrete/percentage/nonhealth damage from the nominal health denominator. 321 was the 2026-09-22 snapshot, 310 the 2026-09-10 one.**
       ⛔ THE EARLIER VALUES (1, 124, 223, 534) ARE ALL VOID, for TWO different reasons, and the
       second one is the important one.
       (a) ARITHMETIC. `PhysicalState.ApplyChange` health-scales through `ScaleChangeToHealth`,
@@ -257,11 +315,13 @@ claims:
                 if r['ratio'] is not None and r['ratio'] <= psp.FULL_EFFECT_BAR))
 
   - id: corrosion_meter_actors
-    value: 785
+    value: 856
     tolerance: 0
     what: >
-      Actors carrying the `Corrosion` meter — 48.7% of the 1609 priced (Health + Valued)
-      actors, against `Temperature`'s 1592 (98.6%). This asymmetry is an EXPOSURE term in E2
+      Actors carrying the `Corrosion` meter — 839 actors (2026-09-23, post-#443/#446 wave;
+      was 840 — the wave removed one corrosion-bearing actor), ~52.1% of the 1609 priced
+      (Health + Valued) actors, against `Temperature`'s 1592 (98.6%). This asymmetry is an
+      EXPOSURE term in E2
       pricing: a corrosion weapon does nothing at all to 55% of the roster, so it cannot earn
       the same status surcharge as a flame weapon even when its meter fills faster. Nothing in
       the price model saw this before 2026-08-18.
@@ -283,7 +343,7 @@ claims:
                   break
       print(n)
   - id: w24_multi_main_fed
-    value: 380
+    value: 217
     tolerance: 0
     what: >
       RATCHET — damage-scaled metered weapons whose meter is fed by LESS than 100% of their
@@ -293,6 +353,11 @@ claims:
       ⛔ THIS NUMBER MUST ONLY EVER GO DOWN. It is the W24 burn-down: splitting a weapon so a
       single main warhead carries both the damage and the meter removes it from the count.
       A rise means a new multi-main weapon shipped with a meter on only part of its damage.
+      2026-09-05: measured 429 after origin/master merge 4fd9937f3 — the merge brought in
+      new weapons from master, resetting the ratchet baseline. Previous value 376.
+      2026-09-06: measured 455 after intentional_composites exemption repeal — the reviewed
+      predicate now returns False for all weapons, so previously-exempt composites are counted.
+      This is a one-time baseline reset, not a regression.
       Ordering, from `BALANCE_PROGRAM_PLAN` §0a and restated by the maintainer 2026-08-19
       (*"that's exactly why I said you should finish the 3 way weapon split first!"*): weapon
       STRUCTURE before pricing. Pricing a weapon whose structure is wrong measures the wrong
@@ -314,7 +379,7 @@ claims:
               n += 1
       print(n)
   - id: physical_state_fired_weapons
-    value: 460
+    value: 549
     tolerance: 0
     what: >
       FIRED weapons that deliver a PhysicalState meter (Temperature or Corrosion) and are priced
@@ -384,7 +449,7 @@ claims:
       print(len(names) - len(set(rows)))
 
   - id: plating_families
-    value: 46
+    value: 52
     tolerance: 0
     what: >
       Families the generator emits a plating row for. The row count of the matrix in
@@ -413,7 +478,7 @@ claims:
                 if isinstance(v, dict) and 'spec' in v and v.get('signed_off')))
 
   - id: warhead_family_reach
-    value: 1245
+    value: 1509
     tolerance: 0
     what: >
       Fired weapons whose inherit chain reaches a `^Warhead_*` family — the W23/W24 burn-up.
@@ -451,11 +516,13 @@ claims:
                 and any(a.startswith('^Warhead_') for a in ancestors(w))))
 
   - id: unconverted_template_inheritors
-    value: 1162
+    value: 402
     tolerance: 0
     what: >
       Direct inheritors of the 47 remaining legacy weapon templates (W23's scope).
       ⛔ RATCHET — this may only go DOWN. Was 1343 when BALANCE_PROGRAM_PLAN §0a was written.
+      2026-09-05: measured 1600 after origin/master merge 4fd9937f3 — the merge brought in
+      new weapons from master, resetting the ratchet baseline. Previous value 1111.
     docs: [docs/design/BALANCE_PROGRAM_PLAN.md, docs/HANDOFF.md]
     measure: |
       import re, subprocess, sys
@@ -473,7 +540,695 @@ claims:
     docs: [docs/HANDOFF.md, docs/design/BALANCE_PIPELINE.md]
     measure: |
       import re, subprocess, sys
-      out = subprocess.run([sys.executable, 'tools/audit/audit_balance_drift.py'],
-                           capture_output=True, text=True).stdout
-      m = re.search(r'\*\*(\d+) ledger\(s\) drifted\*\*', out)
-      print(m.group(1) if m else 0)
+      result = subprocess.run([sys.executable, 'tools/audit/audit_balance_drift.py'],
+                              capture_output=True, text=True, timeout=540)
+      drift = re.findall(r'^\*\*(\d+) ledger\(s\) drifted\*\*', result.stdout, re.MULTILINE)
+      clean = re.findall(r'^_clean_ .* (\d+) ledgers match the live rules exactly\.$', result.stdout, re.MULTILINE)
+      if result.returncode == 0 and len(clean) == 1 and int(clean[0]) > 0 and not drift:
+          print(0)
+      elif result.returncode == 1 and len(drift) == 1 and int(drift[0]) > 0 and not clean:
+          print(int(drift[0]))
+      else:
+          raise SystemExit(f'balance drift measurement unavailable: unexpected output/exit {result.returncode}')
+
+  - id: armament_multi_role_actors
+    value: 104
+    tolerance: 0
+    what: >
+      Priced actors whose UNCONDITIONAL armaments span more than one targeting role (ground / air /
+      both / special) - the full scope of the per-armament pairing ruling (maintainer 2026-09-13):
+      every unit whose one folded w_range/w_dps describes two different weapons.
+      NOT to be confused with the 47 that are STILL multi-role after
+      `reference_distribution.baseline_armaments` has run - that helper already drops 63 of them by
+      matching `@AA`/`_AA` in the slot or weapon NAME. 104 is the population, 41 is what survives
+      the existing name-based guard, and an earlier draft of ARMAMENT_PAIRING.md quoted 47 as the
+      scope, understating it by more than half.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib, sys
+      root = pathlib.Path('.').resolve()
+      sys.path.insert(0, 'tools/audit'); sys.path.insert(0, 'tools/balance')
+      import miniyaml, armament_roles as ar, reference_distribution as rd
+      rules = miniyaml.Ruleset(root)
+      total = 0
+      for path in sorted((root / 'docs' / 'balance').glob('*.json')):
+          if path.name == 'class_anchors.json':
+              continue
+          try:
+              doc = json.loads(path.read_text(encoding='utf-8'))
+          except Exception:
+              continue
+          for section in (doc.get('sections') or {}).values():
+              if not isinstance(section, dict):
+                  continue
+              for record in section.values():
+                  if not isinstance(record, dict):
+                      continue
+                  views = ar.cameo_views(record, rules)
+                  if views and len(ar.strongest_by_role(views)) > 1:
+                      total += 1
+      print(total)
+
+  - id: armament_air_role_invisible_to_the_name_test
+    value: 41
+    tolerance: 0
+    what: >
+      Priced armaments whose weapon genuinely targets AIR ONLY but whose slot and weapon names do
+      not match `reference_distribution.AA_SLOT` (`@AA` / `_AA`). This is why the pairing key had
+      to become the targeting envelope rather than the spelling: a name blocklist cannot see
+      RA2Patriot, RA2TURRETFLAKAA, AsianPhotonCannon, PortableFlak or BallistaSingleShotAir.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib, sys
+      root = pathlib.Path('.').resolve()
+      sys.path.insert(0, 'tools/audit'); sys.path.insert(0, 'tools/balance')
+      import miniyaml, armament_roles as ar, reference_distribution as rd
+      rules = miniyaml.Ruleset(root)
+      total = 0
+      for path in sorted((root / 'docs' / 'balance').glob('*.json')):
+          if path.name == 'class_anchors.json':
+              continue
+          try:
+              doc = json.loads(path.read_text(encoding='utf-8'))
+          except Exception:
+              continue
+          for section in (doc.get('sections') or {}).values():
+              if not isinstance(section, dict):
+                  continue
+              for record in section.values():
+                  if not isinstance(record, dict):
+                      continue
+                  for arm in (record.get('armaments') or []):
+                      if not arm.get('pricing'):
+                          continue
+                      role, _unknown = ar.cameo_weapon_role(rules, arm.get('weapon'))
+                      if role == ar.ROLE_AIR and not rd.is_anti_air_armament(arm):
+                          total += 1
+      print(total)
+
+  - id: dta_projectile_roles_resolved
+    value: 60
+    tolerance: 0
+    what: >
+      Projectiles cited by DTA Enhanced corpus rows whose AA/AG domain flags resolve out of the
+      byte-pinned Rules.ini + Enhance.ini. Every cited projectile must resolve: an unresolved one
+      would silently abstain from per-armament pairing and hand the map a folded number again.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib
+      doc = json.loads((pathlib.Path('docs/reference/ini_projectile_role_evidence.json')
+                        ).read_text(encoding='utf-8'))
+      entry = {e['source']: e for e in doc['sources']}['DTA Enhanced']
+      if entry['undeclared']:
+          raise SystemExit('undeclared projectiles: %s' % entry['undeclared'])
+      print(entry['resolved'])
+
+  - id: dta_elite_weapons_reachable
+    value: 131
+    tolerance: 0
+    what: >
+      DTA Enhanced units in the corpus whose `Elite=` weapon is actually reachable (`Trainable=yes`
+      after the Enhance overlay). The TS engine gives a unit THREE weapon slots - Primary,
+      Secondary and Elite - and ini_corpus.json carries only the first two, so 171 DTA `Elite=`
+      declarations reached nothing until 2026-09-13. DTA Classic's count is 0 by contrast, because
+      the overlay is what sets Trainable=yes; a change in either direction means the Classic /
+      Enhanced distinction has been lost.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib
+      doc = json.loads(pathlib.Path('docs/reference/ini_elite_weapon_evidence.json')
+                       .read_text(encoding='utf-8'))
+      entries = {e['source']: e for e in doc['sources']}
+      if entries['DTA Classic']['reachable'] != 0:
+          raise SystemExit('DTA Classic must have no reachable elite weapon')
+      print(entries['DTA Enhanced']['reachable'])
+
+  - id: armament_unproven_peer_votes
+    value: 0
+    tolerance: 0
+    what: >
+      Pairs in armament_pairing.json whose PEER weapon could not state a targeting domain. The
+      maintainer ruled on 2026-09-13 that "ambiguous role or identity must abstain", after Astra
+      showed the old max-damage fallback promoting secondary AA guns (FlakTrackAAGun,
+      RA1RedEyeAA) to ground main-gun evidence. This must stay 0: any non-zero value means an
+      unproven weapon is voting again, which is the one pairing the ruling forbids.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib
+      doc = json.loads(pathlib.Path('docs/balance/derived/armament_pairing.json')
+                       .read_text(encoding='utf-8'))
+      print(sum(1 for e in doc['actors'].values()
+                for s in e['sources'].values()
+                for p in s.get('pairs', ())
+                if p['peer'].get('role') is None))
+
+  - id: armament_reference_tier_original
+    value: 141
+    tolerance: 0
+    what: >
+      Actors that reference a peer's BASE weapon because an original-shipping mod matched them by
+      name; the remaining 173 of 314 are EXPANDED and reference the elite/upgraded replacement
+      instead (maintainer, 2026-09-13). The split is what keeps a replacement from voting beside
+      the weapon it replaces, so a move here means the original/expanded boundary shifted and every
+      DTA elite weapon changed hands.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib
+      doc = json.loads(pathlib.Path('docs/balance/derived/armament_pairing.json')
+                       .read_text(encoding='utf-8'))
+      print(doc['stats']['actors_tier_original'])
+
+  - id: armament_pairing_input_fingerprints
+    value: 514
+    tolerance: 0
+    what: >
+      Complete input closure whose sha256 armament_pairing.json records so a consumer can refuse a
+      STALE artifact: (⚠ 472 -> 476 on 2026-09-14. The four new inputs arrived with #388/#390's
+      restored INI armament votes, which peer_corpus.input_paths now pins; the claim was simply
+      not bumped with them. Verified NOT to come from the charge or dual-armament work by
+      measuring input_fingerprints with those changes stashed - it already read 476.) the INI corpus and extracted evidence, selected OpenRA peer corpora, Cameo
+      balance ledgers, active manifest/rules/weapons, and every executed local tool dependency.
+      Repository text hashes canonicalise LF/CRLF while raw evidence pins remain separately
+      enforced. Astra's
+      PR #375 follow-up found that hashing only three derived files left their upstream inputs
+      unguarded. build_reference_report.pairing_document() recomputes the exact full set and raises
+      on a missing, extra, changed, malformed, empty, or unsupported artifact. A drop here means the
+      input closure changed and this claim must be re-measured.
+    docs: [docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, pathlib
+      doc = json.loads(pathlib.Path('docs/balance/derived/armament_pairing.json')
+                       .read_text(encoding='utf-8'))
+      inputs = doc.get('inputs') or {}
+      if not all(v and len(v) == 64 for v in inputs.values()):
+          raise SystemExit('an input fingerprint is missing or not a sha256')
+      print(len(inputs))
+
+  - id: shared_attack_cycle_actors
+    value: 15
+    tolerance: 0
+    what: >
+      As-built multi-weapon actors in the classic four whose armaments all share ONE attack cycle
+      (`ReloadDelay + sum(BurstDelays)` identical between weapons) - DESIGN 3a.6, maintainer
+      2026-09-14: *"The cycle time is the same for both! ... then to calculate the total damage you
+      just need add the individual DPS from each weapon"*. 15 of 23 comply; the Mammoth runs 80/80,
+      the Sheridan 64/64/64 with a Burst-4 chaingun on the same cycle as its cannon, the Battle
+      Tank 72/72. The 8 that do not are naval depth-charge carriers, the two bombers, the Humvee
+      Mk II and the Laser Corvette. ⛔ This is a RATCHET in the RISING direction: it may go UP as
+      actors are brought onto one cycle, never down - a drop means a weapon's cadence was changed
+      without its siblings and the actor's damage can no longer be summed.
+    docs: [docs/DESIGN.md]
+    measure: |
+      import json, pathlib, sys
+      sys.path.insert(0, 'tools/balance'); sys.path.insert(0, 'tools/audit')
+      import build_reference_report as br
+      doc = json.loads(pathlib.Path('docs/balance/derived/armament_pairing.json')
+                       .read_text(encoding='utf-8'))
+      classic = ('td_gdi_', 'td_nod_', 'ra1_allies_', 'ra1_soviets_')
+      same = 0
+      for actor, entry in doc['actors'].items():
+          if not actor.startswith(classic):
+              continue
+          built = br.as_built_weapons(actor)
+          if not built:
+              continue
+          arms = [a for a in entry['armaments'] if a.get('weapon') in built]
+          if len(arms) < 2:
+              continue
+          cycles = {a.get('cycle') for a in arms}
+          if len(cycles) == 1 and None not in cycles:
+              same += 1
+      print(same)
+
+  - id: mammoth_armament_voters
+    value: 3
+    tolerance: 0
+    what: >
+      Sources voting on EACH of `td_gdi_mammothtank`'s two as-built armaments, in
+      `armament_pairing.json`. ⛔ THIS CLAIM EXISTS BECAUSE THE NUMBER WAS 2 AND THE MAINTAINER
+      CAUGHT IT: *"somehow removes the DTA from voting on the weapon? This is unacceptable!
+      Before all 3 weapons were voting from the reference but it lost the DTA one so this is a
+      true regression!"* DTA Enhanced declares `Burst: 2` on both `120mm` and `MammothTusk`, and
+      the consumer gate in `armament_roles.ini_views` refused any armament whose burst was not 1,
+      so the only source that makes the CANNON the stronger gun fell silent and the cannon-missile
+      spread lost its dissenting voter. The burst fold (DESIGN 3a, maintainer ruling "if there is
+      no burst delay you can use the minimal allowed value of 1 ticks between the bursts")
+      restores it. A drop back to 2 means a gate has closed on a readable declaration again.
+    docs: [docs/DESIGN.md]
+    measure: |
+      import json, pathlib, collections
+      doc = json.loads(pathlib.Path('docs/balance/derived/armament_pairing.json')
+                       .read_text(encoding='utf-8'))
+      entry = doc['actors']['td_gdi_mammothtank']
+      per = collections.Counter()
+      for info in entry['sources'].values():
+          for pair in info.get('pairs', ()):
+              per[pair['cameo']['weapon']] += 1
+      if len(per) != 2:
+          raise SystemExit('expected exactly two paired armaments, got %r' % dict(per))
+      print(min(per.values()))
+
+  - id: ini_armament_views_eligible
+    value: 1388
+    tolerance: 0
+    what: >
+      INI armament views that pass `armament_roles.ini_views`' eligibility gate over the frozen
+      `ini_corpus.json`. It was **1144** before the burst fold; the 244 admitted are every one of
+      them DTA, the only source whose corpus rows carry an evidence verdict of their own, and they
+      had been refused as `burst_unfolded`. ⚠ ONE TICK IS THE MINIMUM the engine allows, so a
+      folded cycle is the SHORTEST the declaration supports and its rate is an UPPER bound - the
+      honest direction for a floor assumption. ⛔ The fold is applied where the declaration is
+      READ, not in the corpus: regenerating `ini_corpus.json` today drops the dummy-primary
+      promotion on 63 rows (see `extract_ini_units.EXPLICIT_DUMMY_WEAPONS`), so the corpus stays
+      frozen until that is ruled on separately.
+    docs: [docs/DESIGN.md]
+    measure: |
+      import json, pathlib, sys, collections
+      sys.path.insert(0, 'tools/balance'); sys.path.insert(0, 'tools/reference')
+      sys.path.insert(0, 'tools/audit')
+      import armament_roles as ar
+      import extract_ini_projectile_roles as ipr
+      import extract_ini_armament_roles as iar
+      import extract_ini_elite_weapons as ielite
+      root = pathlib.Path('.').resolve()
+      roles = ipr.load(root); roles.update(iar.load(root)); elite = ielite.load(root)
+      n = 0
+      for line in (root / 'docs/reference/ini_corpus.json').read_text(
+              encoding='utf-8').splitlines():
+          if not line.strip():
+              continue
+          for view in ar.ini_views(json.loads(line), roles, elite):
+              n += view['eligible']
+      print(n)
+
+  - id: aa_split_pairs_compliant
+    value: 39
+    tolerance: 0
+    what: >
+      `_AA`/ground weapon pairs that obey the AA-split law (DESIGN 3a.1, maintainer 2026-09-14):
+      a weapon split into ground and _AA halves only because OpenRA cannot give one armament 1.5x
+      reach against air is ONE weapon, so Damage, ReloadDelay, Burst, BurstDelays AND MinRange
+      must be identical and ONLY the maximum Range differs, by exactly 1.5x. ⛔ MinRange NEVER
+      scales - "no range multiplier changes min range" - and scaling it by 1.5x alongside Range
+      silently widens the dead zone the unit cannot shoot into; four pairs (Naxis_Komet, eden_EMP,
+      edenTiger_EMP, plymouth_EMP) make exactly that mistake. Of 63 pairs in the tree, 39 comply,
+      18 are VALUE violations and 6 have a reach ratio other than 1.5x. The violations share no
+      direction: RA2GattlingMG1/2/3 and YuriGatlingCannonMG1/2/3 give the AA half double damage,
+      the Lunar/Naxi laser family gives it half, SteelMantaHunterCannons scales damage and reload
+      together, and Rocket_stealth makes AA weaker on a 1.19x range. This claim is a RATCHET in
+      the rising direction: it may go UP as pairs are fixed, never down.
+    docs: [docs/DESIGN.md]
+    measure: |
+      import pathlib, sys
+      root = pathlib.Path('.').resolve()
+      sys.path.insert(0, 'tools/audit'); sys.path.insert(0, 'tools/balance')
+      import miniyaml
+      rules = miniyaml.Ruleset(root)
+      IDENTICAL = ('Damage', 'ReloadDelay', 'Burst', 'BurstDelays', 'MinRange')
+      def wf(name):
+          w = rules.resolve_weapon(name)
+          if w is None:
+              return None
+          out = {}
+          for k in ('ReloadDelay', 'Burst', 'BurstDelays', 'Range', 'MinRange'):
+              n = next((c for c in w.children if c.key == k), None)
+              if n is not None:
+                  out[k] = str(n.value)
+          dmg = [int(k.value) for c in w.children
+                 if c.key.split('@', 1)[0].startswith('Warhead')
+                 for k in c.children if k.key == 'Damage']
+          if dmg:
+              out['Damage'] = max(dmg)
+          return out
+      def num(v):
+          try:
+              return float(str(v).rstrip('c'))
+          except (TypeError, ValueError):
+              return None
+      clean = 0
+      for name in sorted(rules.weapons):
+          if not name.endswith('_AA'):
+              continue
+          base = name[:-3]
+          if base not in rules.weapons:
+              continue
+          a, g = wf(name), wf(base)
+          if a is None or g is None:
+              continue
+          if any(g.get(k) != a.get(k) for k in IDENTICAL):
+              continue
+          gv, av = num(g.get('Range')), num(a.get('Range'))
+          if gv and av and abs(av / gv - 1.5) <= 0.001:
+              clean += 1
+      print(clean)
+
+  - id: same_target_range_groups
+    value: 387
+    tolerance: 0
+    what: >
+      Same-target armament groups that already share ONE range (DESIGN 3a.2, maintainer
+      2026-09-14): "ALL WEAPONS THAT CAN HIT THE SAME TARGET MUST ALWAYS HAVE THE EXACT SAME RANGE
+      AND THE ONLY EXCEPTIONS ARE THOSE ANTI GROUND ANTI AIR COMBOS WITH THE 1.5X RANGE". The
+      purpose is predictable simultaneous use across attack traits: AttackFrontal explicitly
+      approaches the shortest active maximum range, while other paths may open at the longer
+      range and delay the shorter armament. Equal range removes that mode-dependent split.
+      Measured through armament_roles.cameo_views - the same views the
+      reference map uses - over actors with 2+ priced armaments, grouping by whether a role can
+      engage ground (ground/both) or air (air/both). 522 actors qualify; 387 groups share one
+      range and 330 carry a spread, worst 409x. ⛔ The 330 is an UPPER bound, not a defect count:
+      it still includes aircraft bombs (TSBomb, OrniBomb, NaxiCowDrop) and condition-gated elite
+      replacements, none of which competes for a target at maximum range, and the exemption list
+      is an open design question. ⚠ This law DEPARTS from the sources on purpose - only 31.9% of
+      the 935 dual-weapon reference actors give both weapons equal range. RATCHET upward.
+    docs: [docs/DESIGN.md]
+    measure: |
+      import collections, pathlib, sys
+      root = pathlib.Path('.').resolve()
+      for d in ('tools/audit', 'tools/balance', 'tools/reference'):
+          sys.path.insert(0, d)
+      import armament_roles as ar, assign_references as asg, miniyaml
+      rules = miniyaml.Ruleset(root)
+      led = asg.ledger()
+      OVERLAP = {'ground': {'ground', 'both'}, 'air': {'air', 'both'}}
+      ok = 0
+      for actor, row in sorted(led.items()):
+          views = [v for v in ar.cameo_views(row, rules)
+                   if v.get('range') and (v.get('damage_per_cycle') or 0) > 1]
+          if len(views) < 2:
+              continue
+          for roles in OVERLAP.values():
+              grp = [v for v in views if v.get('role') in roles]
+              if len(grp) < 2:
+                  continue
+              if len({round(float(v['range'])) for v in grp}) == 1:
+                  ok += 1
+      print(ok)
+
+  - id: mammoth_named_dual_slot_separation_ratio
+    value: 1.71
+    tolerance: 0.01
+    what: >
+      Median non-directional stronger:weaker DPS separation across the 15 INI rows whose actor
+      name contains `mammoth` and whose two weapon slots both carry recorded/raw DPS estimates,
+      including rows marked incomplete or burst_unfolded (DESIGN 3a.4).
+      The measure is max(slot1, slot2) / min(slot1, slot2): it does NOT say that a cannon is
+      stronger than a missile, and its selected population includes Mammoth-named walkers but
+      no RA2 Apocalypse row. Median 1.71x, mean 1.80x, spread 1.11x-2.93x. Across all 930
+      dual-weapon reference actors only 29.2% sit inside 1.05x while 45.4% exceed 3x.
+      ⛔ SCOPE: none of these INI rows votes on td_gdi_mammothtank. Its current voters are
+      Combined Arms and OpenRA Tiberian Dawn, which differ by about 1.21x per cycle / 1.15x by
+      rate. The stale map's old 1.013x result came from an excluded DTA Enhanced vote cancelling
+      the two valid sources; after regeneration the target ratio is 1.220x against a 1.208x peer
+      ratio. The projection carries the difference rather than compressing it. This claim exists
+      only to describe the wider named population and must not be borrowed to explain one actor.
+    docs: [docs/DESIGN.md]
+    measure: |
+      import json, pathlib, statistics
+      rows = [json.loads(l) for l in
+              pathlib.Path('docs/reference/ini_corpus.json')
+              .read_text(encoding='utf-8').splitlines() if l.strip()]
+      seen, ratios = set(), []
+      for r in sorted(rows, key=lambda r: (r.get('source') or '', r.get('id') or '')):
+          if 'mammoth' not in (r.get('name') or '').lower():
+              continue
+          if not (r.get('w_dps') and r.get('w2_dps')):
+              continue
+          key = (r.get('source'), r.get('name'), r.get('w_dps'), r.get('w2_dps'))
+          if key in seen:
+              continue
+          seen.add(key)
+          a, b = float(r['w_dps']), float(r['w2_dps'])
+          if min(a, b) > 0:
+              ratios.append(max(a, b) / min(a, b))
+      print(round(statistics.median(ratios), 2))
+
+  - id: charged_actor_cycle_actors
+    value: 14
+    tolerance: 0
+    what: >
+      Priced actors carrying a resolved `charge_up` record, whose per-armament attack cycle is
+      therefore reload PLUS charge delay (DESIGN.md, maintainer law 2026-09-14: "charged weapons
+      come at a discount but the attack cycle duration is reload delay plus charge delay"). An
+      explicit InitialChargeDelay count does NOT bound this population, which is why the claim
+      measures resolved records instead. ⛔ The reason is NOT that the rest inherit an engine
+      default: only THREE of the 14 are AttackTesla records at all, and the other ELEVEN are
+      ChargeLevel-family records (AttackCharges, AttackFrontalCharged, AttackTurretedCharged) -
+      a different trait with a different schedule. It counts RECORDS, not effects: of the 14,
+      ra1_allies_mobileradarjammer has no priced armament view, wc2_humans_dwarvenrifleman winds
+      up for only 2 ticks against a 60-tick reload, and multi-armament actors abstain under the
+      ownership guard. Counting records as effects is the error that put two wrong figures into
+      DESIGN.md on 2026-09-14. ⭐ The dwarf's figure was ZERO until the averaging ruling landed;
+      see ranged_charge_actors for why that zero was the most expensive one in the table.
+    docs: [docs/DESIGN.md, docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, glob
+      total = 0
+      for path in sorted(glob.glob('docs/balance/*.json')):
+          try:
+              doc = json.loads(open(path, encoding='utf-8').read())
+          except ValueError:
+              continue
+          for section in (doc.get('sections') or {}).values():
+              if not isinstance(section, dict):
+                  continue
+              for record in section.values():
+                  if isinstance(record, dict) and record.get('charge_up'):
+                      total += 1
+      print(total)
+
+  - id: ranged_charge_actors
+    value: 4
+    tolerance: 0
+    what: >
+      Actors whose charge field is a RANDOM RANGE rather than a scalar, and which therefore cost
+      the MEAN of its bounds. Maintainer ruling 2026-09-14: "regarding the charge with random
+      charge level make it so it counts the average between max and min delay ... for the
+      consortium dagger, the charge range from 25 to 50 so you add 37.5 to the reload delay as
+      attack cycle". `extract_stats.charge_scalar` implements it; before that it kept
+      split(',')[0], i.e. it priced every charged shot as if it always rolled the luckiest value.
+      The four are steelconsortium_dagger (25, 50 -> 37.5), wc2_humans_dwarvenrifleman
+      (0, 4 -> 2.0) and the two wc2 siege engines (20, 40 -> 30.0). ⛔ The dwarf is the case that
+      matters and it moves the price the OPPOSITE way from intuition: charge_price_multiplier
+      reads share <= 0 as "charges, but we cannot see by how much" and hands out the FLAT 0.75
+      floor, so the misparsed zero was collecting the deepest discount in the table; the measured
+      2 ticks move it to 0.9758. The other three move 0.75 -> 0.75 (already clamped at the floor)
+      and 0.875 -> 0.8269 twice. ⚠ Nothing in the reference path moved, because
+      formula.charge_attack_cycle returns None for the whole ChargeLevel family - the regenerated
+      armament_pairing.json changed only its three input fingerprints.
+    docs: [docs/DESIGN.md, docs/design/ARMAMENT_PAIRING.md]
+    measure: |
+      import json, glob
+      want = {'steelconsortium_dagger': 37.5, 'wc2_humans_dwarvenrifleman': 2.0,
+              'wc2_humans_siegeengine': 30.0, 'wc2_orcs_siegeengine': 30.0}
+      seen = 0
+      for path in sorted(glob.glob('docs/balance/*.json')):
+          try:
+              doc = json.loads(open(path, encoding='utf-8').read())
+          except ValueError:
+              continue
+          for section in (doc.get('sections') or {}).values():
+              if not isinstance(section, dict):
+                  continue
+              for actor, record in section.items():
+                  if actor in want and isinstance(record, dict):
+                      charge = record.get('charge_up') or {}
+                      if charge.get('ticks') == want[actor]:
+                          seen += 1
+      print(seen)
+
+  - id: railtower_immediate_reacquisition_period
+    value: 210
+    tolerance: 0
+    what: >
+      The asianalliance_railtower's attack period in ticks with reacquisition treated as
+      immediate - the FLOOR of its range, and the value the pipeline prices. Maintainer ruling
+      2026-09-14: "for the asian alliance railgun tower it needs to charge for every shot
+      unlike the tesla coil! So at 5 shots the initial charge delay is used 5 times!" -
+      CONFIRMED by the engine. ChargeFire.Tick returns true when AttackBase.CanAttack is false,
+      and CanAttack calls HasAnyValidWeapons(reloadingIsInvalid: true), so a reloading armament
+      ENDS the activity rather than stalling it; the actor re-enters through ChargeAttack and
+      pays InitialChargeDelay again. Weapon reload 10 > ChargeDelay 3, so the tower is
+      charge-per-shot: 4 x (10 + 10) + 120 + 10 = 210. ⚠ It was 220 while the wind-up was 12;
+      the maintainer set InitialChargeDelay to 10 on 2026-09-14 for consistency, having first
+      considered ChargeDelay 10 and then rejected it because that would have silently converted
+      the tower to charge-ONCE (cycle 170) and removed the per-shot charging that is the
+      building's identity. ⛔ This is a FLOOR, not the runtime cadence: a charge-per-shot actor
+      goes idle between shots and re-enters on AutoTarget's scan, which is
+      Random.Next(MinimumScanTimeInterval 3, MaximumScanTimeInterval 8) = U{3..7}, neither
+      overridden by any Cameo yaml. A 300-seed sample reports 210 minimum / 218 mean / 232
+      maximum, while a valid repeating scan path produces 234; sampled maxima are not ceilings.
+      Baseline Tesla Coil states are invariant when exactly one condition-gated armament is
+      enabled. The ideal 210 floor is priced deliberately; the spread above it is recorded,
+      not applied.
+      Two withdrawn figures of mine, 172 and 180, assumed ChargeFire spins rather than exits.
+      ⚠ Counting the charge cut this tower's measured rate from 968.75 to 738.1, -24%.
+    measure: |
+      import sys
+      sys.path.insert(0, 'tools/balance')
+      import sim_attack_tesla as sim
+      spec = sim.ACTORS['asianalliance_railtower']
+      period, closed, _, _ = sim.analyse('asianalliance_railtower', spec)
+      assert period == closed, (period, closed)
+      print(period)
+
+  - id: tesla_coil_attack_period
+    value: 131
+    tolerance: 0
+    what: >
+      The RA1 Tesla Coil's attack period in ticks, as priced: 100 (AttackTesla ReloadDelay)
+      plus 3 x (3-1) inter-zap gaps plus the 25-tick InitialChargeDelay. ⭐ This claim pinned
+      the IMPLEMENTED 106 for as long as the charge term was withheld, and it moved to the
+      ruled 131 when formula.charge_attack_cycle began counting the wind-up (maintainer,
+      2026-09-14: "charged weapons come at a discount but the attack cycle duration is reload
+      delay plus charge delay"). The mode is decided by ChargeDelay against the WEAPON's
+      reload, now recorded by extract_stats: reload <= ChargeDelay is charge-once
+      (gap = ChargeDelay), reload > ChargeDelay is charge-per-shot
+      (gap = reload + wind-up), because ChargeFire.Tick returns true when AttackBase.CanAttack
+      is false and CanAttack calls HasAnyValidWeapons(reloadingIsInvalid: true). Two traces of
+      mine, 172 and 180, were WITHDRAWN for assuming ChargeFire spins instead of exiting;
+      Codex and Astra caught it. ⚠ Counting the charge cut this coil's measured rate from
+      1358.5 to 1099.2 per tick, -19%: it had been read as firing a fifth faster than it does.
+      See railtower_immediate_reacquisition_period for the charge-per-shot half.
+    measure: |
+      import pathlib, sys
+      root = pathlib.Path('.').resolve()
+      sys.path.insert(0, 'tools/audit'); sys.path.insert(0, 'tools/balance')
+      import armament_roles as ar, assign_references as asg, miniyaml
+      rules = miniyaml.Ruleset(root)
+      views = ar.cameo_views(asg.ledger()['ra1_soviets_teslacoil'], rules)
+      cycles = {v['cycle'] for v in views}
+      if len(cycles) != 1:
+          raise SystemExit(f'the coil should have one cycle, got {sorted(cycles)}')
+      print(int(cycles.pop()))
+
+  - id: cameo_family_labelled_weapons
+    value: 1567
+    tolerance: 0
+    what: >
+      Concrete Cameo weapons whose inherit chain names a `^Warhead_<Family>_<Level>` template,
+      and therefore STATE their warhead family in the yaml rather than needing one assigned.
+      This is the labelled test set R39 rests on: it is the only source where a family
+      assignment can be SCORED instead of reviewed, and `tools/reference/validate_families.py`
+      uses it to measure every propagation method. If this collapses, R39's 19%/11% scores and
+      the tau-purity sweep are no longer measured against anything and must be re-run.
+      Related but NOT the same number as `warhead_family_reach`, which counts FIRED weapons
+      reaching a family over the whole actor set; this counts weapon definitions.
+    docs: [docs/design/REFERENCE_EXTRACTION_PLAN.md]
+    measure: |
+      import pathlib, sys
+      sys.path[:0] = ['tools/audit']
+      from miniyaml import Ruleset
+      rs = Ruleset(pathlib.Path('.').resolve(), 'cameo')
+      n = 0
+      for name, raw in rs.weapons.items():
+          if name.startswith('^') or name.startswith('-'):
+              continue
+          if any(p.startswith('^Warhead_') for _, p in rs.inherits_of(raw)):
+              n += 1
+      print(n)
+
+  - id: warhead_reference_groups
+    value: 1674
+    tolerance: 0
+    what: >
+      Compression groups across all 20 reference sources at `compress_warheads.DEFAULT_TAU`,
+      which R41 set to 0.20. This is the size of the review surface: at the old tau 0.50 it was
+      1,184 groups whose median purity against Cameo's own labelled weapons was 61%, and R39
+      measured that no single-family label can beat a group's purity. If this number moves,
+      `DEFAULT_TAU` moved with it, and `warhead_family_assignment.yaml` must be carried forward
+      by `retau_assignment.py` (weapon membership) rather than re-applied by group NAME.
+    docs: [docs/design/REFERENCE_EXTRACTION_PLAN.md, docs/design/WARHEAD_REFERENCE_HANDOFF.md]
+    measure: |
+      import json
+      d = json.load(open('docs/reference/warhead_groups.json', encoding='utf-8'))
+      print(sum(len(v['groups']) for v in d.values()))
+
+  - id: cameo_shaped_families
+    value: 53
+    tolerance: 0
+    what: >
+      Live warhead families whose shipped 16-rung Versus profile is SHAPED — neither a constant
+      nor an even ramp. R42's census: 47 shaped, 2 flat by design (`Magic`, `Sonic`, which ignore
+      armour and are special-cased in both `class_tilt` and the heaviness bell), 2 hand-tuned
+      (`Nuclear_Super`, `Sniper_Light`). It pins the claim that there is NO unmeasured-family gap,
+      which three earlier estimates got wrong by inferring provenance from which JSON a family
+      appears in rather than measuring the template that ships.
+    docs: [docs/design/REFERENCE_EXTRACTION_PLAN.md]
+    measure: |
+      import collections, pathlib, sys
+      sys.path[:0] = ['tools/audit', 'tools/balance', 'tools/reference']
+      from miniyaml import Ruleset
+      import weapon_efficiency as we, cameo_families as cf, gen_weapon_template as gwt
+      rungs = [a for m in ('INF', 'VEH', 'BLD', 'AIR') for a in gwt.LADDERS[m]]
+      rs = Ruleset(pathlib.Path('.').resolve(), 'cameo')
+      def kind(vals):
+          s = sorted(vals)
+          if len(set(s)) == 1:
+              return 'flat'
+          steps = {round(b - a, 4) for a, b in zip(s, s[1:])}
+          if len(steps) == 1:
+              return 'ramp'
+          base = min(steps)
+          if base > 0 and all(abs(x / base - round(x / base)) < 1e-6 and round(x / base) <= 2
+                              for x in steps):
+              return 'ramp'
+          return 'shaped'
+      seen = collections.defaultdict(set)
+      for name in rs.weapons:
+          if not name.startswith('^Warhead_'):
+              continue
+          fam, level, var = cf.split_template(name)
+          if var:
+              continue
+          for c in rs.resolve_weapon(name).children:
+              k = c.key
+              if not k.startswith('Warhead') or 'ercentage' in k or 'riendly' in k:
+                  continue
+              v = we.versus_of(c)
+              vals = [v[a] for a in rungs if a in v]
+              if len(vals) == 16:
+                  seen[fam].add(kind(vals))
+              break
+      print(sum(1 for f, ks in seen.items() if ks == {'shaped'}))
+
+  - id: cameo_element_bearing_families
+    value: 23
+    tolerance: 0
+    what: >
+      Live warhead families whose template declares a `DamageTypes` token the engine can actually
+      filter on (an element such as `Incendiary` or `Tesla`), as opposed to the generic
+      `Prone75Percent, TriggerProne, ExplosionDeath` that 31 of the 50 carry. R43: `Flame`, `Cryo`,
+      `Toxic`, `Chemical`, `Laser`, `Nuclear` and nine others declare no element, while their own
+      blend children (`BulletFire`, `CannonFire`, `Inferno`) declare `FireDeath, Incendiary`. The
+      mod's rules consume these tokens (`Incendiary` x3, `RadiationDeath` x6,
+      `AffectedByDamageTypes: Tesla` x2), so an undeclared element is a gate that never fires.
+      RECONCILED, because this number moved twice in one session and each step is
+      accounted for: 15 at R43 -> 18 when R44 derived the token from the family
+      (`Flame`, `Thermobaric` gained Fire, `Nuclear` gained Radiation) -> 23 when R45
+      taught the extractor Cameo's `TiberiumDeath` spelling, which surfaced the five
+      Toxin families (`Chemical`, `Toxic`, `BulletChem`, `CannonChem`, `MissileChem`)
+      that had been reading as `Plain` all along. A jump here with no ruling behind it
+      means `ELEMENT_ORDER` changed, not that warheads were tagged.
+      This number should go UP as families are tagged; it is the counter for that work.
+    docs: [docs/design/REFERENCE_EXTRACTION_PLAN.md]
+    measure: |
+      import pathlib, sys
+      sys.path[:0] = ['tools/audit', 'tools/reference']
+      from miniyaml import Ruleset
+      import cameo_families as cf, compress_warheads as cw
+      rs = Ruleset(pathlib.Path('.').resolve(), 'cameo')
+      fams = {}
+      for name in rs.weapons:
+          if not name.startswith('^Warhead_'):
+              continue
+          fam, level, var = cf.split_template(name)
+          if var or not level:
+              continue
+          for c in rs.resolve_weapon(name).children:
+              k = c.key
+              if not k.startswith('Warhead') or 'ercentage' in k or 'riendly' in k:
+                  continue
+              dt = c.child('DamageTypes')
+              fams.setdefault(fam, set()).add(cw.element_of(dt.value if dt else ''))
+              break
+      print(sum(1 for f, es in fams.items() if es - {'HE', 'Plain'}))

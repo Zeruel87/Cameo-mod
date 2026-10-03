@@ -30,10 +30,14 @@ namespace OpenRA.Mods.CA.Activities
 			ticks = 0;
 			scanInterval = self.World.SharedRandom.Next(20, 40);
 			move = self.Trait<IMove>();
-			var attack = self.Trait<AttackBase>();
-			targets = self.World.ActorsHavingTrait<Huntable>().Where(
-				a => self != a && !a.IsDead && a.IsInWorld && a.AppearsHostileTo(self)
-				&& a.IsTargetableBy(self) && attack.HasAnyValidWeapons(Target.FromActor(a)));
+			var attack = self.TraitsImplementing<AttackBase>().FirstOrDefault(ab => !ab.IsTraitDisabled);
+
+			if (attack == null)
+				targets = Enumerable.Empty<Actor>();
+			else
+				targets = self.World.ActorsHavingTrait<Huntable>().Where(
+					a => self != a && !a.IsDead && a.IsInWorld && a.AppearsHostileTo(self)
+					&& a.IsTargetableBy(self) && attack.HasAnyValidWeapons(Target.FromActor(a)));
 		}
 
 		public override bool Tick(Actor self)

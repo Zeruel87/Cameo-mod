@@ -43,13 +43,13 @@ ROOT_CLOSURES = {
     # CabalCyborgChaingun and TSDevoutChainguns are excluded: merging their
     # folded percentage hits overflows at active high-health values.
     "NaxiWW2KübelwagenMachinegun": set(),
-    "OfficerMachineGun": set(),
+    "td_gdi_officer_machinegun": set(),
     # RA220mmrapid is deliberately excluded: its Light slice can hit Air while
     # its Medium slice cannot, so choosing one target contract needs role review.
     "RA2GattlingInf": set(),
     "RA2vulcan": set(),
-    "RAVulcan": set(),
-    "SheridanVulcan": set(),
+    "ra1_allies_machinegunner_machinegun": set(),
+    "ra1_allies_sheridanassaulttank_chaingun": set(),
     "SteelCargoshipCannons": set(),
     "TSMutVulcanTurret": set(),
     "TSVulcanGun": set(),
@@ -74,7 +74,7 @@ ROOT_CLOSURES = {
     },
     "GuardianGIMG": {"GuardianGIMG_elite", "RA2vulcan2", "RA2vulcan3"},
     "AsianLynxMG": {"AsianLynxMG_elite"},
-    "BTRMachineGun": {"BTRMachineGun_AA"},
+    "ra1_soviets_btr80_machinegun": {"ra1_soviets_btr80_machinegun_AA"},
     "Future_Wheel_MG": {"Future_Wheel_MG_elite"},
     "LatinBuggyMG": {"LatinBuggyMG_elite"},
     "RA2NarcoAKM": {"RA2NarcoAKM_elite"},

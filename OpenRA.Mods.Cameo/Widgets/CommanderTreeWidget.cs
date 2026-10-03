@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Cameo.Traits;
 using OpenRA.Mods.Cameo.Widgets.Logic;
@@ -44,19 +45,19 @@ namespace OpenRA.Mods.Cameo.Widgets
 		readonly string clickDisabledSound = ChromeMetrics.Get<string>("ClickDisabledSound");
 		readonly Color overlayTextColor = Color.White;
 		readonly string infiniteSymbol = "∞";
-		readonly float2 queuedOffset = new(4f, 2f);
+		readonly Vector2 queuedOffset = new(4f, 2f);
 
 		Animation clock;
 		Animation cantBuild;
 
-		float2 iconOffset;
+		Vector2 iconOffset;
 		SpriteFont overlayFont;
 		SpriteFont symbolFont;
 		string readyText;
 		string holdText;
-		float2 readyOffset;
-		float2 holdOffset;
-		float2 infiniteOffset;
+		Vector2 readyOffset;
+		Vector2 holdOffset;
+		Vector2 infiniteOffset;
 
 		ProductionIcon tooltipIcon;
 
@@ -188,7 +189,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 			cantBuild = new Animation(world, notBuildableAnimation);
 			cantBuild.PlayFetchIndex(notBuildableSequence, () => 0);
 
-			iconOffset = 0.5f * new float2(IconWidth, IconHeight) + IconSpriteOffset.ToFloat2();
+			iconOffset = 0.5f * new Vector2(IconWidth, IconHeight) + IconSpriteOffset.ToVector2();
 
 			overlayFont = Game.Renderer.Fonts["TinyBold"];
 			Game.Renderer.Fonts.TryGetValue("Symbols", out symbolFont);
@@ -198,8 +199,8 @@ namespace OpenRA.Mods.Cameo.Widgets
 			holdText = FluentProvider.GetMessage("productionpalette-sidebar-production-palette.hold");
 			if (string.IsNullOrEmpty(holdText))
 				holdText = "ON HOLD";
-			readyOffset = iconOffset - overlayFont.Measure(readyText).ToFloat2() / 2f;
-			holdOffset = iconOffset - overlayFont.Measure(holdText).ToFloat2() / 2f;
+			readyOffset = iconOffset - overlayFont.Measure(readyText).ToVector2() / 2f;
+			holdOffset = iconOffset - overlayFont.Measure(holdText).ToVector2() / 2f;
 			infiniteOffset = queuedOffset;
 
 			layoutDirty = true;
@@ -802,11 +803,11 @@ namespace OpenRA.Mods.Cameo.Widgets
 				var centerRow = (range.Top + range.Bottom) / 2f;
 				var y = ContentPadding + centerRow * rowStep;
 
-				node.Position = new float2(x, y);
+				node.Position = new Vector2(x, y);
 				node.Bounds = new Rectangle((int)Math.Round((double)x, MidpointRounding.AwayFromZero), (int)Math.Round((double)y, MidpointRounding.AwayFromZero), IconWidth, IconHeight);
-				node.Center = node.Position + new float2(IconWidth / 2f, IconHeight / 2f);
-				node.TopAnchor = node.Position + new float2(IconWidth / 2f, 0f);
-				node.BottomAnchor = node.Position + new float2(IconWidth / 2f, IconHeight);
+				node.Center = node.Position + new Vector2(IconWidth / 2f, IconHeight / 2f);
+				node.TopAnchor = node.Position + new Vector2(IconWidth / 2f, 0f);
+				node.BottomAnchor = node.Position + new Vector2(IconWidth / 2f, IconHeight);
 
 				maxRight = Math.Max(maxRight, x + IconWidth);
 				maxBottom = Math.Max(maxBottom, y + IconHeight);
@@ -878,12 +879,12 @@ namespace OpenRA.Mods.Cameo.Widgets
 					Bounds = rect
 				};
 
-				var topLeft = new float2(rect.X, rect.Y);
-				var size = new float2(rect.Width, rect.Height);
+				var topLeft = new Vector2(rect.X, rect.Y);
+				var size = new Vector2(rect.Width, rect.Height);
 				var center = topLeft + size / 2f;
 				group.Center = center;
-				group.TopAnchor = new float2(center.X, rect.Y);
-				group.BottomAnchor = new float2(center.X, rect.Y + rect.Height);
+				group.TopAnchor = new Vector2(center.X, rect.Y);
+				group.BottomAnchor = new Vector2(center.X, rect.Y + rect.Height);
 				group.Nodes.AddRange(members);
 
 				promotionGroups.Add(group);
@@ -1178,9 +1179,9 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 			foreach (var group in promotionGroups)
 			{
-				var topLeft = RenderOrigin.ToFloat2() + new float2(group.Bounds.X, group.Bounds.Y);
-				var bottomRight = topLeft + new float2(group.Bounds.Width, group.Bounds.Height);
-				Game.Renderer.RgbaColorRenderer.DrawRect(new float3(topLeft, 0f), new float3(bottomRight, 0f), GroupBorderWidth, GroupBorderColor);
+				var topLeft = RenderOrigin.ToVector2() + new Vector2(group.Bounds.X, group.Bounds.Y);
+				var bottomRight = topLeft + new Vector2(group.Bounds.Width, group.Bounds.Height);
+				Game.Renderer.RgbaColorRenderer.DrawRect(new Vector3(topLeft, 0f), new Vector3(bottomRight, 0f), GroupBorderWidth, GroupBorderColor);
 			}
 		}
 
@@ -1216,10 +1217,10 @@ namespace OpenRA.Mods.Cameo.Widgets
 					edgeColor = Color.FromArgb(EdgeColor.A / 2, EdgeColor.R, EdgeColor.G, EdgeColor.B);
 				else
 					edgeColor = EdgeColor;
-				var start = RenderOrigin.ToFloat2() + GetEdgeStartAnchor(from, useGroupStart);
-				var end = RenderOrigin.ToFloat2() + GetEdgeEndAnchor(to, useGroupEnd);
+				var start = RenderOrigin.ToVector2() + GetEdgeStartAnchor(from, useGroupStart);
+				var end = RenderOrigin.ToVector2() + GetEdgeEndAnchor(to, useGroupEnd);
 				var dir = end - start;
-				var length = dir.Length;
+				var length = dir.Length();
 				if (length < 1f)
 					continue;
 
@@ -1233,7 +1234,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 						start += norm * maxInset;
 						end -= norm * maxInset;
 						dir = end - start;
-						length = dir.Length;
+						length = dir.Length();
 						if (length < ArrowHeadLength + 1f)
 							continue;
 						norm = dir / length;
@@ -1241,14 +1242,14 @@ namespace OpenRA.Mods.Cameo.Widgets
 				}
 
 				var arrowStart = end - norm * ArrowHeadLength;
-				var perp = new float2(-norm.Y, norm.X);
+				var perp = new Vector2(-norm.Y, norm.X);
 				var left = arrowStart + perp * ArrowHeadWidth;
 				var right = arrowStart - perp * ArrowHeadWidth;
 
-				Game.Renderer.RgbaColorRenderer.DrawLine(new float3(start, 0f), new float3(arrowStart, 0f), ArrowWidth, edgeColor);
-				Game.Renderer.RgbaColorRenderer.DrawLine(new float3(left, 0f), new float3(end, 0f), ArrowWidth, edgeColor);
-				Game.Renderer.RgbaColorRenderer.DrawLine(new float3(right, 0f), new float3(end, 0f), ArrowWidth, edgeColor);
-				Game.Renderer.RgbaColorRenderer.FillTriangle(new float3(end, 0f), new float3(left, 0f), new float3(right, 0f), edgeColor);
+				Game.Renderer.RgbaColorRenderer.DrawLine(new Vector3(start, 0f), new Vector3(arrowStart, 0f), ArrowWidth, edgeColor);
+				Game.Renderer.RgbaColorRenderer.DrawLine(new Vector3(left, 0f), new Vector3(end, 0f), ArrowWidth, edgeColor);
+				Game.Renderer.RgbaColorRenderer.DrawLine(new Vector3(right, 0f), new Vector3(end, 0f), ArrowWidth, edgeColor);
+				Game.Renderer.RgbaColorRenderer.FillTriangle(new Vector3(end, 0f), new Vector3(left, 0f), new Vector3(right, 0f), edgeColor);
 			}
 		}
 
@@ -1258,13 +1259,13 @@ namespace OpenRA.Mods.Cameo.Widgets
 			return useGroup ? $"group:{node.Group.Key}" : $"node:{node.Actor.Name}";
 		}
 
-		float2 GetEdgeStartAnchor(CommanderNode node, bool useGroupAnchor)
+		Vector2 GetEdgeStartAnchor(CommanderNode node, bool useGroupAnchor)
 		{
 			var useGroup = useGroupAnchor && node.Group != null;
 			return useGroup ? node.Group.BottomAnchor : node.BottomAnchor;
 		}
 
-		float2 GetEdgeEndAnchor(CommanderNode node, bool useGroupAnchor)
+		Vector2 GetEdgeEndAnchor(CommanderNode node, bool useGroupAnchor)
 		{
 			var useGroup = useGroupAnchor && node.Group != null;
 			return useGroup ? node.Group.TopAnchor : node.TopAnchor;
@@ -1285,13 +1286,13 @@ namespace OpenRA.Mods.Cameo.Widgets
 			if (!node.IsVisible)
 				return;
 
-			var topLeft = RenderOrigin.ToFloat2() + node.Position;
+			var topLeft = RenderOrigin.ToVector2() + node.Position;
 			var center = topLeft + iconOffset;
 			var iconRect = new Rectangle((int)topLeft.X, (int)topLeft.Y, IconWidth, IconHeight);
 
 			WidgetUtils.DrawSpriteCentered(node.Icon.Sprite, node.Icon.Palette, center);
 
-			var iconSize = new float2(IconWidth, IconHeight);
+			var iconSize = new Vector2(IconWidth, IconHeight);
 			if (iconOverlays.Length > 0)
 			{
 				foreach (var overlay in iconOverlays)
@@ -1318,7 +1319,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 			ProductionIconButtonizer.Draw(node.Icon, iconRect, node.Icon.Name ?? node.Actor.Name, ButtonizerFallbackFont);
 
-			var iconPos = RenderOrigin.ToFloat2() + node.Position;
+			var iconPos = RenderOrigin.ToVector2() + node.Position;
 			var totalQueued = node.Icon.Queued.Count;
 			if (totalQueued > 0)
 			{
@@ -1332,7 +1333,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 				else if (!waiting)
 				{
 					var timeText = WidgetUtils.FormatTime(first.Queue.RemainingTimeActual(first), world.Timestep);
-					var timeOffset = iconOffset - overlayFont.Measure(timeText).ToFloat2() / 2f;
+					var timeOffset = iconOffset - overlayFont.Measure(timeText).ToVector2() / 2f;
 					overlayFont.DrawTextWithContrast(timeText, iconPos + timeOffset, overlayTextColor, Color.Black, 1);
 				}
 
@@ -1366,7 +1367,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 				.ToArray();
 		}
 
-		void DrawNodeBorder(CommanderNode node, float2 topLeft)
+		void DrawNodeBorder(CommanderNode node, Vector2 topLeft)
 		{
 			var isHover = node == hoverNode;
 			var isAncestor = hoverNode != null && !isHover && hoverAncestors.Contains(node);
@@ -1383,9 +1384,9 @@ namespace OpenRA.Mods.Cameo.Widgets
 				return;
 
 			var padding = BorderPadding;
-			var rectTopLeft = topLeft - new float2(padding, padding);
-			var rectBottomRight = rectTopLeft + new float2(IconWidth + padding * 2, IconHeight + padding * 2);
-			Game.Renderer.RgbaColorRenderer.DrawRect(new float3(rectTopLeft, 0f), new float3(rectBottomRight, 0f), BorderWidth, borderColor);
+			var rectTopLeft = topLeft - new Vector2(padding, padding);
+			var rectBottomRight = rectTopLeft + new Vector2(IconWidth + padding * 2, IconHeight + padding * 2);
+			Game.Renderer.RgbaColorRenderer.DrawRect(new Vector3(rectTopLeft, 0f), new Vector3(rectBottomRight, 0f), BorderWidth, borderColor);
 		}
 
 		public override void Removed()
@@ -1412,11 +1413,11 @@ namespace OpenRA.Mods.Cameo.Widgets
 			public bool Revealed { get; set; }
 
 			public bool IsVisible { get; set; } = true;
-			public float2 Position { get; set; }
+			public Vector2 Position { get; set; }
 			public Rectangle Bounds { get; set; }
-			public float2 Center { get; set; }
-			public float2 TopAnchor { get; set; }
-			public float2 BottomAnchor { get; set; }
+			public Vector2 Center { get; set; }
+			public Vector2 TopAnchor { get; set; }
+			public Vector2 BottomAnchor { get; set; }
 			public int RowTop { get; set; }
 			public int RowBottom { get; set; }
 			public int LeafColumnSlot { get; set; }
@@ -1448,9 +1449,9 @@ namespace OpenRA.Mods.Cameo.Widgets
 			public string Key { get; }
 			public List<CommanderNode> Nodes { get; } = new();
 			public Rectangle Bounds { get; set; }
-			public float2 Center { get; set; }
-			public float2 TopAnchor { get; set; }
-			public float2 BottomAnchor { get; set; }
+			public Vector2 Center { get; set; }
+			public Vector2 TopAnchor { get; set; }
+			public Vector2 BottomAnchor { get; set; }
 		}
 	}
 }

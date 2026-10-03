@@ -1,0 +1,203 @@
+# Behaviour switches of the current increment (AI_MASTER_PLAN §1.2 step 6, amended 2026-10-01).
+# Applied to a FROZEN A/B worktree by tools/ai/apply_increment_switches.py — never committed into ai.yaml itself:
+# master keeps every behaviour at its default until the increment's A/B says otherwise.
+#
+# Arms: ctrl = previous master (no switches); all = groups A + B; half = group A only.
+# A trait key matches every instance of that trait in mods/cameo/ai/*.yaml (Trait or Trait@name), except the
+# instances named in `skip` (classic stays the untouched A/B reference).
+# Off on purpose: SiegeEvaluatorBotModule.BehaviourEnabled (lost its A/B, AI_MATCH_LOG ca2b), and the engineer safe
+# route v1 alone (lost its smoke) — v2 below replaces it.
+
+skip: [SquadManagerBotModuleCA@classic]
+
+groups:
+  # SHIPPED 2026-10-01 as master defaults after the INC-1+2+3 A/B (all 13-3, 81% vs ctrl 12-4, 75%): former groups
+  # A_squad_tactics, B_ownership_engineers_missions, C_f1_frans_services (C on every genericbot tier, §19.1).
+  # Still OFF on master, for the next increment A/B:
+  D_zone_topology:                   # NOVA ZG-a/b/c — zone-backed RegionMemory + zone-adjacency RegionRouter (#711/#713/#718)
+    MasterAiBotModule:
+      UseZoneTopology: true
+  E_engt_transport:                  # re-arm the Frans transport provider ONLY after #716 (orders-only, DESIGN §19.8) lands
+    GrantConditionOnBotOwner@engttransport:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  H_influence_layers:                # NOVA IM-1 — BotInfluenceLayers on the situation snapshot + scout consumption
+    MasterAiBotModule:
+      UseInfluenceLayers: true
+  G_personality_leads:               # NOVA PL-1 + DAWN PL-2 — Steamroller/Rush/Guerrilla leads lean their budget drivers while trailing (§12.14)
+    MasterAiBotModule:
+      UsePersonalityLeads: true
+  I_derived_unit_weights:            # NOVA UW-1 — derive UnitsToBuild weights from RoleMix x Versus strength (§2.8b item 3)
+    UnitBuilderBotModuleCA:
+      UseDerivedUnitWeights: true
+  J_rolemix_production:              # NOVA CA-3 (§12.5) — the six personalities' starting RoleMixes fill production deficits (classic carries none)
+    SquadManagerBotModuleCA@rush:
+      UseRoleMix: true
+    SquadManagerBotModuleCA@turtle:
+      UseRoleMix: true
+    SquadManagerBotModuleCA@tech:
+      UseRoleMix: true
+    SquadManagerBotModuleCA@expansion:
+      UseRoleMix: true
+    SquadManagerBotModuleCA@steamroller:
+      UseRoleMix: true
+    SquadManagerBotModuleCA@guerrilla:
+      UseRoleMix: true
+  # UT-1 (AI_DEEP_RESEARCH §5.1): the squad manager's attack-delay reset scales by the
+  # master's Turtle<->Rush utility axis. Explicit @-keys arm the six genericbot
+  # personality instances only; @classic (the A/B control) is skipped above and never
+  # listed. K and L stay reserved for DAWN.
+  M_utility_axes:
+    SquadManagerBotModuleCA@rush:
+      UseUtilityAxes: true
+    SquadManagerBotModuleCA@turtle:
+      UseUtilityAxes: true
+    SquadManagerBotModuleCA@tech:
+      UseUtilityAxes: true
+    SquadManagerBotModuleCA@expansion:
+      UseUtilityAxes: true
+    SquadManagerBotModuleCA@steamroller:
+      UseUtilityAxes: true
+    SquadManagerBotModuleCA@guerrilla:
+      UseUtilityAxes: true
+  K_cn2_unit_repair:                 # DAWN CN2 - UnitRepairBotModule (CN port): depots/repair-near/mobile repairers for damaged units
+    GrantConditionOnBotOwner@cn2unitrepair:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  L_cn2_garrison_defense:            # DAWN CN2 - GarrisonDefenseBotModule (CN port): mans own garrisons, threat-matched specialists
+    GrantConditionOnBotOwner@cn2garrison:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  M_cn3_deploy:                      # DAWN CN3 - DeployBotModule (CN port): artillery/stat/support/ability deploy driving
+    GrantConditionOnBotOwner@cn3deploy:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  N_ca6_target_intel:                # DAWN CA-6 - scout<->target loop: stale intel loses score; scouts refresh the main target's footprint
+    MasterAiBotModule:
+      WeightIntelAge: 120
+    ScoutBotModule:
+      UseTargetIntelBias: true
+  O_ca2_defend_reserve:              # DAWN CA-2 - defend-draft keeps a reserve (FransGroundDefendForcePreservationGuard port); attacker inside base = emergency, commits all
+    SquadManagerBotModuleCA:
+      UseDefendPreservation: true
+  P_di2_director_pacing:             # NOVA DI-2 — Director wave phase scales the assault launch bar (stacked on director-1 publisher)
+    SquadManagerBotModuleCA:
+      UseDirectorPacing: true
+  Q_ut3_defend_share:                # NOVA UT-3 — TurtleRush axis scales the CA-2 defend reserve (turtles dig deeper, rushers strip the pool); needs O_ca2 armed to have a reserve to scale
+    SquadManagerBotModuleCA:
+      UseUtilityDefendReserve: true
+  R_tc2_sync_attacks:                # NOVA TC-2a — an ally's Director Climax opens our launch window too; team waves surge together (reads TC-1 blackboard, inert in 1v1)
+    SquadManagerBotModuleCA:
+      UseTeamSyncAttacks: true
+  S_tc2_defend_answers:              # NOVA TC-2b — answer an ally's broadcast defend request: protect squad rallies at the ally's position (third channel below own threat/escort; inert in 1v1)
+    SquadManagerBotModuleCA:
+      UseTeamDefendAnswers: true
+      AllyAnswerCooldownTicks: 750   # re-draft cooldown after a superseded answer — damps the commit/release churn on standing requests (0 = off, bit-identical)
+  T_fb2_demand_capturers:            # DAWN FB2 (Frans SpecOps demand) — safe capturable targets justify building a specialist; zero engineers no longer means zero demand forever
+    EngineerBotModule:
+      UseDemandCapturers: true
+  U_ut4_expansion_appetite:          # NOVA UT-4 — TechRush<->Expansion axis scales the greedy MCV target count (expansion leans wider, techrush slimmer; needs DriveMcvRequests on)
+    ExpansionPlannerBotModule:
+      UseUtilityExpansionAppetite: true
+  V_tc2_expansion_claims:            # NOVA TC-2c — yield contested fields to the outranking ally's published expansion claim (lower ClientIndex wins; inert in 1v1)
+    ExpansionPlannerBotModule:
+      UseTeamExpansionClaims: true
+  W_tc2_role_split:                  # NOVA TC-2d — allied bots spread their TechRush<->Expansion rests by ClientIndex rank (mirrored teams cover the arsenal; inert in 1v1)
+    MasterAiBotModule:
+      UseTeamRoleSplit: true
+  X_cn3_bridge_repair:               # DAWN CN3 - BridgeRepairBotModule (CN port): idle engineers enter damaged bridge huts; demand builds one when none exist
+    GrantConditionOnBotOwner@cn3bridgerepair:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  Y_cn3_stealth_squads:              # DAWN CN3 — stealth squads (CN port): cloak-capable armed ground ambushes around remembered detector coverage
+    GrantConditionOnBotOwner@cn3stealthsquads:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  Z_def3_remote_outpost_coverage:    # NOVA DEF-3 — defences advise around the most-uncovered expansion front, not just the picked yard
+    DefenseCoveragePlanner:
+      CoverRemoteOutposts: true
+  F_plug_spawn:                      # NOVA — restore the vendored PlugSpawnerBotModuleCA (plug->hosts map, prereq-gated): WC2/Zerg tech chains, TS uplinks, temple nuke
+    GrantConditionOnBotOwner@plugspawn:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  AA_cn4_region_roles:               # NOVA CN4 - RegionRolesBotModule (CN port): zone-graph regions get Core/Economy/Military/Outpost roles; defence fronts prefer Military/Outpost ground (needs D_zone_topology)
+    GrantConditionOnBotOwner@cn4regionroles:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+    DefenseCoveragePlanner:
+      UseRegionRoles: true
+  AB_garrison_contest:               # EMBER GC-1 - leased infantry claim scouted neutral garrisonables + Raid missions clear enemy-occupied ones (artillery stand-off via the siege evaluator); LoadGarrisonerCA@Infantry yields genericbot while armed
+    GrantConditionOnBotOwner@garrisoncontest:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  AC_cover_map_expansion:            # EMBER EX-4 - MCV appetite tracks free far fields, not McvTargetCount: expand until every reachable field is claimed; difficulty paces speed, never the ceiling
+    ExpansionPlannerBotModule:
+      CoverAllFields: true
+  AJ_field_coverage:                 # FE-1 (AI_ARCHITECTURE 12.24, DESIGN 19.1b): one refinery per anchor (spreader / spreaderless field) placed next to it and never more than anchors (replaces the yard cap, OptimalRefineryCount and the scale-target refinery cap); the MCV site and the crawl target go in different directions and spread to ground we do not own; EX-4 + greedy MCV run more aggressively
+    ExpansionPlannerBotModule:
+      FieldCoverage: true
+      CoverAllFields: true             # EX-4 on (group AC's switch, repeated so AJ is self-contained)
+      CoverAllFieldsMaxInflight: 3     # 2 -> 3: a further wave of MCVs is queued while the first is still driving, so fields fill in parallel; bounded, and the cash reserve still gates each request
+      McvRequestReserve: 1000          # 1500 -> 1000: the maintainer saw bots crawl late; each request still needs the cash, difficulty paces through BotLimits intervals
+      McvTargetCount: 4                # 3 -> 4: the floor under CoverAllFields (active + inflight) for a map with few reachable far fields
+  AD_spaced_base_placement:          # SP-1 re-ranking (the ONE spacing owner, SpacingAdvisorBotModule; its hard building gap is already live for genericbot) - findPos re-ranks its first 24 placeable cells by distance to the nearest own building; bases grow outward instead of packing into a pathfinder jam
+    SpacingAdvisorBotModule:
+      RerankCandidates: true
+  AE_army_first:                     # the ONE army-first switch (ArmyFirstBotModule, AF-1 + DAWN merged): holds non-essential buildings while cash < 2500 (resume >= 4000) OR while combat units < 14 with cash > 1500; conyard/refinery/power/first factory always pass
+    GrantConditionOnBotOwner@armyfirst:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+    ArmyFirstBotModule:
+      MinArmyUnitsBeforeBuildings: 14
+      ArmyFirstMinCash: 1500
+  AF_harvester_spread:               # EMBER HS-1 - genericbot's field-deficit redirect scans ~3.5x faster (433->125) so crowded fields bleed harvesters to starved ones; @classic untouched
+    HarvesterBotModuleCA@generic:
+      ScanForLowEffectHarvestersInterval: 125
+  AH_parallel_production:            # EMBER PP-1 - IBotProductionWidth provider: BuildUnit fills up to 4 idle queues per category per call (3 war factories produce in parallel); provider-seam so shared @generic never hands it to classic
+    GrantConditionOnBotOwner@parallelprod:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  AG_assault_fanout:                 # the line-of-death fix, ONE switch (CV concave 12.7a unified with NOVA ATK-1, 2026-10-02): arms the AssaultFormationBotModule provider so Rush squads deploy a range-matched concave arc (wider for bigger armies) and commit staggered before engaging. Provider tunables live on its Info; classic has no provider = bit-identical
+    GrantConditionOnBotOwner@assaultfanout:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  ST_scale_targets:                  # DESIGN 19.10 / AI_ARCHITECTURE 12.22: arms the ScaleTargetsBotModule provider - harvester/refinery/production/conyard/tech/superweapon/aircraft targets and the army value target grow with the seen enemy, the unscouted map, difficulty, personality and game time, and replace the fixed per-tier limits (HarvesterLimit, RefineryLimit, ProductionTypeLimit, McvTargetCount, tech/superweapon BuildingLimits, MaxAircraft, SquadValue). No provider (classic, switch off) = every consumer keeps its limit, bit-identical
+    GrantConditionOnBotOwner@scaletargets:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  AK_build_order_knobs:              # DESIGN 19.2 / AI_ARCHITECTURE 12.25 BO-1: arms the BuildOrderKnobsBotModule provider - eight bounded multipliers (tempo, greed, production, tech, defence, power_margin, expansion, support) + a named opening from personality preset x learned x jitter with a fog-honest react layer; the shared base builder reads it only from an enabled provider (BuildingDelays/Intervals, BuildingFractions by category, power surplus, opening step). No provider (classic, switch off) = bit-identical
+    GrantConditionOnBotOwner@buildorderknobs:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  AL_emergency_net_loss:             # maintainer ruling 2026-10-03, AI_ARCHITECTURE open question 10 - Emergency means LOSING (loss >25% of army+loss AND deaths > kills in the window; clears at 12%) and never rewrites the personality (no forced turtle); target + urgency only
+    MasterAiBotModule:
+      EmergencyLossArmyPct: 25
+      EmergencyKeepsPersonality: true
+  AM_army_staging:                   # DESIGN 19.12 / AI_ARCHITECTURE 12.29, maintainer 2026-10-03: arms the ArmyStagingBotModule planner - the idle army waits at the front with the defences, split by threatened side; the squad manager stages the pool, the base builder rallies at the primary cell. No provider (classic, switch off) = bit-identical
+    GrantConditionOnBotOwner@armystaging:
+      Bots: easiest, veryeasy, easy, medium, hard, veryhard, brutal, challenger, unbeatable, cameogod, exploit_rush, exploit_turtle, exploit_guerrilla
+  F2_ca_f2p2:                        # CA F2 part 2 hand-ports (WP-A1/A3/A4): air limits, route start, squad state tweaks
+    UnitBuilderBotModuleCA:        # one instance is shared by genericbot AND classicbot (34 ContentPacks extend it), so it cannot be split
+      SwitchCondition: genericbot  # the two switches below take effect only while this holds: classic stays the A/B reference
+      CountQueuedAircraft: true
+      ObservedAirThreats: true
+    SquadManagerBotModuleCA:
+      RouteFromNearestOwnBuilding: true
+      PreferBuildingTargets: true
+      ValueOnlyAttackLaunch: true
+      UseUpstreamStateTweaks: true
+  BB_tc3_coalition_plan:             # NOVA TC-3 - coalition fold: every member computes the identical team directive (MainTarget vote, Push/Defend phase, rescue election, sector anchors) from the same broadcast set - publish-only, inert in 1v1
+    MasterAiBotModule:
+      UseCoalitionPlan: true
+  BC_tc3_rescue_election:            # NOVA TC-3 - nearest-army rescue: the fold elects exactly one allied responder per defend request (nearest ArmyCentroid to DefendPosition); losers stand down
+    SquadManagerBotModuleCA:
+      UseCoalitionRescue: true
+  BD_tc3_sectors:                    # NOVA TC-3 - Voronoi territory: ExpansionPlanner scores own-sector fields first (spawn-anchor partition, foreign fields deprioritized never forbidden; dead ally's sector refolds)
+    ExpansionPlannerBotModule:
+      UseCoalitionSectors: true
+  BE_tc3_main_target:                # NOVA TC-3 - one commander: master's target bias + squad MainTarget preference fold to the coalition target (the merged-army effect under one directive)
+    MasterAiBotModule:
+      UseCoalitionTargetBias: true
+    SquadManagerBotModuleCA:
+      UseCoalitionTarget: true
+  BF_team_capture_claims:            # NOVA TC-2e - capture-claim arbitration over the team blackboard: live capture/contest target cells are published; a lower-ClientIndex claimant wins, the rest stand down (DAWN 6v6 follow-up)
+    GarrisonContestBotModule:
+      UseTeamCaptureClaims: true
+      PreferShardCaptureTargets: true
+    EngineerBotModule:
+      UseTeamCaptureClaims: true
+      PreferShardCaptureTargets: true
+  BG_raid_mission_steering:          # TC-2f - EMBER's raid dead-end (AI_ARCHITECTURE 12.27): a Raid card may ride a launching wave up to the overcommit cap - the wave commits anyway, steering changes where not whether
+    SquadManagerBotModuleCA:
+      UseRaidMissionSteering: true
+      RaidMissionSteerOvercommitPercent: 300
+      RaidMissionSteerMinValue: 0
+  BH_tc3_assist_election:            # NOVA TC-3 - the coalition fold's second election pass (AI_ARCHITECTURE 12.28): a contested expansion claim elects the nearest free ally as escort, strictly after rescue drains the shared pool; the elected protect squad rallies the field as an assist_answer (inert in 1v1)
+    SquadManagerBotModuleCA:
+      UseCoalitionAssist: true

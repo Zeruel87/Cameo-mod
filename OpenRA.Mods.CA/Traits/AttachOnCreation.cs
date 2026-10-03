@@ -8,6 +8,7 @@
  */
 #endregion
 
+using System.Linq;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
@@ -67,8 +68,14 @@ namespace OpenRA.Mods.CA.Traits
 				if (attachable == null)
 					return;
 
-				var attachableToTrait = self.Trait<AttachableTo>();
-				var attached = attachableToTrait.Attach(attachable);
+				var attachableToTrait = self.TraitsImplementing<AttachableTo>().FirstOrDefault(a => a.CanAttach(attachable));
+				if (attachableToTrait == null)
+				{
+					actorToAttach.Dispose();
+					return;
+				}
+
+				var attached = attachableToTrait.Attach(actorToAttach, attachable);
 
 				if (!attached)
 					actorToAttach.Dispose();

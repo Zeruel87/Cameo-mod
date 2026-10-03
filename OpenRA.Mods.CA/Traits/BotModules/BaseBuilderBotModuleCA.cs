@@ -118,6 +118,17 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("How many randomly chosen cells with resources to check when deciding refinery placement.")]
 		public readonly int MaxResourceCellsToCheck = 3;
 
+		[Desc("Cameo (AI_ARCHITECTURE §12.13, EX-2): while an expansion target provider is mounted, refinery placement",
+			"samples only resource cells of fields no own refinery serves (no refinery within this many cells of the",
+			"field's resource centre), so refineries spread over new fields instead of stacking on the same home field.",
+			"Classic mounts no provider and keeps the old farthest-from-refinery ordering.")]
+		public readonly int RefineryUnservedRadiusCells = 10;
+
+		[Desc("Cameo (AI_ARCHITECTURE §12.20): when an active IBotPlacementAdvisor is mounted, findPos hands it",
+			"this many placeable candidate cells to re-rank instead of keeping the first. With no advisor the",
+			"placement scan is byte-identical to upstream.")]
+		public readonly int PlacementAdvisorCandidates = 24;
+
 		[Desc("Delay (in ticks) until rechecking for new BaseProviders.")]
 		public readonly int CheckForNewBasesDelay = 1500;
 
@@ -286,8 +297,81 @@ namespace OpenRA.Mods.CA.Traits
 		IResourceLayer resourceLayer;
 		IPathFinder pathFinder;
 		IBotPositionsUpdated[] positionsUpdatedModules;
+		IBotExpansionTargetProvider[] expansionTargetProviders;
 		CPos initialBaseCenter;
 		public CPos? ResourceConyardCenter;
+
+		// Cameo (AI_ARCHITECTURE §12.13, EX-1): the field an expansion planner wants the base to walk toward, if any.
+		public CPos? ExpansionTarget()
+		{
+			if (expansionTargetProviders == null)
+				return null;
+
+			foreach (var provider in expansionTargetProviders)
+			{
+				var target = provider.ExpansionTarget;
+				if (target != null)
+					return target;
+			}
+
+			return null;
+		}
+
+		// Cameo (§12.13, EX-2): a provider whose target field is in reach and unclaimed wants a refinery there, so the
+		// refinery count is not adequate yet, whatever the fixed optimum says: every field in reach gets one.
+		public IBotExpansionTargetProvider ExpansionWantsRefinery()
+		{
+			if (expansionTargetProviders == null)
+				return null;
+
+			foreach (var provider in expansionTargetProviders)
+				if (provider.WantsRefineryAtExpansionTarget && (provider.ExpansionTarget != null || provider.RefineryLawActive))
+					return provider;
+
+			return null;
+		}
+
+		// Cameo (§12.13, EX-2): an expansion planner is mounted at all (genericbot). Classic shares this module but
+		// mounts no provider, so refinery placement keyed on this stays bit-identical there.
+		public bool HasExpansionGuidance => expansionTargetProviders is { Length: > 0 };
+
+		// Cameo (§12.24, FE-1): the provider enforcing one refinery per anchor, if its switch is on. Null = every refinery
+		// rule below is the old one (classic mounts no provider; genericbot with the switch off publishes false).
+		public IBotExpansionTargetProvider RefineryLawProvider()
+		{
+			if (expansionTargetProviders == null)
+				return null;
+
+			foreach (var provider in expansionTargetProviders)
+				if (provider.RefineryLawActive)
+					return provider;
+
+			return null;
+		}
+
+		/// <summary>
+		/// §12.13 EX-2: keep only the resource cells whose field no own refinery serves — a field counts as served
+		/// when a refinery stands within <paramref name="servedRadiusCells"/> of the field's resource centre
+		/// (<paramref name="fieldCenterOf"/> maps a cell to its index centre, e.g. ResourceMapBotModule's).
+		/// Cell-to-refinery distance alone is wrong: a big field's far edge is still the same field. Own-actor
+		/// cells only, so fog-honest. Falls back to the full list when every field in reach is already served.
+		/// </summary>
+		public static IEnumerable<CPos> PreferUnservedResourceCells(IEnumerable<CPos> candidates,
+			Func<CPos, CPos> fieldCenterOf, IReadOnlyCollection<CPos> ownRefineryCells, int servedRadiusCells)
+		{
+			var list = candidates as IReadOnlyList<CPos> ?? candidates.ToList();
+			if (ownRefineryCells.Count == 0)
+				return list;
+
+			var radiusSquared = (long)servedRadiusCells * servedRadiusCells;
+			var unserved = list.Where(c =>
+			{
+				var center = fieldCenterOf(c);
+				return ownRefineryCells.All(r => (r - center).LengthSquared > radiusSquared);
+			}).ToList();
+			return unserved.Count > 0 ? unserved : list;
+		}
+
 		public Dictionary<Actor, (CPos ConyardLoc, CPos ResourceLoc)> RequestedRefineries = [];
 
 		readonly Stack<TraitPair<RallyPoint>> rallyPoints = [];
@@ -317,6 +401,8 @@ namespace OpenRA.Mods.CA.Traits
 
 		BotLimits botLimits;
 		int refineryLimit;
+		IBotScaleTargets[] scaleTargets;
+		IBotBuildOrderKnobs[] buildOrderKnobs;
 
 		public PowerManager PlayerPower { get; private set; }
 		public int ExcessPower { get; private set; }
@@ -407,6 +493,7 @@ namespace OpenRA.Mods.CA.Traits
 				}
 
 				ResourceMapModule = bot.Player.PlayerActor.TraitsImplementing<ResourceMapBotModule>().FirstOrDefault(t => t.IsTraitEnabled());
+				expansionTargetProviders = bot.Player.PlayerActor.TraitsImplementing<IBotExpansionTargetProvider>().ToArray();
 				firstTick = false;
 			}
 
@@ -535,6 +622,43 @@ namespace OpenRA.Mods.CA.Traits
 			}
 		}
 
+		/// <summary>
+		/// The first enabled build-order knobs provider (AI_ARCHITECTURE 12.25), or null: classic and the switch-off state have none,
+		/// and every knob consumer then keeps the unscaled number, bit-identical.
+		/// </summary>
+		public IBotBuildOrderKnobs BuildOrderKnobs
+		{
+			get
+			{
+				buildOrderKnobs ??= player.PlayerActor.TraitsImplementing<IBotBuildOrderKnobs>().ToArray();
+				return buildOrderKnobs.FirstEnabled();
+			}
+		}
+
+		/// <summary>An enabled scale-targets provider's target for the category (DESIGN 19.10); false = keep the BotLimits number.</summary>
+		public bool TryGetScaleTarget(string category, out int target)
+		{
+			scaleTargets ??= player.PlayerActor.TraitsImplementing<IBotScaleTargets>().ToArray();
+			return scaleTargets.TryTarget(category, out target);
+		}
+
+		/// <summary>
+		/// The BuildingLimits entry of a building, with the scale targets applied: a building the provider tags `tech` or
+		/// `superweapon` takes its category target in place of its per-actor number; every other entry keeps its value.
+		/// False when the building has no entry (no limit).
+		/// </summary>
+		public bool TryGetBuildingLimit(string actorName, out int limit)
+		{
+			if (!Info.BuildingLimits.TryGetValue(actorName, out limit))
+				return false;
+
+			scaleTargets ??= player.PlayerActor.TraitsImplementing<IBotScaleTargets>().ToArray();
+			if (scaleTargets.TryBuilding(actorName, out var scaled))
+				limit = scaled;
+
+			return true;
+		}
+
 		void RefreshBotLimits()
 		{
 			botLimits = player.PlayerActor.TraitsImplementing<BotLimits>().FirstEnabledTraitOrDefault();
@@ -635,6 +759,15 @@ namespace OpenRA.Mods.CA.Traits
 		CPos ChooseRallyLocationNear(Actor producer)
 		{
 			var locomotors = LocomotorsForProducibles(producer);
+
+			// DESIGN 19.12: with a staging provider new ground units wait at the front with the defences (the biggest group's
+			// point), not at a random cell beside the factory. A producer whose units cannot walk there (shipyard, helipad)
+			// keeps the old choice. No provider = the random cell below, bit for bit.
+			var staging = player.PlayerActor.TraitsImplementing<IBotArmyStaging>().FirstEnabledTraitOrDefault()?.PrimaryStagingCell;
+			if (staging != null && locomotors.Length > 0
+				&& (pathFinder == null || locomotors.All(l => pathFinder.PathMightExistForLocomotorBlockedByImmovable(l, producer.Location, staging.Value))))
+				return staging.Value;
+
 			var possibleRallyPoints = world.Map.FindTilesInCircle(producer.Location, Info.RallyPointScanRadius)
 				.Where(c => IsRallyPointValid(producer.Location, c, locomotors, producer.Info.TraitInfoOrDefault<BuildingInfo>()))
 				.ToList();
@@ -722,7 +855,28 @@ namespace OpenRA.Mods.CA.Traits
 
 			var currentRefineryCount = AIUtils.CountActorByCommonName(RefineryBuildings);
 
-			if (refineryLimit != 0 && currentRefineryCount >= refineryLimit)
+			// FE-1 (§12.24): one refinery per anchor. DESIGN §19.1b binds every field to its refinery, so the yard-based
+			// ceiling (RefineriesPerBase x yards + MaxExtraRefineries), BotLimits.RefineryLimit and the §19.10 scale-target
+			// refinery cap are all bypassed: the physical cap is the number of anchors, and a refinery is allowed only while
+			// an anchor in building reach is unserved. The very first refinery keeps InititalMinimumRefineryCount.
+			var law = RefineryLawProvider();
+			if (law != null)
+			{
+				var inProduction = 0;
+				foreach (var r in Info.RefineryTypes)
+					if (BuildingsBeingProduced != null && BuildingsBeingProduced.TryGetValue(r, out var n))
+						inProduction += n;
+
+				var total = currentRefineryCount + inProduction;
+				if (total < Info.InititalMinimumRefineryCount)
+					return false;
+
+				return total >= law.RefineryAnchorCount || law.UnservedAnchorsInReach <= inProduction;
+			}
+
+			// Scale targets (DESIGN 19.10): an enabled provider's refinery target replaces BotLimits.RefineryLimit.
+			var limit = TryGetScaleTarget("refinery", out var scaledRefineries) ? scaledRefineries : refineryLimit;
+			if (limit != 0 && currentRefineryCount >= limit)
 				return true;
 
 			foreach (var r in Info.RefineryTypes)
@@ -737,7 +891,8 @@ namespace OpenRA.Mods.CA.Traits
 		// Require at least one refinery, unless we can't build it.
 		public bool HasAdequateRefineryCount() =>
 			Info.RefineryTypes.Count == 0 ||
-			AIUtils.CountActorByCommonName(RefineryBuildings) >= OptimalRefineryCount() ||
+			(AIUtils.CountActorByCommonName(RefineryBuildings) >= (RefineryLawProvider() != null ? Info.InititalMinimumRefineryCount : OptimalRefineryCount())
+				&& ExpansionWantsRefinery() == null) ||
 			AIUtils.CountActorByCommonName(powerBuildings) == 0 ||
 			AIUtils.CountActorByCommonName(ConstructionYardBuildings) == 0;
 
@@ -841,6 +996,14 @@ namespace OpenRA.Mods.CA.Traits
 
 			for (var i = 0; i < refineries.Length; i++)
 			{
+				// StarCraft and Warcraft headquarters also accept resources. Keep them
+				// in the refinery count, but never sell them as redundant drop-off sites.
+				if (Info.ConstructionYardTypes.Contains(refineries[i].Info.Name))
+				{
+					AIUtils.BotDebug("AI ({0}): Preserving headquarters during refinery cleanup: {1}", player.ClientIndex, refineries[i]);
+					continue;
+				}
+
 				for (var j = i + 1; j < refineries.Length; j++)
 				{
 					if ((refineries[i].Location - refineries[j].Location).LengthSquared <= Info.SellRefineryTooCloseCellDistance * Info.SellRefineryTooCloseCellDistance)
@@ -950,7 +1113,22 @@ namespace OpenRA.Mods.CA.Traits
 
 		void IBotSuggestRefineryProduction.RequestLocation(CPos refineryLocation, CPos conyardLocation, Actor expandActor)
 		{
-			if (ResourceMapModule == null || ResourceMapModule.FindClosestIndiceFromCPos(refineryLocation).PlayerRefineryCount < Info.MaxRefineryPerIndice)
+			if (ResourceMapModule == null)
+			{
+				RequestedRefineries[expandActor] = (conyardLocation, refineryLocation);
+				return;
+			}
+
+			// Cameo (§12.13, EX-2): with an expansion planner, pending requests to the same field count toward its
+			// cap as well — otherwise several queued requests can stack on one index before PlayerRefineryCount has
+			// seen a built refinery. Classic mounts no provider and keeps the old check, request for request.
+			var indice = ResourceMapModule.FindClosestIndiceFromCPos(refineryLocation);
+			var held = indice.PlayerRefineryCount;
+			if (HasExpansionGuidance)
+				held += RequestedRefineries.Count(r =>
+					r.Key != expandActor && ResourceMapModule.FindClosestIndiceFromCPos(r.Value.ResourceLoc) == indice);
+
+			if (held < Info.MaxRefineryPerIndice)
 				RequestedRefineries[expandActor] = (conyardLocation, refineryLocation);
 		}
 	}

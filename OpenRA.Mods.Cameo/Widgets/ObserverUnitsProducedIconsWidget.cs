@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Cameo.Traits;
 using OpenRA.Mods.Common.Traits;
@@ -31,7 +32,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 		public int IconHeight = 24;
 		public int IconSpacing = 1;
 
-		readonly float2 iconSize;
+		readonly Vector2 iconSize;
 		public int MinWidth = 240;
 
 		public ArmyUnit TooltipUnit { get; private set; }
@@ -76,7 +77,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 			IconWidth = other.IconWidth;
 			IconHeight = other.IconHeight;
 			IconSpacing = other.IconSpacing;
-			iconSize = new float2(IconWidth, IconHeight);
+			iconSize = new Vector2(IconWidth, IconHeight);
 
 			MinWidth = other.MinWidth;
 
@@ -124,7 +125,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 					var centerPosition = iconTopLeft;
 
 					var palette = unit.IconPaletteIsPlayerPalette ? unit.IconPalette + player.InternalName : unit.IconPalette;
-					WidgetUtils.DrawSpriteCentered(icon.Image, worldRenderer.Palette(palette), centerPosition + 0.5f * iconSize, 0.5f);
+					WidgetUtils.DrawSpriteCentered(icon.Image, worldRenderer.Palette(palette), centerPosition.ToVector2() + 0.5f * iconSize, 0.5f);
 
 					armyIcons.Add(new ArmyIcon
 					{

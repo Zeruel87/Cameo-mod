@@ -1,6 +1,21 @@
 # Warhead reference — measured corpus, family profiles and archetypes
 
-The reference DATA behind the warhead system, in one file. Three separate files until
+The reference DATA behind the warhead system, in one file.
+
+> ⛔ **Corrected 2026-09-03 — "six independent RA2-lineage mods" was an overcount, in 7 places.**
+> The pairwise Versus agreement was measured for the first time on 2026-09-03. Of the six INI
+> sources that share warhead names, **four carry substantially the same armour table**:
+> `ra2_vanilla ~ yr_vanilla` **98%** (one game — YR is RA2's expansion, maintainer ruling),
+> `ra2_reborn ~ yr_vanilla` **97%**, `ra2_reborn ~ ra2_vanilla` **94%**, and
+> `cnc_reloaded ~ ra2_reborn` **87%**, which joins the group transitively. Only **Mental Omega**
+> (52–66% against everything) and **Red Resurrection** (52–68%) are independent.
+> ⚠ Romanov's Vengeance shares **zero** warhead names with any of them — it names warheads by
+> calibre (`105mm`, `120mmxrad`) where the Westwood mods name them by role (`ap`, `antiperson`) —
+> so it can be neither confirmed nor collapsed against them.
+> ⭐ **The AP finding itself survives at reduced strength**: three independent voices agreeing is
+> still evidence that the plate inversion is Westwood's design rather than one mod's quirk. The
+> COUNT was wrong, and it was wrong because the corpus split one game into "RA2" and "YR".
+> Re-measure: `docs/design/REFERENCE_DEDUP.md` §11. Three separate files until
 2026-08-23, all consumed by the same tooling and all describing the same corpus.
 
 **Generated / measured — do not hand-edit the tables.** The machine-readable sidecars are
@@ -405,7 +420,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **VEH (Scout=100 Light=105.8 Medium=100 Heavy=100 Superheavy=100)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.
@@ -505,7 +520,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **INF (None=110 Flak=100 Plate=100)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.
@@ -672,7 +687,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **VEH (Scout=93.3 Light=102.7 Medium=93.3 Heavy=46.7 Superheavy=23.1)**; **BLD (Wood=100 Steel=53.3 Concrete=58.1)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.
@@ -752,7 +767,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **INF (None=41.7 Flak=41.7 Plate=25)**; **BLD (Wood=108.3 Steel=75 Concrete=100)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.
@@ -912,7 +927,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **INF (None=180 Flak=300 Plate=200)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.
@@ -1012,7 +1027,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **INF (None=20 Flak=138.5 Plate=100)**; **VEH (Scout=100 Light=100 Medium=84.6 Heavy=100 Superheavy=100)**; **BLD (Wood=97.8 Steel=61.5 Concrete=100)**; **AIR (Fighter=100 Bomber=84.6 Helicopter=100 Spaceship=100)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.
@@ -1100,7 +1115,7 @@ ladder reads the way the law requires (W13 rule 6).
 
 ⚠ The raw field median violates the law on: **INF (None=41.7 Flak=41.7 Plate=25)**; **VEH (Scout=83.3 Light=125 Medium=166.7 Heavy=145.5 Superheavy=166.7)**; **BLD (Wood=108.3 Steel=75 Concrete=100)**; **AIR (Fighter=125 Bomber=166.7 Helicopter=145.5 Spaceship=166.7)**.
 
-For AP that is not a data error — six independent RA2-lineage mods all
+For AP that is not a data error — three independent RA2/YR voices all
 write `none 25 · flak 25 · plate 15`, i.e. armour piercing doing LESS to
 plated infantry than to unplated. It is Westwood's design, faithfully
 cloned. Cameo's law inverts it so the weapon stays readable.

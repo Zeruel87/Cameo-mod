@@ -15,8 +15,8 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.CA.Traits
 {
-	[Desc("Selectable dropdown of prerequisites.")]
 	[TraitLocation(SystemActors.Player | SystemActors.EditorPlayer)]
+	[Desc("Selectable dropdown of prerequisites.")]
 	public class LobbyPrerequisiteDropdownInfo : TraitInfo, ILobbyOptions, ITechTreePrerequisiteInfo
 	{
 		[FieldLoader.Require]

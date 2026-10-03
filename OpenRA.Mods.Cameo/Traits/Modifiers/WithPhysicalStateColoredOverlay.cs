@@ -16,6 +16,7 @@ using OpenRA.Traits;
 using OpenRA.Mods.Common.Traits;
 using System.Linq;
 using System;
+using System.Numerics;
 
 namespace OpenRA.Mods.Cameo.Traits
 {
@@ -53,9 +54,9 @@ namespace OpenRA.Mods.Cameo.Traits
 	public class WithPhysicalStateColoredOverlay : ConditionalTrait<WithPhysicalStateColoredOverlayInfo>, IRenderModifier, INotifyPhysicalStateChanged
 	{
 		readonly Actor self;
-		readonly float3 maxTint;
-		readonly float3 minTint;
-		readonly float3 tintRange;
+		readonly Vector3 maxTint;
+		readonly Vector3 minTint;
+		readonly Vector3 tintRange;
 
 		readonly float alphaRange;
 		readonly float minAlpha;
@@ -64,7 +65,7 @@ namespace OpenRA.Mods.Cameo.Traits
 		readonly int valueRange;
 		readonly PhysicalState physicalState;
 
-		float3 currentTint;
+		Vector3 currentTint;
 		float currentAlpha;
 		float proportion;
 
@@ -73,8 +74,8 @@ namespace OpenRA.Mods.Cameo.Traits
 		{
 			this.self = self;
 			valueRange = Info.UpperValue - Info.LowerValue;
-			maxTint = new float3(info.MaxColor.R, info.MaxColor.G, info.MaxColor.B) / 255f;
-			minTint = new float3(info.MinColor.R, info.MinColor.G, info.MinColor.B) / 255f;
+			maxTint = new Vector3(info.MaxColor.R, info.MaxColor.G, info.MaxColor.B) / 255f;
+			minTint = new Vector3(info.MinColor.R, info.MinColor.G, info.MinColor.B) / 255f;
 			tintRange = maxTint - minTint;
 			
 			minAlpha = info.MinColor.A / 255f;
@@ -123,7 +124,7 @@ namespace OpenRA.Mods.Cameo.Traits
 						// Interpolate from neutral white toward the state colour, then multiply the
 						// renderable's existing tint. Every channel remains <= its original value, so
 						// sprite/model detail is preserved and the effect can never brighten pixels.
-						var multiply = float3.Ones + currentAlpha * (currentTint - float3.Ones);
+						var multiply = Vector3.One + currentAlpha * (currentTint - Vector3.One);
 						yield return ma.WithTint(ma.Tint * multiply, ma.TintModifiers);
 					}
 					else

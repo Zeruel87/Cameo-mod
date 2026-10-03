@@ -28,11 +28,104 @@
 		ContrailEndWidth: 16
 
 TDBuildingExplode:
-	Inherits: BuildingExplode
-	Warhead@Effect: CreateEffect
-		Explosions: building, building_napalm, med_frag, poof, small_building
-		ImpactSounds: crumble.aud, xplobig4.aud
-		Delay: 0
+	ValidTargets: Ground, Water, Air
+	ReloadDelay: 25
+	Range: 5120
+	TargetActorCenter: true
+	Warhead@Demolition_Light: AreaDamage
+		ValidRelationships: Ally, Neutral, Enemy
+		FriendlyFireDamage: 50
+		FriendlyFireSpread: 50
+		ValidTargets: Ground, Water
+		Spread: 233
+		Damage: 60000
+		Falloff: 100, 45, 18, 6, 0
+		Versus:
+			HAZMAT: 62
+			COMPOSITE: 100
+			BLAST: 42
+			REFLECTOR: 75
+			ARMOR: 70
+			Shield: 143
+			Wood: 200
+			None: 183
+			Steel: 165
+			Flak: 143
+			Concrete: 136
+			Scout: 109
+			Plate: 107
+			Light: 86
+			Fighter: 70
+			Medium: 69
+			Bomber: 62
+			Heroic: 59
+			Heavy: 58
+			Helicopter: 54
+			Superheavy: 51
+			Spaceship: 47
+			FlyingInfantry: 94
+			CyborgLight: 125
+			CyborgMedium: 99
+			CyborgHeavy: 79
+			CyborgHeroic: 55
+			AntiAirInfantry: 162
+			AntiAirVehicle: 77
+			AntiAirBuilding: 150
+			ShipLight: 131
+			ShipMedium: 97
+			ShipHeavy: 98
+			ShipSuperheavy: 92
+			AntiAirShip: 113
+			SubmarineLight: 75
+			SubmarineHeavy: 71
+		DamageTypes: Prone75Percent, TriggerProne, ExplosionDeath
+		PercentageScale: 10000
+		PercentageSpread: 50
+		PercentageVersus:
+			Shield: 17
+			Wood: 16
+			Steel: 15
+			Concrete: 14
+			None: 13
+			Flak: 12
+			Plate: 11
+			Heroic: 10
+			Scout: 9
+			Light: 8
+			Medium: 7
+			Heavy: 6
+			Superheavy: 5
+			Fighter: 4
+			Bomber: 3
+			Helicopter: 2
+			Spaceship: 1
+			FlyingInfantry: 6
+			CyborgLight: 10
+			CyborgMedium: 9
+			CyborgHeavy: 8
+			CyborgHeroic: 7
+			AntiAirInfantry: 12
+			AntiAirVehicle: 7
+			AntiAirBuilding: 14
+			ShipLight: 11
+			ShipMedium: 10
+			ShipHeavy: 9
+			ShipSuperheavy: 9
+			AntiAirShip: 10
+			SubmarineLight: 8
+			SubmarineHeavy: 7
+	Projectile: Bullet
+		Speed: 150
+		Blockable: false
+		LaunchAngle: 66
+		Inaccuracy: 400
+		Image: BOMB
+	Warhead@ShieldHit: GrantExternalCondition
+		Condition: shieldhit
+		Duration: 10
+		Range: 1250
+		ValidTargets: Shielded
+	Inherits@fx: ^td_tiberiandawn_tdbuildingexplode
 
 M16:
 	Inherits@wh: ^Warhead_Bullet_Light
@@ -69,6 +162,9 @@ Rockets:
 	Report: bazook1.aud
 	Warhead@MissileAP_Light:
 		Damage: 18000
+	Projectile: Missile
+		VerticalRateOfTurn: 20
+
 Flamethrower:
 	Inherits@wh: ^Warhead_Flame_Light
 	Inherits@proj: ^Projectile_Flame_Light
@@ -98,7 +194,7 @@ TiberiumExplosion:
 		AddsResourceType: Tiberium
 		Size: 1,1
 
-ra1_allies_alliedsniper:
+ra1_allies_sniper:
 	Inherits@wh: ^Warhead_Sniper_Light
 	Inherits@proj: ^Projectile_Sniper_Light
 	Inherits@fx: ^Effect_Sniper_Light
@@ -113,11 +209,11 @@ ra1_allies_alliedsniper:
 		Damage: 20
 
 ArtilleryShell:
-	Inherits@finalmain: ^Compatibility_Concussion_MediumFlat
+	Inherits@finalmain: ^Warhead_Concussion_Medium_Flat
 	Inherits@wh: ^Warhead_Demolition_Light
 	Inherits@wh2: ^Warhead_Concussion_Medium
 	Inherits@proj: ^Projectile_Grenade_Light
-	Inherits@fx: ^Effect_Concussion_Medium
+	Inherits@fx: ^td_tiberiandawn_artilleryshell
 	ReloadDelay: 112
 	Range: 12345
 	MinRange: 2470
@@ -131,16 +227,9 @@ ArtilleryShell:
 		ContrailEndWidth: 25
 		ContrailStartColor: FFFF88FF
 		ContrailEndColor: FF884422
-	Warhead@Demolition_Light:
-		Damage: 16000
-	Warhead@Concussion_Medium:
-		Damage: 16000
-	Warhead@Effect: CreateEffect
-		Explosions: poof
-		ImpactSounds: xplosml2.aud
 	-Warhead@Concussion_Medium:
 	-Warhead@Demolition_Light:
-	Warhead@Concussion_MediumFlatCompatibility:
+	Warhead@Concussion_Medium_Flat:
 		ValidTargets: Ground, Water
 		Damage: 32000
 		PercentageScale: 9997
@@ -148,7 +237,7 @@ ArtilleryShell:
 BigFlamer:
 	Inherits@wh: ^Warhead_Flame_Medium
 	Inherits@proj: ^Projectile_Flame_Medium
-	Inherits@fx: ^Effect_Flame_Medium
+	Inherits@fx: ^td_tiberiandawn_bigflamer
 	Burst: 2
 	BurstDelays: 10
 	ReloadDelay: 50
@@ -156,29 +245,18 @@ BigFlamer:
 	Report: flamer2.aud
 	Warhead@Flame_Medium:
 		Damage: 14000
-	Warhead@Glow: GlowImpact
-		Color: FF6600
-		Scale: 1.5
-		FadeFrames: 90
-		FadeInFrames: 12
 
 FlametankExplode:
 	Inherits@wh: ^Warhead_Flame_Medium
 	Inherits@proj: ^Projectile_Flame_Medium
-	Inherits@fx: ^Effect_Flame_Medium
+	Inherits@fx: ^td_tiberiandawn_flametankexplode
 	Warhead@Flame_Medium:
 		Damage: 28000
-	Warhead@Effect: CreateEffect
-		Explosions: big_napalm
-		GlowScale: 2.0
-		GlowFadeFrames: 60
-		GlowFadeInFrames: 12
-		ImpactSounds: xplobig6.aud
 
 227mm:
-	Inherits@wh: ^Warhead_MissileHE_Medium
+	Inherits@wh: ^Warhead_MissileAP_Medium
 	Inherits@proj: ^Projectile_Missile_Medium
-	Inherits@fx: ^Effect_MissileHE_Medium
+	Inherits@fx: ^td_tiberiandawn_227mm
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 111
 	Range: 9920
@@ -188,6 +266,7 @@ FlametankExplode:
 	TargetActorCenter: true
 	Report: rocket1.aud
 	Projectile: Missile
+		VerticalRateOfTurn: 16
 		Blockable: false
 		Image: DRAGON
 		Shadow: true
@@ -198,18 +277,8 @@ FlametankExplode:
 		Speed: 500
 		ContrailStartColor: FF884400
 		ContrailEndColor: 000000FF
-	Warhead@MissileHE_Medium:
+	Warhead@MissileAP_Medium:
 		Damage: 8000
-	Warhead@Effect: CreateEffect
-		Explosions: med_frag
-		ImpactSounds: kaboom25.aud
-		ValidTargets: Ground, Ship
-		ImpactActors: false
-	Warhead@EffectWater: CreateEffect
-		Explosions: med_splash
-		ImpactSounds: splash9.aud
-		ValidTargets: Water, Underwater
-		InvalidTargets: Ship, Structure, Bridge
 
 HighVAP:
 	Inherits@wh: ^Warhead_Bullet_Medium
@@ -222,51 +291,5 @@ HighVAP:
 	Range: 6720
 	StartBurstReport: gun8.aud
 	Warhead@Bullet_Medium:
+		InvalidTargets: Air
 		Damage: 4000
-ChemTibAtomic:
-	Inherits: Atomic
-	Warhead@Effect: CreateEffect
-		Explosions: chem_nuke_explosion
-		ImpactSounds: nukexplo.aud
-		ImpactActors: false
-	Warhead@11Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 1,1
-		Delay: 10
-	Warhead@12Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 2,2
-		Delay: 20
-	Warhead@13Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 3,3
-		Delay: 30
-	Warhead@14Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 4,4
-		Delay: 40
-	Warhead@15Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 5,5
-		Delay: 50
-	Warhead@16Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 6,6
-		Delay: 60
-	Warhead@17Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 7,7
-		Delay: 70
-	Warhead@18Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 8,8
-		Delay: 80
-	Warhead@19Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 9,9
-		Delay: 90
-	Warhead@10Res: CreateResource
-		AddsResourceType: Tiberium
-		Size: 10,10
-		Delay: 100
-

@@ -11,6 +11,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.CA.Graphics;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
@@ -29,6 +30,18 @@ namespace OpenRA.Mods.CA.Traits.Render
 
 		[Desc("Color of the box when not using player/relationship/team color.")]
 		public readonly Color Color = Color.White;
+
+		[Desc("Thickness of the selection box lines.")]
+		public readonly float Thickness = 1f;
+
+		[Desc("Defines a custom rectangle for the selection box.",
+			"If null, the Interactable decoration bounds will be used.",
+			"The first two numbers define the width and height of the rectangle as a world distance.",
+			"The (optional) second two numbers define an x and y offset from the actor center.")]
+		public readonly WDist[] Bounds = null;
+
+		[Desc("Additional padding to add around the selection box as a world distance.")]
+		public readonly WDist BoundsPadding = WDist.Zero;
 
 		[Desc("If ColorSource is Relationship, use this color for allies.")]
 		public readonly Color? AllyColor = null;
@@ -57,7 +70,7 @@ namespace OpenRA.Mods.CA.Traits.Render
 	class WithColoredSelectionBox : ConditionalTrait<WithColoredSelectionBoxInfo>, IRenderAnnotations, INotifyCreated, INotifyOwnerChanged
 	{
 		public new readonly WithColoredSelectionBoxInfo Info;
-		Selectable selectable;
+		Interactable interactable;
 		Color color;
 		Color allyColor;
 		Color enemyColor;
@@ -77,12 +90,12 @@ namespace OpenRA.Mods.CA.Traits.Render
 
 		protected override void Created(Actor self)
 		{
-			selectable = self.TraitOrDefault<Selectable>();
+			interactable = self.TraitOrDefault<Interactable>();
 		}
 
 		IEnumerable<IRenderable> IRenderAnnotations.RenderAnnotations(Actor self, WorldRenderer wr)
 		{
-			if (IsTraitDisabled || selectable == null)
+			if (IsTraitDisabled || (interactable == null && Info.Bounds == null))
 				yield break;
 
 			if (self.World.RenderPlayer != null)
@@ -94,9 +107,26 @@ namespace OpenRA.Mods.CA.Traits.Render
 			if (self.World.FogObscures(self))
 				yield break;
 
-			var bounds = selectable.DecorationBounds(self, wr);
+			var bounds = Info.Bounds == null ? interactable.DecorationBounds(self, wr) : SelectionBounds(self, wr);
+			var padding = new int2(Info.BoundsPadding.Length * wr.TileSize.Width / wr.TileScale,
+				Info.BoundsPadding.Length * wr.TileSize.Height / wr.TileScale);
+			bounds = new Rectangle(bounds.X - padding.X, bounds.Y - padding.Y,
+				bounds.Width + 2 * padding.X, bounds.Height + 2 * padding.Y);
 			var boxBounds = new Rectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height);
-			yield return new SelectionBoxAnnotationRenderable(self, boxBounds, color);
+			yield return new SelectionBoxAnnotationRenderableCA(self, boxBounds, color, Info.Thickness);
+		}
+
+		Rectangle SelectionBounds(Actor self, WorldRenderer wr)
+		{
+			var size = new int2(Info.Bounds[0].Length * wr.TileSize.Width / wr.TileScale,
+				Info.Bounds[1].Length * wr.TileSize.Height / wr.TileScale);
+			var offset = -size / 2;
+			if (Info.Bounds.Length > 2)
+				offset += new int2(Info.Bounds[2].Length * wr.TileSize.Width / wr.TileScale,
+					Info.Bounds[3].Length * wr.TileSize.Height / wr.TileScale);
+
+			var xy = wr.ScreenPxPosition(self.CenterPosition) + offset;
+			return new Rectangle(xy.X, xy.Y, size.X, size.Y);
 		}
 
 		bool IRenderAnnotations.SpatiallyPartitionable { get { return false; } }
@@ -142,7 +172,7 @@ namespace OpenRA.Mods.CA.Traits.Render
 			}
 			else if (Info.ColorSource == ColorSource.Player)
 			{
-				color = self.Owner.Color;
+				color = self.OwnerColor();
 			}
 			else
 			{

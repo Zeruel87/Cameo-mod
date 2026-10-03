@@ -91,7 +91,11 @@ namespace OpenRA.Mods.CA.Traits
 			Info = info;
 			Armament = init.Self.TraitsImplementing<Armament>()
 				.Single(a => a.Info.Name == Info.ArmamentName);
-			attack = init.Self.Trait<AttackBase>();
+			// The attack trait that owns this ability's armament. Never Trait<AttackBase>():
+			// it throws on actors with more than one attack trait (76 mobile units today;
+			// upstream CA f31049d2 still has this latent bug).
+			var attacks = init.Self.TraitsImplementing<AttackBase>().ToList();
+			attack = attacks.FirstOrDefault(a => a.Info.Armaments.Contains(Info.ArmamentName)) ?? attacks.First();
 		}
 
 		protected override void Created(Actor self)

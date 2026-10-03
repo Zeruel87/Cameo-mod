@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Effects;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
@@ -403,7 +404,7 @@ namespace OpenRA.Mods.CA.Traits
 					var text = power.info.MaxTargets > 0 ? $"{targetUnits.Count()} / {power.info.MaxTargets}" : targetUnits.Count().ToString();
 					var size = font.Measure(text);
 					var textPos = new int2(Viewport.LastMousePos.X - (size.X / 2), Viewport.LastMousePos.Y + size.Y + (size.Y / 3));
-					yield return new UITextRenderable(font, WPos.Zero, textPos, 0, color, text);
+					yield return new UITextRenderable(font, WPos.Zero, textPos.ToVector2(), 0, color, text);
 				}
 			}
 
@@ -416,7 +417,7 @@ namespace OpenRA.Mods.CA.Traits
 					var pal = wr.Palette(TileSet.TerrainPaletteInternalName);
 
 					foreach (var t in power.CellsMatching(xy, footprint, dimensions))
-						yield return new SpriteRenderable(tile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, pal, 1f, alpha, float3.Ones, TintModifiers.IgnoreWorldTint, true);
+						yield return new SpriteRenderable(tile, wr.World.Map.CenterOfCell(t), WVec.Zero, -511, pal, 1f, alpha, Vector3.One, TintModifiers.IgnoreWorldTint, true);
 				}
 
 				if (power.info.TargetTintColor != null)
@@ -430,7 +431,7 @@ namespace OpenRA.Mods.CA.Traits
 							.Select(r =>
 							{
 								var mr = (IModifyableRenderable)r;
-								var tint = new float3(power.info.TargetTintColor.Value.R, power.info.TargetTintColor.Value.G, power.info.TargetTintColor.Value.B) / 255f;
+								var tint = new Vector3(power.info.TargetTintColor.Value.R, power.info.TargetTintColor.Value.G, power.info.TargetTintColor.Value.B) / 255f;
 								mr = mr.WithTint(tint, mr.TintModifiers | TintModifiers.ReplaceColor).WithAlpha(power.info.TargetTintColor.Value.A / 255f);
 								return mr;
 							});

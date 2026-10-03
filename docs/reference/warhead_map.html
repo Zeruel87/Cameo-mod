@@ -1,0 +1,240 @@
+<title>Combined Arms Warhead Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#f2f1ee; --surface:#fbfaf8; --raise:#ffffff;
+  --ink:#191b1d; --mut:#6b7076; --faint:#9aa0a6;
+  --line:#dcdad4; --line2:#e9e7e2;
+  --accent:#2f5d7c; --accent-soft:#dce8f0;
+  --warn:#9a5b2a; --warn-soft:#f3e5d6;
+  --bar:#7fa6bf; --bar-hi:#2f5d7c; --bar-lo:#c2b9ae;
+  --sans:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#15171a; --surface:#1c1f23; --raise:#22262b;
+  --ink:#e8e6e1; --mut:#949aa1; --faint:#6f767d;
+  --line:#2f343a; --line2:#272b30;
+  --accent:#74a6c8; --accent-soft:#1e333f;
+  --warn:#d59c62; --warn-soft:#3a2b1b;
+  --bar:#4f7d99; --bar-hi:#74a6c8; --bar-lo:#4a4640;
+}}
+:root[data-theme="dark"]{
+  --ground:#15171a; --surface:#1c1f23; --raise:#22262b;
+  --ink:#e8e6e1; --mut:#949aa1; --faint:#6f767d;
+  --line:#2f343a; --line2:#272b30;
+  --accent:#74a6c8; --accent-soft:#1e333f;
+  --warn:#d59c62; --warn-soft:#3a2b1b;
+  --bar:#4f7d99; --bar-hi:#74a6c8; --bar-lo:#4a4640;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--sans);margin:0}
+.wrap{padding-block:26px;padding-left:clamp(16px,3.5vw,44px);padding-right:clamp(16px,3.5vw,44px);
+  max-width:1180px;margin:0 auto}
+h1{font:600 1.65rem/1.15 var(--cond);letter-spacing:-.005em;margin:0 0 6px;text-wrap:balance}
+.lede{color:var(--mut);max-width:72ch;margin:0 0 12px}
+.lede b{color:var(--ink);font-weight:600}
+code{font:.86em/1.4 var(--mono)}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 13px;min-width:104px}
+.stat .n{font:600 1.22rem/1.1 var(--mono);font-variant-numeric:tabular-nums;display:block}
+.stat .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-top:3px;display:block}
+.tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);
+  border-bottom:1px solid var(--line);padding:12px 0 11px;margin:16px 0 0;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,input[type=search],input[type=text],button{font:14px var(--sans);color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:6px 9px}
+input[type=search]{min-width:min(230px,100%);flex:1 1 180px}
+button{cursor:pointer;font-weight:500}
+button.primary{background:var(--accent);color:#fff;border-color:transparent}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px}
+.rows{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+.row{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:7px;padding:12px 14px}
+.row.park{border-left-color:var(--warn);border-left-style:dashed}
+.row.hide{display:none}
+.top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.fname{font:600 1.02rem/1.3 var(--mono);letter-spacing:-.01em}
+.chip{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;padding:2px 7px;border-radius:99px;
+  background:var(--accent-soft);color:var(--accent);font-weight:600;white-space:nowrap}
+.chip.w{background:var(--warn-soft);color:var(--warn)}
+.metrics{margin-left:auto;display:flex;gap:14px;font:.8rem var(--mono);
+  font-variant-numeric:tabular-nums;color:var(--mut);white-space:nowrap}
+.metrics b{color:var(--ink);font-weight:600}
+.prof{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:11px 0 3px}
+@media (max-width:620px){.prof{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.cell .lbl{font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);display:block;margin-bottom:3px}
+.cell .v{font:600 .84rem var(--mono);font-variant-numeric:tabular-nums;display:block;margin-bottom:3px}
+.cell .t{height:5px;background:var(--line2);border-radius:99px;overflow:hidden}
+.cell .f{height:100%;background:var(--bar);border-radius:99px}
+.cell.hi .f{background:var(--bar-hi)} .cell.lo .f{background:var(--bar-lo)}
+.cell.na{opacity:.45}
+.cell.na .v{color:var(--faint);font-style:italic}
+.cell.der .v{color:var(--warn)}
+.cell.der .f{background:repeating-linear-gradient(90deg,var(--warn) 0 3px,transparent 3px 6px)}
+details{margin-top:9px}
+summary{cursor:pointer;font-size:.8rem;color:var(--accent);font-weight:500}
+.wlist{font:.78rem/1.7 var(--mono);color:var(--mut);margin-top:6px;word-break:break-word}
+.derived{font-size:.8rem;color:var(--warn);margin:9px 0 0;padding-left:9px;
+  border-left:2px solid var(--warn)}
+.derived b{font-weight:600}
+.note{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:11px;padding-top:10px;
+  border-top:1px solid var(--line2)}
+.note label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mut)}
+.note input{flex:1 1 220px;min-width:0}
+.callout{background:var(--warn-soft);border:1px solid var(--line);border-left:3px solid var(--warn);
+  border-radius:7px;padding:12px 14px;margin:18px 0 0}
+.callout h2{font:600 .78rem/1.2 var(--cond);text-transform:uppercase;letter-spacing:.09em;
+  color:var(--warn);margin:0 0 7px}
+.pairs{font:.8rem/1.9 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.out{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:14px}
+.out h2{font:600 .78rem/1.2 var(--cond);text-transform:uppercase;letter-spacing:.09em;color:var(--mut);margin:0 0 8px}
+textarea{width:100%;min-height:130px;font:12px/1.6 var(--mono);color:var(--ink);background:var(--raise);
+  border:1px solid var(--line);border-radius:5px;padding:10px;resize:vertical}
+.foot{font-size:.8rem;color:var(--mut);margin-top:9px}
+.dmark{color:var(--warn)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <h1>Combined Arms Warhead Map</h1>
+  <p class="lede"><b>One row per Cameo warhead</b> — every Combined Arms weapon that maps to the
+  same warhead is pooled here exactly once. The 360 weapons CA fires became 182 review
+  groups, and those groups collapse onto the <b>32 warheads</b> below by usage-weighted
+  geometric mean.</p>
+  <p class="lede">Each weapon contributes <b>its own measured row</b>, never its group's shape —
+  a group is a reading aid, and a per-weapon override routinely sends one member elsewhere.
+  Percentage warheads are priced as flat damage against the <b>typical unit of the armour they
+  hit</b> (infantry 6,336 HP · light 18,774 · heavy 52,994 · wood 89,166), weighted by how much
+  of that class they can actually reach.</p>
+  <p class="lede"><b>An armour a warhead cannot touch reads <i>n/a</i>, not 100.</b> A dual-purpose
+  unit's ground and air armaments are folded into one weapon — a flak track's AG and AA halves are
+  one warhead, not two — so the ground warheads carry a real Aircraft figure instead of a blank.</p>
+  <p class="lede"><b>No Cameo warhead is air-only.</b> A SAM still has to hurt something that lands
+  under it, so where every source weapon in a family is air-only its ground rows are
+  <b class="dmark">derived</b> from the same delivery's measured warheads and placed below the air
+  value. Those cells are marked; a mod that gives its AA real ground rows will replace them.</p>
+  <div class="stats" id="stats"></div>
+  <div class="tools">
+    <input type="search" id="q" placeholder="Search warhead or weapon…" aria-label="Search">
+    <select id="fkind" aria-label="Filter"><option value="">All warheads</option>
+      <option value="live">Live warheads only</option>
+      <option value="park">Drops and parks only</option></select>
+    <select id="sort" aria-label="Sort">
+      <option value="uses">Sort by usage</option>
+      <option value="name">Sort by name</option>
+      <option value="factor">Sort by factor</option></select>
+  </div>
+  <div class="rows" id="rows"></div>
+
+  <div class="callout"><h2>Warheads that are not yet distinct</h2><p class="lede" style="margin:0 0 7px">RMS log distance between profiles. Combined Arms is one vote of twenty, so these are recorded rather than acted on — separation happens once every source is averaged in.</p><div class="pairs">0.074 &nbsp; Laser &nbsp;·&nbsp; Tesla<br>0.109 &nbsp; Bullet &nbsp;·&nbsp; Arrow<br>0.114 &nbsp; Flame &nbsp;·&nbsp; Plasma<br>0.136 &nbsp; Demolition &nbsp;·&nbsp; Sonic<br>0.144 &nbsp; LaserPulse &nbsp;·&nbsp; BulletHE<br>0.149 &nbsp; MissileAP &nbsp;·&nbsp; MissileCryo<br>0.165 &nbsp; Laser &nbsp;·&nbsp; Melee<br>0.167 &nbsp; CannonHE &nbsp;·&nbsp; Concussion<br>0.173 &nbsp; LaserPulse &nbsp;·&nbsp; Flame<br>0.176 &nbsp; Tesla &nbsp;·&nbsp; Melee<br>0.179 &nbsp; CannonAP &nbsp;·&nbsp; Quantum<br>0.192 &nbsp; CannonHE &nbsp;·&nbsp; Prism<br>0.198 &nbsp; Quantum &nbsp;·&nbsp; CannonNuke<br>0.199 &nbsp; LaserPulse &nbsp;·&nbsp; Plasma</div></div>
+  <div class="out">
+    <h2>Corrections to hand back</h2>
+    <textarea id="dump" readonly aria-label="Corrections"></textarea>
+    <button class="primary" id="copy" style="margin-top:9px">Copy corrections</button>
+    <p class="foot">Notes are kept in this browser as you type. Copy this block back into the
+    conversation and it will be applied to the pipeline.</p>
+  </div>
+</div>
+
+<script id="data" type="application/json">{"source":"combined_arms","armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"families":[{"family":"Bullet","uses":66.0,"weapons":["BATFGun","ChainGun","CommissarPistol","ConfessorGun","CorrupterSpew","FLAK-23-AG","FLAK-SEAS-AG","GAU8","GAU8.Building","GunWalkerZap","HeliGunAG","M14","M16Carbine","M16CarbineBATF","M1Carbine","M1CarbineBATF","M60mg","M60mgIFV","M60mgJJ","M60mgMD","M60mgNHAW","M60mgTD","MGattG","Pistol","PistolTD","Rah66AG.BlackHand","StormriderZap","Vulcan3","WarriorGun","WarriorGunBATF"],"groups":["BulletKinetic_Air","BulletKinetic_Air_2","BulletKinetic_Air_3","BulletKinetic_Veh","BulletKinetic_Veh_2","Bullet_Air","Bullet_Air_2","Bullet_Inf","Bullet_Inf_3","Bullet_Veh","Bullet_Veh_2","Bullet_Veh_5","Bullet_Veh_7","Bullet_Veh_8","Bullet_Veh_9","HitscanKinetic_Air_2","Hitscan_Veh_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[27.3,33.8,199.7,109.8,131.8,27.5],"factor":0.573},{"family":"MissileAP","uses":62.0,"weapons":["APTusk","BikeRockets","BikeRockets.TibCore","BlackEagleMissiles","Dragon","Dragon.CYB","Dragon.CYB.TibCore","Dragon.TD","Dragon.TibCore","DragonBATF","DragonBATF.CYB","DragonBATF.CYB.TibCore","DragonBATF.TD","DragonBATF.TibCore","DragonGI","EnervatorBolts","HellfireAG","HellfireAG.Cryo","HellfireAG.Orca","HstkMissile","HstkMissile.TibCore","IFVRockets","IFVRocketsE","IFVRocketsE.TibCore","IntruderDiscs","IntruderDiscsBATF","KamovRockets","KamovRocketsWide","LaceratorShards","MarauderDiscs","Maverick","MaverickSU","PhantomMissiles","PitbullRockets","PlasmaDiscs","SBRockets","ScrinTorp","ScrinTorp.UPG","SeismicMissile","Stinger","StingerGTWR","StnkMissile","StnkMissile.TibCore","TOW","TigerGuardMissile","TigerGuardMissileBATF"],"groups":["BulletAP_Air","BulletAP_Air_2","BulletAP_Air_3","MissileAP_Air","MissileAP_Air_3","MissileAP_Veh","MissileAP_Veh_2","MissileHE_Def_2","MissileHE_Inf","MissileHE_Inf_3","MissileHE_Inf_4","MissileHE_Inf_5","MissileHE_Veh_10","MissileHE_Veh_11","MissileHE_Veh_13","MissileHE_Veh_4","MissileHE_Veh_5","MissileHE_Veh_7","MissileHE_Veh_9","MissileKinetic_Veh_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[176.8,101.3,26.3,111.5,101.0,121.7],"factor":0.916},{"family":"MissileHE","uses":40.0,"weapons":["227mm","227mm.Hailstorm","227mm.Hammerhead","227mmH","227mmH.Hailstorm","227mmH.Hammerhead","ApocalypseTusk","CyCannon","CyborgReaperMissiles","GradRockets","GradRockets.UPG","GradRocketsWide","GradRocketsWide.UPG","HellfireAG.Harrier","HindRockets","HindRockets.UPG","HindRockets.Ukraine","HindRockets.Ukraine.UPG","HonestJohn","HonestJohn.UPG","HonestJohnBH","HonestJohnBH.UPG","KatyushaRockets","KatyushaRocketsWide","MammothTusk","MammothTusk.Drone","RocketShells","TitanTusk","TitanTusk.Gyro"],"groups":["BulletHE_Veh_4","Bullet_Veh_4","Bullet_Veh_6","MissileAP_Air_2","MissileHE_Air","MissileHE_Veh_12","MissileHE_Veh_2","MissileHE_Veh_3","MissileHE_Veh_6"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[79.8,124.4,177.4,146.2,81.2,102.5],"factor":1.19},{"family":"CannonAP","uses":38.0,"weapons":["105mm","120mm","120mm.Drone","120mmHEAT","125mm","125mmLasher","125mmRhino","130mm","130mmTD","130mmTD.Drone","135mm","152mm","183mm","203mm","203mm.Inacc","25mm","2Inch","30mm","90mm","GuardianDroneGun","InterloperWave","TitanGun","TurretGun","TurretGunTD"],"groups":["BulletAP_Veh","BulletHE_Def","BulletHE_Def_2","BulletHE_Veh","BulletHE_Veh_14","BulletHE_Veh_15","BulletHE_Veh_2","BulletHE_Veh_7","Bullet_Veh_3"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[186.0,137.1,60.0,173.6,null,97.2],"factor":1.209},{"family":"MissileAA","uses":32.0,"weapons":["227mmAA.Hailstorm","227mmAA.Hammerhead","227mmAA.Hypersonic","BikeRocketsAA.TibCore","CyborgReaperMissilesAA","IFVRocketsAA","IFVRocketsAAE","IFVRocketsAAE.CRYO","IFVRocketsAAE.TibCore","InvaderLauncher","ManticoreBolts","Nike","RedEye","RedEyeGI","RedEyeGI.CRYO","ShardLauncher","Sidewinder","StingerAA"],"groups":["Hitscan_Air","MissileHE_Air","MissileHE_Def","MissileHE_Inf_2","MissileHE_Veh","MissileKinetic_Def"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[47.2,42.3,25.7,51.8,103.5,43.1],"factor":1.035,"derived_ground":{"donor_delivery":"Missile","donors":["Arrow","MissileAP","MissileCryo","MissileHE","MissileTesla"],"ratio":0.5}},{"family":"Quantum","uses":25.0,"weapons":["AtomizerBolts","DevourerLaser","DevourerLaserCharged","DisintegratorBeam","DisintegratorBeamBATF","DisintegratorIFVBeam","FloatingDiscLaser","InterloperLaser","LaceratorShards.Hypercharged","MothershipBeam","NeutronCannon","PlasmaDiscs.Hypercharged","ReaperLaser","ReaperLaserCharged","ReaperLaserChargedReversed","ReaperLaserReversed","RiftCannon","TripodLaser","TripodLaserReversed","VenomLaser","VenomLaser.UPG","ViperLaser"],"groups":["Hitscan_Veh_3","LaserKinetic_Veh","Laser_Air","Laser_Air_2","Laser_Inf_3","Laser_Veh","Laser_Veh_3","Laser_Veh_6","Laser_Veh_7","MissileAP_Veh_2","MissileAtomized_Veh"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[175.6,113.9,66.9,129.7,76.1,114.4],"factor":1.14},{"family":"LaserPulse","uses":22.0,"weapons":["BattleTankLaser","CyberscrinLaser","HopliteGun","HopliteGunBATF","HopliteGunCharged","LaserTur","LaserTur.Adv","LeecherBeam","LightTankLaser","PortaLaser","PortaLaser.Templar","PortaLaser.Templar.UPG","PsychicBeamBATF","RaiderBuggyLaser","StealthAPCLaser"],"groups":["LaserAtomized_Veh","LaserHE_Inf","Laser_Def_2","Laser_Inf","Laser_Inf_2","Laser_Veh_10","Laser_Veh_2","Laser_Veh_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[46.5,76.2,176.8,139.9,null,52.9],"factor":0.858},{"family":"CannonNuke","uses":17.0,"weapons":["125mmAtomic","125mmLasherAtomic","125mmRhinoAtomic","130mmAtomic","135mmAtomic","152mmAtomic","280mmAtomic","280mmNeutron","380mmAtomic"],"groups":["BulletHE_Veh","BulletHE_Veh_10","BulletHE_Veh_12","BulletHE_Veh_13","BulletHE_Veh_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[145.9,139.5,89.2,153.9,null,104.5],"factor":1.239},{"family":"CannonHE","uses":16.0,"weapons":["155mm","155mmSpec","155mmTD","155mmTDM","227mm.Hypersonic","227mmH.Hypersonic","25mmFRAG","380mm","8Inch","8Inch.NoReport","JuggernautGun","SCUD","SonicMortar"],"groups":["BulletHE_Veh_10","BulletHE_Veh_11","BulletHE_Veh_3","BulletHE_Veh_4","BulletHE_Veh_5","BulletHE_Veh_9","Bullet_Veh_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[66.1,174.2,177.1,139.4,null,144.0],"factor":1.326},{"family":"Laser","uses":15.0,"weapons":["AvatarLaser","AvatarLaser.Adv","DisintegratorIFVBeamAA","IFVLaser","Laser","Laser.Adv","MantisLaser","PointLaser","VenomLaserAA","VenomLaserAA.UPG"],"groups":["Laser_Air_3","Laser_Def","Laser_Veh","Laser_Veh_5","Laser_Veh_8"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[168.6,125.7,200.0,200.0,144.2,155.3],"factor":1.593},{"family":"Demolition","uses":14.0,"weapons":["DevastatorDiscs","DevastatorTorpedo","Grenade","GrenadeJJ","JDAM","KirovBomb","KirovChaosBomb","KirovClusterBomb","KirovTeslaBomb","OrcaBomb","PeacemakerBombs","ShadowOperativeGrenade","VertigoBomb"],"groups":["BombAP_Air","BombAP_Air_2","BombHE_Air","BombTesla_Air","BombTesla_Air_2","BulletHE_Air","BulletHE_Air_3","BulletHE_Inf","BulletHE_Inf_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[89.0,158.8,112.1,140.6,null,123.5],"factor":1.204},{"family":"Flame","uses":14.0,"weapons":["AvatarFlamer","AvatarFlamer.UPG","BigFlamerTD","BlackHandFlamer","FireballGun","FireballLauncher","FlamerTD","FlamerTDBATF","HeavyFlameTankFlamer","HeavyFlameTankFlamer.UPG"],"groups":["BulletFire_Inf","BulletFire_Veh","Spray_Inf","Spray_Inf_2","Spray_Veh","Spray_Veh_2","Spray_Veh_3"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[53.6,95.7,146.0,117.6,null,58.9],"factor":0.877},{"family":"Railgun","uses":14.0,"weapons":["IonZap","MicrowaveZap","MicrowaveZap.UPG","Railgun","TitanRailgun","TitanRailgunImpact","TormentorZap","XOLaser","ZoneDefenderGun","ZoneTrooperRailgun"],"groups":["HitscanHE_Veh_2","LaserAP_Air","LaserHE_Veh_2","Laser_Veh_11","RailgunHE_Veh","RailgunHE_Veh_2","RailgunHE_Veh_3","Railgun_Veh"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[177.3,80.6,69.7,162.4,200.0,114.3],"factor":1.137},{"family":"Tesla","uses":14.0,"weapons":["CyclopsZap","PortaTesla","PortaTesla.UPG","StormColumnZap","TTankZap","TTankZap.UPG","TTrackZap","TTrackZap.UPG","TeslaZap","TeslaZapBoost1","TeslaZapBoost2","TeslaZapBoost3"],"groups":["Tesla_Def","Tesla_Def_2","Tesla_Inf","Tesla_Veh","Tesla_Veh_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[170.5,120.0,192.5,188.5,null,134.6],"factor":1.584},{"family":"Arrow","uses":13.0,"weapons":["EvisceratorShards","EvisceratorShardsCharged","ImpalerSpike","ImpalerSpikePassenger","RavagerShards","ShardWalkerShards","StalkerShards"],"groups":["HitscanKinetic_Inf","MissileKinetic_Inf","MissileKinetic_Veh","MissileKinetic_Veh_2","MissileKinetic_Veh_3"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[23.3,36.7,200.0,114.0,114.7,31.6],"factor":0.594},{"family":"Sniper","uses":13.0,"weapons":["Colt45","Colt45BATF","CommandoIFVGun","SealIFVGun","ShadowOperativeGun","SilencedPPK","SilencedPPKBATF","SniperIFVGun","SniperIFVGun.UPG"],"groups":["HitscanHE_Veh","HitscanKinetic_Inf_2","HitscanKinetic_Veh","HitscanKinetic_Veh_2","Hitscan_Inf_3","Hitscan_Inf_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[92.2,56.2,156.6,48.1,null,50.1],"factor":0.721},{"family":"BulletHE","uses":12.0,"weapons":["ChainGun.Yak.L","ChainGun.Yak.R","EnforcerIFVShotgun","EnforcerShotgun","Gatt","Hydra.L","Hydra.R","MothershipDiscs","Rah66AG","WolverineGun","WolverineGunLine"],"groups":["BulletHE_Air_2","BulletHE_Air_4","BulletHE_Air_5","Bullet_Def","Bullet_Veh_10","HitscanKinetic_Air","Railgun_Veh_2","SprayKinetic_Inf","SprayKinetic_Veh"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[59.5,67.7,198.2,155.6,110.0,49.6],"factor":0.923},{"family":"Chemical","uses":12.0,"weapons":["ChemballLauncher","ChemicalMortar","ChemsprayTD","ChemsprayTDBATF","CorrupterSpewCharged","RuinerCannon","RuinerCannonCharged","SCUD.Iraq"],"groups":["BulletRadiation_Veh","BulletRadiation_Veh_2","BulletRadiation_Veh_3","BulletRadiation_Veh_4","SprayRadiation_Inf","SprayRadiation_Inf_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[36.4,71.6,115.3,75.0,null,42.5],"factor":0.625},{"family":"MissileCryo","uses":10.0,"weapons":["CryoMissile","Dragon.CRYO","DragonBATF.CRYO","DragonGI.CRYO","IFVRocketsE.CRYO"],"groups":["BulletCryo_Veh_2","MissileCryo_Inf","MissileCryo_Veh"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[194.2,132.2,25.0,103.7,null,141.6],"factor":0.988},{"family":"Radiation","uses":10.0,"weapons":["ApocRadBeamWeapon","DesolatorBeam","OverlordRadBeamWeapon","RadBeamWeaponHeavy","RadTrooperBeam"],"groups":["Radiation_Inf","Radiation_Veh","Radiation_Veh_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[43.5,42.3,146.9,75.8,null,44.3],"factor":0.619},{"family":"Sonic","uses":10.0,"weapons":["BasiliskPulse","DisruptorPulse","DisruptorPulse.Amp","DisruptorPulse.Amp.Seek3","DisruptorPulse.Seek3","ObliteratorBolt","SonicPulse","SonicPulse.UPG","SonicPulseDelphis"],"groups":["SprayHE_Veh","SprayHE_Veh_2","SprayHE_Veh_3","Spray_Def","Spray_Veh_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[78.5,170.7,110.9,119.1,null,152.3],"factor":1.219},{"family":"Cryo","uses":6.0,"weapons":["CryoMortar","CryoSprayer"],"groups":["BulletCryo_Veh","SprayCryo_Veh"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[45.2,195.9,195.9,55.4,null,112.8],"factor":1.016},{"family":"Melee","uses":6.0,"weapons":["BruteAttack","BruteBuildingAttack","CyberdogJaw","CyborgRepair","DogJaw","TerrorDogJaw"],"groups":["Hitscan_Inf","Hitscan_Inf_2"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[200.0,144.0,150.5,185.6,null,162.1],"factor":1.671},{"family":"Prism","uses":5.0,"weapons":["HopliteIFVGun","PrisCLaser","PrisLaser","PrisTLaser"],"groups":["LaserHE_Def","LaserHE_Veh_3","LaserHE_Veh_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[84.4,158.2,154.2,189.9,null,148.7],"factor":1.422},{"family":"BlastSonic","uses":3.0,"weapons":["ZoneRaiderGrenade"],"groups":["BulletHE_Veh_6"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[95.9,191.8,74.6,200.0,null,106.6],"factor":1.24},{"family":"Concussion","uses":3.0,"weapons":["EMPGrenade","HallucinationGrenade"],"groups":["BulletHE_Veh_5","BulletTesla_Inf"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[78.9,194.5,172.3,120.8,null,109.6],"factor":1.285},{"family":"BulletTesla","uses":2.0,"weapons":["ShadeEmp","XOCoilGun"],"groups":["BulletTesla_Air","MissileKinetic_Veh_5"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[122.1,47.7,178.8,159.5,null,58.4],"factor":0.994},{"family":"Flak","uses":1.0,"weapons":["ZSU-23"],"groups":["Bullet_Def"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[24.6,30.7,53.3,51.0,106.6,22.9],"factor":1.066,"derived_ground":{"donor_delivery":"Bullet","donors":["BlastSonic","Bullet","BulletHE","BulletTesla","CannonAP","CannonHE","CannonNuke","Chemical","Concussion","Cryo"],"ratio":0.5}},{"family":"MissileTesla","uses":1.0,"weapons":["NullifierBolt"],"groups":["MissileTesla_Veh"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[21.3,53.3,200.0,106.6,null,53.3],"factor":0.664},{"family":"Nuclear","uses":1.0,"weapons":["KirovNukeBomb"],"groups":["BombRadiation_Air"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[191.8,200.0,85.3,200.0,null,127.9],"factor":1.529},{"family":"Plasma","uses":1.0,"weapons":["PlasmaTurretGun"],"groups":["Hitscan_Def"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[53.3,106.6,181.2,117.2,null,63.9],"factor":0.949},{"family":"Storm","uses":1.0,"weapons":["StormcrawlerZap"],"groups":["Tesla_Veh_3"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[59.7,149.2,32.0,68.2,null,200.0],"factor":0.828},{"family":"(drop: not a damage warhead)","uses":27.0,"weapons":["CyborgReaperSnare","DemoTruckTargeting","EnlightenedBeam","EnslaveInfantry","EnslaveVehicle","Flare","Heal","IvanIFVTargeting","Ivanbomb","OrcaBombBuilding","PeacemakerBombsBuilding","RepairIFV","ScrinRepair"],"groups":["Bullet_Inf_2","HitscanAP_Air","HitscanTesla_Air","Hitscan_Veh","LaserHE_Veh","Laser_Inf_4"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[162.9,136.1,152.9,162.9,null,152.9],"factor":1.483},{"family":"(park: naval)","uses":7.0,"weapons":["DepthCharge","DoubleDepthCharge","SubMissile","TorpTube"],"groups":["BulletHE_Veh_2","BulletHE_Veh_8","MissileHE_Veh_14","MissileHE_Veh_8"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[197.1,180.7,184.9,153.5,94.9,180.1],"factor":1.728},{"family":"(drop: support weapon)","uses":6.0,"weapons":["CustodianHeal","MineDefuser","Repair"],"groups":["Hitscan_Inf","Laser_Veh_9"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[200.0,200.0,200.0,200.0,null,200.0],"factor":2.0},{"family":"(drop: support power)","uses":2.0,"weapons":["EMPMissileLauncher","FirestormBarrage"],"groups":["BulletFire_Def","BulletTesla_Def"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[101.1,77.8,123.1,123.1,null,110.1],"factor":1.056},{"family":"(drop: targeting relay)","uses":1.0,"weapons":["BursterTargeting"],"groups":["Hitscan_Inf"],"armors":["Heavy","Wood","None","Light","Aircraft","Concrete"],"profile":[200.0,200.0,200.0,200.0,null,200.0],"factor":2.0}],"live":32,"collisions":[[0.074,"Laser","Tesla"],[0.109,"Bullet","Arrow"],[0.114,"Flame","Plasma"],[0.136,"Demolition","Sonic"],[0.144,"LaserPulse","BulletHE"],[0.149,"MissileAP","MissileCryo"],[0.165,"Laser","Melee"],[0.167,"CannonHE","Concussion"],[0.173,"LaserPulse","Flame"],[0.176,"Tesla","Melee"],[0.179,"CannonAP","Quantum"],[0.192,"CannonHE","Prism"],[0.198,"Quantum","CannonNuke"],[0.199,"LaserPulse","Plasma"]]}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const ARM = D.armors, ROWS = document.getElementById('rows');
+const KEY = 'ca-warhead-map-notes';
+let notes = {};
+try { notes = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { notes = {}; }
+
+const isPark = f => f.family.startsWith('(');
+const live = D.families.filter(f => !isPark(f));
+const park = D.families.filter(isPark);
+
+document.getElementById('stats').innerHTML = [
+  ['Cameo warheads', live.length],
+  ['weapons mapped', live.reduce((a, f) => a + f.weapons.length, 0)],
+  ['usage votes', Math.round(live.reduce((a, f) => a + f.uses, 0))],
+  ['dropped or parked', park.reduce((a, f) => a + f.weapons.length, 0)]
+].map(([k, n]) => `<div class="stat"><span class="n">${n}</span><span class="k">${k}</span></div>`).join('');
+
+function cells(f) {
+  const der = !!f.derived_ground, airI = ARM.findIndex(a => a.toLowerCase() === 'aircraft');
+  return ARM.map((a, i) => {
+    const v = f.profile[i];
+    if (v == null) return `<div class="cell na"><span class="lbl">${a}</span>
+      <span class="v">n/a</span><div class="t"></div></div>`;
+    let cls = v >= 150 ? 'hi' : (v <= 60 ? 'lo' : '');
+    if (der && i !== airI) cls += ' der';
+    return `<div class="cell ${cls}"><span class="lbl">${a}</span>
+      <span class="v">${v}</span><div class="t"><div class="f" style="width:${Math.min(100, v / 2)}%"></div></div></div>`;
+  }).join('');
+}
+
+function render() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const kind = document.getElementById('fkind').value;
+  const sort = document.getElementById('sort').value;
+  let list = D.families.slice();
+  if (kind === 'live') list = list.filter(f => !isPark(f));
+  if (kind === 'park') list = list.filter(isPark);
+  if (sort === 'name') list.sort((a, b) => a.family.localeCompare(b.family));
+  else if (sort === 'factor') list.sort((a, b) => b.factor - a.factor);
+  else list.sort((a, b) => (isPark(a) - isPark(b)) || (b.uses - a.uses));
+
+  ROWS.innerHTML = list.map(f => {
+    const hit = !q || f.family.toLowerCase().includes(q)
+      || f.weapons.some(w => w.toLowerCase().includes(q));
+    const id = f.family.replace(/[^A-Za-z0-9]/g, '_');
+    return `<div class="row ${isPark(f) ? 'park' : ''} ${hit ? '' : 'hide'}">
+      <div class="top">
+        <span class="fname">${f.family}</span>
+        <span class="chip ${isPark(f) ? 'w' : ''}">${f.weapons.length} weapon${f.weapons.length === 1 ? '' : 's'}</span>
+        <span class="metrics"><span>uses <b>${f.uses}</b></span><span>factor <b>${f.factor}</b></span></span>
+      </div>
+      <div class="prof">${cells(f)}</div>
+      ${f.derived_ground ? `<p class="derived">Ground rows are <b>derived, not measured</b> —
+        every source weapon here is air-only. Shape borrowed from this mod's
+        ${f.derived_ground.donor_delivery} warheads (${f.derived_ground.donors.join(', ')}),
+        placed at ${f.derived_ground.ratio * 100}% of the measured air value so air stays the peak.
+        Another reference mod that gives its AA real ground rows will replace these.</p>` : ''}
+      <details><summary>${f.weapons.length} weapons, from ${f.groups.length} group${f.groups.length === 1 ? '' : 's'}</summary>
+        <div class="wlist">${f.weapons.join(' · ')}</div>
+        <div class="wlist" style="margin-top:6px;color:var(--faint)">groups: ${f.groups.join(', ')}</div>
+      </details>
+      <div class="note">
+        <label for="n_${id}">Correction</label>
+        <input type="text" id="n_${id}" data-fam="${f.family}" value="${(notes[f.family] || '').replace(/"/g, '&quot;')}"
+               placeholder="wrong warhead, wrong weapons, missing profile…">
+      </div>
+    </div>`;
+  }).join('');
+
+  ROWS.querySelectorAll('input[data-fam]').forEach(el => {
+    el.addEventListener('input', () => {
+      const k = el.dataset.fam;
+      if (el.value.trim()) notes[k] = el.value.trim(); else delete notes[k];
+      try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch (e) {}
+      dump();
+    });
+  });
+  dump();
+}
+
+function dump() {
+  const keys = Object.keys(notes).sort();
+  document.getElementById('dump').value = keys.length
+    ? keys.map(k => `${k}: ${notes[k]}`).join('\n')
+    : 'No corrections yet — type in a Correction field on any row.';
+}
+
+['q', 'fkind', 'sort'].forEach(id =>
+  document.getElementById(id).addEventListener('input', render));
+document.getElementById('copy').addEventListener('click', async () => {
+  const b = document.getElementById('copy');
+  try { await navigator.clipboard.writeText(document.getElementById('dump').value);
+        b.textContent = 'Copied'; } catch (e) { b.textContent = 'Select and copy manually'; }
+  setTimeout(() => { b.textContent = 'Copy corrections'; }, 1800);
+});
+render();
+</script>

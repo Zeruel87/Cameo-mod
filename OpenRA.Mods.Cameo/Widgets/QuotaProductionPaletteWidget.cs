@@ -5,6 +5,7 @@
 #endregion
 
 using System.Linq;
+using System.Numerics;
 using OpenRA;
 using OpenRA.Graphics;
 using OpenRA.Mods.CA.Widgets;
@@ -121,7 +122,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 
 					var text = count.ToStringInvariant();
 					var textSize = quotaFont.Measure(text);
-					var pos = icon.Pos + new float2(
+					var pos = icon.Pos + new Vector2(
 						IconSize.X - textSize.X - StructureCountMargin.X,
 						IconSize.Y - textSize.Y - StructureCountMargin.Y);
 					quotaFont.DrawTextWithContrast(text, pos, StructureCountColor, Color.Black, 1);
@@ -141,7 +142,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 				var alive = quotaManager.GetAliveCount(icon.Name);
 				var text = $"{alive}/{quota}";
 				var textSize = quotaFont.Measure(text);
-				var pos = icon.Pos + new float2(IconSize.X - textSize.X - 1, IconSize.Y - textSize.Y - 1);
+				var pos = icon.Pos + new Vector2(IconSize.X - textSize.X - 1, IconSize.Y - textSize.Y - 1);
 				quotaFont.DrawTextWithContrast(text, pos, Color.Cyan, Color.Black, 1);
 			}
 		}
@@ -164,11 +165,11 @@ namespace OpenRA.Mods.Cameo.Widgets
 				if (mutualExclusion == null || mutualExclusion.Group != hoveredGroup)
 					continue;
 
-				var topLeft = icon.Pos + new float2(inset, inset);
-				var bottomRight = icon.Pos + IconSize.ToFloat2() - new float2(inset + 1f, inset + 1f);
+				var topLeft = icon.Pos + new Vector2(inset, inset);
+				var bottomRight = icon.Pos + IconSize.ToVector2() - new Vector2(inset + 1f, inset + 1f);
 				Game.Renderer.RgbaColorRenderer.DrawRect(
-					new float3(topLeft, 0f),
-					new float3(bottomRight, 0f),
+					new Vector3(topLeft, 0f),
+					new Vector3(bottomRight, 0f),
 					MutualExclusionOutlineWidth,
 					mutualExclusion.OutlineColor);
 			}
@@ -199,7 +200,7 @@ namespace OpenRA.Mods.Cameo.Widgets
 				HoverHeaderBorderColor);
 
 			var textSize = hoverHeaderFont.Measure(header.Text);
-			var textPos = hoveredIcon.Pos + new float2(
+			var textPos = hoveredIcon.Pos + new Vector2(
 				(IconSize.X - textSize.X) / 2,
 				(HoverHeaderHeight - textSize.Y) / 2);
 			hoverHeaderFont.DrawTextWithContrast(header.Text, textPos, HoverHeaderTextColor, Color.Black, 1);

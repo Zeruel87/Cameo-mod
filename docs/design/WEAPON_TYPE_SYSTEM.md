@@ -1,12 +1,18 @@
 # WEAPON TYPE SYSTEM — deep-research proposal (2026-08-01)
 
-> **STATUS: PROPOSAL.** Decisions made (Q1–Q4): unified `^<Family>_<Level>` naming;
-> missiles get full L/M/H per profile; add Sonic + Heavy-anti-inf; build the library
-> first. **The armor orders were REBUILT (2026-08-01) under the two-level ordering
+> **STATUS: SHIPPED — historical proposal.** The matrix below was the design research
+> that produced the live `^Warhead_<Family>_<Level>` lattice now in
+> `mods/cameo/weapons/weapons.yaml` (201 templates as of 2026-09-24). Note the shipped
+> naming differs from this doc's draft: templates are `^Warhead_*`, not bare
+> `^<Family>_<Level>`; the current level/step/shield/K values are the ones in the
+> shipped templates and `docs/audit/latest/versus_profile.md`, not the sketch table
+> in §1. Decisions made (Q1–Q4): unified family-level naming; missiles get full
+> L/M/H per profile; Sonic + Heavy-anti-inf added; the library was built first.
+> **The armor orders were REBUILT (2026-08-01) under the two-level ordering
 > law (`ARMOR_SYSTEM.md` "PROFILE construction") after grounding them in the actual
 > existing tables** — see §12 for the final matrix, which SUPERSEDES the earlier
 > single-order sketch in §3/§10. Builds on `ARMOR_SYSTEM.md` + `BALANCE_SYNTHESIS.md`
-> §13. Awaiting maintainer sign-off on the §12 matrix before splicing into weapons.yaml.
+> §13.
 
 ---
 

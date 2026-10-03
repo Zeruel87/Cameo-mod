@@ -1,0 +1,158 @@
+name: Agent task
+description: Propose a scoped task for the designated approver in the shared agent pilot.
+title: "[Agent task] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This record coordinates ownership; it is not an atomic lock. Follow AGENTS.md and docs/AGENT_WORKSPACE.md, including activation. Aedis's designated coordinator agent is the approver of record. Record the active approver and approval receipt.
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Intended outcome
+      description: Describe one independently mergeable result and why it matters.
+    validations:
+      required: true
+
+  - type: input
+    id: owner
+    attributes:
+      label: Human owner
+      description: GitHub username of the person responsible for the agent and final handoff.
+      placeholder: "@username"
+    validations:
+      required: true
+
+  - type: input
+    id: integrator
+    attributes:
+      label: Current approver
+      description: Aedis's designated coordinator agent (provider/session ID). Link the approval or takeover record.
+      placeholder: "Aedis coordinator - provider/session ID"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Agent provider
+      options:
+        - Codex
+        - Claude
+        - Devin
+        - AionUI-hosted agent
+        - OpenCode
+        - Other or human-only
+    validations:
+      required: true
+
+  - type: input
+    id: session
+    attributes:
+      label: Agent session identity
+      description: Opaque session ID and model, or pending if the session has not started. Human-only tasks may say none. Do not publish private session links or conversation text.
+    validations:
+      required: true
+
+  - type: input
+    id: base
+    attributes:
+      label: Repository and base commit
+      description: Repository plus the exact branch/ref and commit from which work will start.
+      placeholder: "cameo-mod/Cameo-mod master @ 40-character SHA"
+    validations:
+      required: true
+
+  - type: textarea
+    id: writable_scope
+    attributes:
+      label: Writable paths
+      description: One repository-relative path or glob per line. Read-only exploration may be broader.
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: checkout
+    attributes:
+      label: Branch and worktree label
+      description: Branch/ref plus the pushed remote ref and a portable checkout label. Use pending before creation; never publish an absolute personal path. The claim is not valid until its approved empty claim commit is pushed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reading_route
+    attributes:
+      label: Read first and existing implementation
+      description: Exact TASK_INDEX route, document sections and existing tools/branches to inspect before editing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: excluded_scope
+    attributes:
+      label: Explicitly excluded paths or work
+      description: Record nearby files, generated outputs, gameplay changes, publishing, or other work that this task must not touch.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and overlapping work checked
+      description: Link related tasks/PRs and state how active claims were checked for overlap.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime_impact
+    attributes:
+      label: Expected runtime impact
+      options:
+        - None - documentation or tooling only
+        - Generated analysis or ledger only
+        - YAML or asset behavior
+        - Cameo C# behavior
+        - OpenRA engine behavior or pin
+        - Unknown - requires investigation
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance evidence
+      description: Exact checks, review evidence, and any required human gameplay or visual decision.
+    validations:
+      required: true
+
+  - type: input
+    id: expiry
+    attributes:
+      label: Claim expires
+      description: Explicit date, time, and timezone. The Project DATE field is a reminder only. Stop writes on expiry until renewed; keep the reservation until the current approver explicitly releases it.
+      placeholder: "YYYY-MM-DD HH:MM UTC"
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: Required decision and next action
+      description: Name any human policy/visual/merge decision still needed, or none. Record the next concrete step and any existing approval source.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Claim acknowledgement
+      options:
+        - label: The worker will remain read-only until the recorded current approver approves this claim.
+          required: true
+        - label: Each writer will use its own branch and isolated worktree; research-only work may remain read-only.
+          required: true
+        - label: No token, SSH detail, credential, or private conversation content is included here.
+          required: true

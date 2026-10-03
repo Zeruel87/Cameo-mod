@@ -1,0 +1,322 @@
+# Map/editor-ready Scrin aircraft visuals. Gameplay roles, weapons, carrier
+# logic, costs, prerequisites, and final balance remain deferred.
+
+^ScrinAircraftShieldAlignment:
+	WithIdleOverlay@shield1:
+		FollowBodySpriteOffset: true
+		Offset: 0,0,427
+	WithIdleOverlay@shield_damage:
+		FollowBodySpriteOffset: true
+		Offset: 0,0,427
+
+^ScrinAircraftVisual:
+	Inherits: ^Helicopter
+	Inherits@shieldalignment: ^ScrinAircraftShieldAlignment
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@materialization: ^ScrinFactoryMaterialization
+	WithActorMaterialization:
+		LockFacing: false
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	Selectable:
+		Bounds: 1024, 1024
+	Aircraft:
+		Speed: 100
+		TurnSpeed: 20
+		AltitudeVelocity: 100
+		CanForceLand: false
+		Repulsable: false
+		Voice: Move
+	DeathSounds:
+	-WithShadow:
+	-Hovers@CRUISING:
+	-AttackAircraft:
+	-SpawnActorOnDeath:
+	-Voiced:
+
+scrin_drone_ship:
+	Inherits: ^Helicopter
+	Inherits@shieldalignment: ^ScrinAircraftShieldAlignment
+	Inherits@materialization: ^ScrinFactoryMaterialization
+	WithActorMaterialization:
+		LockFacing: false
+	Voiced:
+		VoiceSet: ScrinDroneShipVoice
+	DeathSounds:
+	WithIdleOverlay@shield1:
+		Sequence: colossal-mobile-west
+		StartSequence: colossal-mobile-west
+	WithIdleOverlay@shield_damage:
+		Sequence: colossal-mobile-west
+	Tooltip:
+		Name: actor_scrin_drone_ship.name
+	Buildable:
+		Queue: ScrinAircraft, ScrinWarpAircraft
+		BuildPaletteOrder: 10
+		Prerequisites: scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Deploys into a Drone Platform construction hub.
+	Valued:
+		Cost: 5000
+	Health:
+		HP: 1000000
+	Armor:
+		Type: Heavy
+	MustBeDestroyed:
+		RequiredForShortGame: true
+	BaseBuilding:
+	Selectable:
+		Bounds: 2048, 2048, 0, -2048
+		DecorationBounds: 2304, 2560, 0, -2048
+	Aircraft:
+		Speed: 61
+		TurnSpeed: 20
+		CruiseAltitude: 768
+		AltitudeVelocity: 35
+		CanForceLand: false
+		Repulsable: false
+		Voice: Move
+	-WithShadow:
+	-Hovers@CRUISING:
+	Transforms:
+		IntoActor: scrin_drone_platform
+		Offset: -1,-1
+		Facing: 480
+		NoTransformNotification: BuildingCannotPlaceAudio
+	-AttackAircraft:
+	-SpawnActorOnDeath:
+	RenderSprites:
+		PlayerPalette: player_rgba
+
+scrin_stormrider:
+	Inherits: ^ScrinAircraftVisual
+	Voiced:
+		VoiceSet: ScrinStormriderVoice
+	Tooltip:
+		Name: actor_scrin_stormrider.name
+	Buildable:
+		Queue: ScrinAircraft, ScrinWarpAircraft
+		BuildPaletteOrder: 20
+		Prerequisites: scrin_reactor, scrin_extractor
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Fast attack spacecraft effective against ground and air targets.
+	Valued:
+		Cost: 1000
+	Health:
+		HP: 85000
+	Selectable:
+		Bounds: 1024, 1024, 0, -576
+	Aircraft:
+		CanHover: false
+		CanSlide: false
+		VTOL: false
+		Voice: Move
+	Armament:
+		Weapon: ScrinStormriderStreak
+		# FX_Weapon_00 muzzle (KW AlienStormrider FireFX/Launch bone), fit over
+		# 32 facings: max error 1.18 px, silhouette overlap >= 0.844.
+		LocalOffset: 386,1,577
+	AttackAircraft:
+		FacingTolerance: 128
+		Voice: Attack
+	RenderSprites:
+		PlayerPalette: scrin_stormrider_player
+
+scrin_devastator_warship:
+	Inherits: ^ScrinAircraftVisual
+	Voiced:
+		VoiceSet: ScrinDevastatorVoice
+	WithIdleOverlay@shield1:
+		Image: hexshield_directional_oval
+		Sequence: aircraft-large-west
+		StartSequence: aircraft-large-west
+	WithIdleOverlay@shield_damage:
+		Image: hexshield_directional_oval
+		Sequence: aircraft-large-west
+	Tooltip:
+		Name: actor_scrin_devastator_warship.name
+	Buildable:
+		Queue: ScrinWarpAircraft
+		BuildAtProductionType: ScrinCapitalAircraft
+		BuildPaletteOrder: 30
+		Prerequisites: ~scrin_warp_chasm, scrin_technology_assembler
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Heavy long-range assault warship.
+	Valued:
+		Cost: 2500
+	Health:
+		HP: 240000
+	Aircraft:
+		CruiseAltitude: 2317
+		Speed: 55
+		TurnSpeed: 12
+	Armament:
+		Weapon: ScrinDevastatorDiscs
+		# FX_Weapon_ numbered muzzle pair (KW AlienDevastatorWarship
+		# FireFX/Launch bone); FXFire01..05 are damage FX, not muzzles.
+		# Fit over 32 facings: max error 0.55 px, overlap >= 0.741.
+		LocalOffset: 556,0,694, -8,0,650
+	AttackAircraft:
+		FacingTolerance: 192
+		AttackType: Hover
+		Voice: Attack
+	Selectable:
+		Bounds: 2048, 2048, 0, -768
+	RenderSprites:
+		PlayerPalette: scrin_devastator_warship_player
+
+scrin_planetary_assault_carrier:
+	Inherits: ^ScrinAircraftVisual
+	Voiced:
+		VoiceSet: ScrinPACVoice
+	# CarrierMaster stacks one pac-loaded token per docked fighter. Keep the
+	# visual thresholds coarse because the approved source set has full, half,
+	# and empty dock states rather than eight separate hull renders.
+	WithFacingSpriteBody:
+		Sequence: idle-full
+		RequiresCondition: pac-loaded >= 5
+	WithFacingSpriteBody@HALF:
+		Sequence: idle-half
+		RequiresCondition: pac-loaded >= 1 && pac-loaded <= 4
+	WithFacingSpriteBody@EMPTY:
+		Sequence: idle-empty
+		RequiresCondition: pac-loaded == 0
+	WithIdleOverlay@shield1:
+		Image: hexshield_directional_oval
+		Sequence: aircraft-colossal
+		StartSequence: aircraft-colossal
+	WithIdleOverlay@shield_damage:
+		Image: hexshield_directional_oval
+		Sequence: aircraft-colossal
+	Tooltip:
+		Name: actor_scrin_planetary_assault_carrier.name
+	Buildable:
+		Queue: ScrinWarpAircraft
+		BuildAtProductionType: ScrinCapitalAircraft
+		BuildPaletteOrder: 40
+		Prerequisites: ~scrin_warp_chasm, scrin_technology_assembler, scrin_signal_transmitter
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Carrier spacecraft that deploys eight Invader Fighters.
+	Valued:
+		Cost: 3000
+	Health:
+		HP: 300000
+	Aircraft:
+		CruiseAltitude: 2488
+		Speed: 50
+		TurnSpeed: 12
+	Armament:
+		Weapon: ScrinCarrierLaunch
+	AttackAircraft:
+		FacingTolerance: 192
+		AttackType: Hover
+		Voice: Attack
+	CarrierMaster:
+		Actors: scrin_invader_fighter, scrin_invader_fighter, scrin_invader_fighter, scrin_invader_fighter, scrin_invader_fighter, scrin_invader_fighter, scrin_invader_fighter, scrin_invader_fighter
+		LoadedCondition: pac-loaded
+		RearmTicks: 25
+		RespawnTicks: 50
+		InstaRepair: true
+		SlaveDisposalOnKill: KillSlaves
+		SpawnAllAtOnce: false
+	Selectable:
+		Bounds: 2048, 2048, 0, -704
+	RenderSprites:
+		PlayerPalette: scrin_planetary_assault_carrier_player
+
+scrin_invader_fighter:
+	Inherits: ^ScrinAircraftVisual
+	# Interceptor-like hull, without inheriting ProtossPersonalShield.
+	Armor:
+		Type: Bomber
+	Tooltip:
+		Name: actor_scrin_invader_fighter.name
+	Valued:
+		Cost: 500
+	Health:
+		HP: 30000
+	Aircraft:
+		Speed: 200
+		CanHover: false
+		CanSlide: false
+		AltitudeVelocity: 120
+		CruiseAltitude: 1c256
+		TurnSpeed: 32
+		VTOL: false
+		Repulsable: false
+		TakeUpCellWhenLand: false
+	Targetable:
+		TargetTypes: Air
+	CarrierSlave:
+		LandingDistance: 8000
+	HasParent:
+	RejectsOrders:
+	Armament:
+		Weapon: ScrinInvaderFighterZap
+		# FX_WEAPON_ numbered muzzle pair (KW AlienInvaderFighter launch bone);
+		# fit over 32 facings: max error 1.41 px, overlap >= 0.573.
+		LocalOffset: 246,-52,522, 246,55,522
+	AttackAircraft:
+		FacingTolerance: 20
+		PauseOnCondition: disabled
+		OpportunityFire: true
+		PersistentTargeting: true
+	Selectable:
+		Bounds: 1024, 1024, 0, -448
+	RenderSprites:
+		PlayerPalette: scrin_invader_fighter_player
+
+scrin_mothership:
+	Inherits: ^ScrinAircraftVisual
+	Voiced:
+		VoiceSet: ScrinMothershipVoice
+	WithIdleOverlay@shield1:
+		Sequence: capital-mobile-standard
+		StartSequence: capital-mobile-standard
+		Offset: 0,0,853
+	WithIdleOverlay@shield_damage:
+		Sequence: capital-mobile-standard
+		Offset: 0,0,853
+	Tooltip:
+		Name: actor_scrin_mothership.name
+	Buildable:
+		Queue: ScrinWarpAircraft
+		BuildAtProductionType: ScrinCapitalAircraft
+		BuildPaletteOrder: 50
+		Prerequisites: ~scrin_warp_chasm, scrin_technology_assembler, scrin_signal_transmitter
+		BuildLimit: 1
+		Icon: icon
+		IconPalette: player_rgba
+		IconPaletteIsPlayerPalette: true
+		Description: Colossal command spacecraft with a devastating energy weapon.
+	Valued:
+		Cost: 7500
+	Health:
+		HP: 700000
+	Aircraft:
+		CruiseAltitude: 2180
+		Speed: 30
+		TurnSpeed: 8
+	Armament:
+		Weapon: ScrinMothershipDiscs
+		# No weapon bone in KW (AlienMothership defines none): the disc leaves
+		# the CENTER core bone, fit error 0.0 px over 32 facings.
+		LocalOffset: 0,0,979
+	AttackAircraft:
+		FacingTolerance: 256
+		AttackType: Hover
+		Voice: Attack
+	Selectable:
+		Bounds: 3072, 3072, 0, -1280
+	RenderSprites:
+		PlayerPalette: scrin_mothership_player

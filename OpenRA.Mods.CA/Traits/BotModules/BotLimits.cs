@@ -32,6 +32,26 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Prioritize the first barracks before the first refinery for configured factions.")]
 		public readonly bool PrioritizeBarracksBeforeRefinery = false;
 
+		[Desc("Ticks the same personality candidate must persist before this difficulty switches to it. Negative disables switching.")]
+		public readonly int PersonalityReactionDelay = 7500;
+
+		[Desc("Cash above which the base builder adds more production structures to spend what it earns.",
+			"Overrides BaseBuilderBotModuleCA.NewProductionCashThreshold. Negative: use the module's value.")]
+		public readonly int NewProductionCashThreshold = -1;
+
+		[Desc("Cash above which the unit builder fills every unit queue in one pass.",
+			"Overrides UnitBuilderBotModuleCA.MaximiseProductionCashRequirement. Negative: use the module's value.")]
+		public readonly int MaximiseProductionCashRequirement = -1;
+
+		[Desc("Percent (0-100) of mobile combat picks the unit builder may spend on COUNTERS to the enemy army it",
+			"has observed (through fog when the master AI observes through fog). 0 disables adaptive counters.")]
+		public readonly int AdaptiveCounterWeight = 0;
+
+		[Desc("Self-preservation (AI_DEEP_RESEARCH.md §7, Zero-K's lesson): a ground squad using the combat predictor",
+			"retreats when its predicted strength ratio against the enemies it sees falls below this percent. Higher",
+			"tiers value their units more. Maintainer 2026-09-28: never suicide units.")]
+		public readonly int RetreatRatioPct = 50;
+
 		public override object Create(ActorInitializer init) { return new BotLimits(init.Self, this); }
 	}
 

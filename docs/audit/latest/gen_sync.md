@@ -1,3 +1,44 @@
+[X] weapons.yaml has 41 ^Warhead_ template(s) the generator does NOT emit:
+      ^Warhead_Arrow_Light_Flat
+      ^Warhead_Bullet_Light_Flat
+      ^Warhead_Bullet_Medium_Flat
+      ^Warhead_CabalLaser_GroundSlice
+      ^Warhead_CannonAP_Light_Flat
+      ^Warhead_CannonFire_Heavy_Flat
+      ^Warhead_CannonHE_Heavy_Flat
+      ^Warhead_CannonHE_Medium_Flat
+      ^Warhead_Chemical_Light_Flat
+      ^Warhead_Chemical_Medium_Flat
+      ^Warhead_Concussion_Medium_Flat
+      ^Warhead_Cryo_Medium_Flat
+      ^Warhead_Demolition_Heavy_Flat
+      ^Warhead_Demolition_Light_Flat
+      ^Warhead_Flak_Medium_Flat
+      ^Warhead_Flame_Light_Flat
+      ^Warhead_Flame_Medium_Flat
+      ^Warhead_Laser_ExtraDamage
+      ^Warhead_Laser_Heavy_Flat
+      ^Warhead_Melee_Heavy_Flat
+      ^Warhead_MissileAA_Heavy_Flat
+      ^Warhead_MissileAA_Light_Flat
+      ^Warhead_MissileAA_Medium_Flat
+      ^Warhead_MissileAP_Heavy_Flat
+      ^Warhead_MissileAP_Light_Flat
+      ^Warhead_MissileAP_Light_WallExcluded
+      ^Warhead_MissileAP_Medium_Flat
+      ^Warhead_MissileAP_Medium_GroundShip
+      ^Warhead_MissileAP_Medium_WallExcluded
+      ^Warhead_MissileHE_Heavy_Flat
+      ^Warhead_MissileHE_Light_Flat
+      ^Warhead_MissileHE_Medium_Flat
+      ^Warhead_Plasma_Heavy_Flat
+      ^Warhead_Plasma_Medium_Flat
+      ^Warhead_ProtonLaser_GroundSlice
+      ^Warhead_Quantum_Heavy_Flat
+      ^Warhead_Railgun_ExtraDamage
+      ^Warhead_Railgun_Heavy_Flat
+      ^Warhead_TankBusterBeam_Unscoped_Flat
+      ^Warhead_Tesla_Heavy_Flat
+      ^Warhead_Thermobaric_Heavy_Flat
 
-checked 139 shared template(s); drift = 0
-[OK] generator reproduces every ^Warhead_ family in weapons.yaml (no-op regenerate).
+checked 209 shared template(s); drift = 41

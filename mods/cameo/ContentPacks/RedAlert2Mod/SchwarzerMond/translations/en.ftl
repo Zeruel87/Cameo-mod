@@ -161,6 +161,7 @@ actor_schwarzermond_airfield =
 
 actor_schwarzermond_lasertower =
    .description = Anti-infantry defense tower armed with a laser.
+      Can attack aircraft.
       Benefits from Crystal Lens and Amplified Lens burst upgrades.
 
 actor_schwarzermond_sturmcannon =

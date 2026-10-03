@@ -1,0 +1,44 @@
+World:
+	# AdaptiveGameSpeed times whole frames against the speed's tick budget and
+	# scales pacing back toward Normal under load — remove it so the batch
+	# actually gets the maximum rate (Claude's ai_harvester_gate recipe).
+	-AdaptiveGameSpeed:
+	MapOptions:
+		# Conquest stays ON — elimination is a legitimate match end.
+		ShortGameCheckboxEnabled: True
+		# Fixture matches are data collection, not spectacle: run at maximum
+		# (1 ms timestep, CPU-bound ~25x default) and lock it so the local
+		# server's hard-coded 'option gamespeed default' order is rejected.
+		GameSpeed: maximum
+		GameSpeedDropdownLocked: True
+	# Hard stalemate cap: locked so every batch match terminates and
+	# NotifyTimerExpired (via ConquestVictoryConditions) decides by experience.
+	# Minutes convert to ticks at the game speed (TimeLimitManager: 60 x 1000/Timestep): at
+	# maximum 1 min = 60,000 ticks, so these options equal the insane-era 0/10/20/30/40/60/90
+	# caps tick for tick, and 3 = the old 30 (180,000 ticks). The ENGINE then ends a stalemate
+	# and records it (both sides `lost`), instead of the harness killing it with no record.
+	TimeLimitManager:
+		TimeLimitOptions: 0, 1, 2, 3, 4, 6, 9
+		TimeLimitDefault: 3
+		TimeLimitLocked: True
+	# Referee gets nothing: no BaseActor and no SupportActors means
+	# SpawnStartingUnits spawns zero actors, so HasNoRequiredUnits fails the
+	# referee's conquest objective on the first tick — decided early, and
+	# excluded from match records via the map-declared NonCombatant flag.
+	StartingUnits@duel_empty:
+		Class: empty
+		ClassName: No Starting Units
+		Factions: td_gdi
+
+# This mod strips MustBeDestroyed from almost everything, so conquest would
+# otherwise insta-fail everyone at tick 0 (the first smoke test proved it).
+# Restoring it on the base classes gives the duel real elimination semantics:
+# a side loses when every fighting unit and building is gone.
+^Building:
+	MustBeDestroyed:
+^Vehicle:
+	MustBeDestroyed:
+^Infantry:
+	MustBeDestroyed:
+^Defense:
+	MustBeDestroyed:

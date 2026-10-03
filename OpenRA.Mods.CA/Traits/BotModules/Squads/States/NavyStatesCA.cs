@@ -34,6 +34,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 
 			var navalProductions = owner.World.ActorsHavingTrait<Building>().Where(a
 				=> owner.SquadManager.Info.NavalProductionTypes.Contains(a.Info.Name)
+				&& (!owner.SquadManager.FoggedScans || owner.SquadManager.IsNotHiddenUnit(a))
 				&& mobile.PathFinder.PathExistsForLocomotor(mobile.Locomotor, first.Location, a.Location)
 				&& a.AppearsHostileTo(first));
 
@@ -49,7 +50,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 					return nearest;
 			}
 
-			return owner.SquadManager.FindClosestEnemy(first, WDist.FromCells(owner.SquadManager.Info.NavalScanRadius));
+			return owner.SquadManager.FindClosestEnemy(first, WDist.FromCells(owner.SquadManager.Info.NavalScanRadius), owner);
 		}
 	}
 
@@ -68,20 +69,34 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			{
 				var closestEnemy = FindClosestEnemy(owner);
 				if (closestEnemy == null)
-					return;
+				{
+					// 6d fogged fallback: commit to a remembered enemy building.
+					var frozen = owner.SquadManager.FoggedScans
+						? owner.SquadManager.FindFrozenEnemyTarget(owner.Units.First().Actor.CenterPosition, -1)
+						: null;
 
-				owner.TargetActor = closestEnemy;
+					if (frozen == null)
+						return;
+
+					owner.Target = Target.FromFrozenActor(frozen);
+				}
+				else
+					owner.TargetActor = closestEnemy;
 			}
 
 			if (owner.SquadManager.unitCannotBeOrdered(leader))
 				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor).Actor;
 
-			var enemyUnits = owner.World.FindActorsInCircle(owner.TargetActor.CenterPosition, WDist.FromCells(owner.SquadManager.Info.IdleScanRadius))
-				.Where(owner.SquadManager.IsPreferredEnemyUnit).ToList();
+			var enemyUnits = owner.World.FindActorsInCircle(owner.Target.CenterPosition, WDist.FromCells(owner.SquadManager.Info.IdleScanRadius))
+				.Where(owner.SquadManager.IsPreferredObservedEnemyUnit).ToList();
 
 			if (enemyUnits.Count == 0)
 			{
-				Retreat(owner, flee: false, rearm: true, repair: true);
+				if (owner.Target.Type == TargetType.FrozenActor)
+					owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsAttackMoveStateCA(), false);
+				else
+					Retreat(owner, flee: false, rearm: true, repair: true);
+
 				return;
 			}
 
@@ -123,7 +138,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (owner.SquadManager.unitCannotBeOrdered(leader.Actor))
 				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor);
 
-			if (!owner.IsTargetValid || !CheckReachability(leader.Actor, owner.TargetActor))
+			if (!owner.IsTargetValid || !CheckReachability(leader.Actor, owner.World.Map.CellContaining(owner.Target.CenterPosition)))
 			{
 				var targetActor = FindClosestEnemy(owner);
 				if (targetActor != null)
@@ -138,7 +153,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			// Switch to attack state if we encounter enemy units like ground squad
 			var attackScanRadius = WDist.FromCells(owner.SquadManager.Info.AttackScanRadius);
 
-			var enemyActor = owner.SquadManager.FindClosestEnemy(leader.Actor, attackScanRadius);
+			var enemyActor = owner.SquadManager.FindClosestEnemy(leader.Actor, attackScanRadius, owner);
 			if (enemyActor != null)
 			{
 				owner.TargetActor = enemyActor;
@@ -158,7 +173,8 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				if (leader.Actor.CenterPosition == leader.WPos && !IsAttackingAndTryAttack(leader.Actor).IsFiring)
 				{
 					stopUnits.Add(leader.Actor);
-					owner.Units.Remove(leader);
+					owner.Units.RemoveAll(u => u.Actor == leader.Actor);
+					owner.SquadManager.ReturnToIdlePool(leader.Actor);
 					AIUtils.BotDebug("AI ({0}): Kick leader from squad.", owner.Bot.Player.ClientIndex);
 				}
 
@@ -180,6 +196,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 						{
 							stopUnits.Add(u.Actor);
 							owner.Units.RemoveAt(i);
+							owner.SquadManager.ReturnToIdlePool(u.Actor);
 							i--;
 						}
 						else
@@ -200,7 +217,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				{
 					leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedNavyLeaderLocomotor);
 					leader.WPos = leader.Actor.CenterPosition;
-					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
+					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromPos(owner.Target.CenterPosition), false));
 					owner.Bot.QueueOrder(new Order("Stop", null, false, groupedActors: stopUnits.ToArray()));
 					owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), false, groupedActors: otherUnits.ToArray()));
 					kickStuck--;
@@ -226,7 +243,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 				{
 					var others = owner.Units.Where(u => u.Actor != leader.Actor).Select(u => u.Actor);
 					owner.Bot.QueueOrder(new Order("Scatter", null, false, groupedActors: others.ToArray()));
-					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
+					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromPos(owner.Target.CenterPosition), false));
 					makeWay--;
 				}
 				else if (makeWay == 1)
@@ -289,7 +306,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			if (leaderWaitCheck && kickStuck <= 0)
 				owner.Bot.QueueOrder(new Order("Stop", leader.Actor, false));
 			else
-				owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
+				owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromPos(owner.Target.CenterPosition), false));
 
 			var unitsHurryUp = owner.Units.Where(u => (u.Actor.CenterPosition - leader.Actor.CenterPosition).HorizontalLengthSquared >= occupiedArea * 2).Select(u => u.Actor);
 			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), false, groupedActors: unitsHurryUp.ToArray()));
@@ -322,7 +339,7 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			// Rescan target to prevent being ambushed and die without fight
 			// If there is no threat around, return to AttackMove state for formation
 			var attackScanRadius = WDist.FromCells(owner.SquadManager.Info.AttackScanRadius);
-			var closestEnemy = owner.SquadManager.FindClosestEnemy(leader, attackScanRadius);
+			var closestEnemy = owner.SquadManager.FindClosestEnemy(leader, attackScanRadius, owner);
 
 			if (closestEnemy == null)
 			{
@@ -418,6 +435,6 @@ namespace OpenRA.Mods.CA.Traits.BotModules.Squads
 			owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsIdleState(), true);
 		}
 
-		public void Deactivate(SquadCA owner) { owner.Units.Clear(); }
+		public void Deactivate(SquadCA owner) { owner.SquadManager.DismissSquad(owner); }
 	}
 }

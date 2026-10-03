@@ -51,6 +51,17 @@ SECTION_FILES = ("faction", "buildings", "defenses", "infantry", "vehicles",
                  "aircraft", "naval", "upgrades", "promotions", "misc")
 SHARED_LEAVES = {"Shared", "Core"}
 
+# These Yuri weapons are three mutually exclusive gatling stages plus parallel
+# AG/AA domains.  Their live conditions use two different trait fields
+# (RequiresCondition on the Tank, PauseOnCondition on the Cannon), so the raw
+# condition-only selector cannot express one shared pricing baseline.  Keep the
+# maintainer-approved model input explicit and fail closed if a wrapper is
+# renamed: Level-1 AG is the only armament priced for either actor.
+PRICING_ARMAMENT_OVERRIDES = {
+    "yuri_gatlingcannon": {"Armament@1": "YuriGatlingCannonMG1"},
+    "yuri_gatlingtank": {"Armament@1": "YuriGatlingTankMG1"},
+}
+
 SECTION_DEFAULT_SUBTYPE = {
     "infantry": "Infantry",
     "vehicles": "Vehicle",
@@ -99,6 +110,42 @@ def stat(resolved, local, trait: str, field: str):
     return {"v": v, "src": src}
 
 
+def charge_scalar(raw, default=None):
+    """One number out of a charge field that may be a RANDOM RANGE.
+
+    ⛔ **Maintainer ruling, 2026-09-14** — *"regarding the charge with random
+    charge level make it so it counts the average between max and min delay ...
+    for the consortium dagger, the charge range from 25 to 50 so you add 37.5 to
+    the reload delay as attack cycle"*.
+
+    `ChargeLevel: 25, 50` is not two settings, it is ONE uniform roll the engine
+    makes every time the actor winds up. The cost of a cycle is therefore the
+    MEAN of the bounds, and this used to keep `split(",")[0]` — the lower bound,
+    i.e. it priced every charged shot as if it always rolled the luckiest value.
+
+    ⚠ A range whose floor is 0 is still a RANGE, not an absent value:
+    `wc2_humans_dwarvenrifleman` declares `0, 4` and costs **2**, not zero. That
+    zero is the one this function most needed to stop reporting, because a zero
+    read as "no charge" silently exempts the actor from the whole charge law.
+
+    Mean of MIN and MAX rather than of every element, exactly as ruled — they
+    coincide for the two-element ranges the tree actually has, and the ruling is
+    what a third value would have to be measured against.
+    """
+    parts = []
+    for piece in str(raw).split(","):
+        piece = piece.strip()
+        if not piece:
+            continue
+        try:
+            parts.append(float(piece))
+        except (TypeError, ValueError):
+            return default
+    if not parts:
+        return default
+    return (min(parts) + max(parts)) / 2.0
+
+
 def charge_up(resolved, local):
     """The actor's charge-up attack trait + provenance, or None.
 
@@ -113,6 +160,9 @@ def charge_up(resolved, local):
     W16 also records the MEASURED wind-up so the discount can scale with it:
       ticks — how long the actor spends charging
       cycle — the reload the trait itself governs, when it has one
+
+    `ticks` may come from a RANDOM RANGE, in which case it is the mean of the
+    bounds — see `charge_scalar` for the ruling and for why a zero floor matters.
 
     ⚠ Both read the ENGINE DEFAULT when the key is absent from the yaml. An absent
     key means default, never zero: the RA2 Tesla Coil writes no
@@ -137,10 +187,7 @@ def charge_up(resolved, local):
                 n = child(c, key)
                 if n is None or n.value in (None, ""):
                     return default
-                try:                       # ChargeLevel may be a LIST (CA's frontal
-                    return float(str(n.value).split(",")[0].strip())   # variant)
-                except (TypeError, ValueError):
-                    return default
+                return charge_scalar(n.value, default)
 
             ticks = num(spec.get("charge"))
             rate = num(spec.get("rate"), 1) or 1
@@ -154,6 +201,16 @@ def charge_up(resolved, local):
             if cycle_reload:
                 rec["cycle_reload"] = round(cycle_reload, 2)
                 rec["burst"] = int(num(spec.get("burst"), 1) or 1)
+                # ⭐ THE FIELD THAT DECIDES WHETHER THE WIND-UP IS PAID ONCE OR PER SHOT.
+                # `ChargeDelay` is the wait `ChargeFire` inserts between shots; when it is
+                # SHORTER than the weapon's reload, `ChargeFire` meets a reloading armament,
+                # `CanAttack` is false, and the activity exits - so the actor winds up again
+                # for every shot. No actor in the tree writes it, which is exactly why the
+                # mode was invisible for so long: the engine default 3 has to be recorded
+                # explicitly or `charge_attack_cycle` cannot tell the two machines apart.
+                charge_delay = num(spec.get("charge_delay"))
+                if charge_delay is not None:
+                    rec["charge_delay"] = round(charge_delay, 2)
         return rec
     return None
 
@@ -191,14 +248,19 @@ def _parent_inherits(rs, name: str):
 
 
 def actor_subtype(rs, local, section: str) -> str:
-    """Derive the unit subtype from the defaults.yaml role template chain.
+    """Derive the subtype from recognized active role templates.
 
     Walks the actor's inheritance chain and returns the nearest
-    ^<Name>Template it inherits from defaults.yaml.  Units that do not
+    role template from defaults.yaml or the explicit active D2K engineer role. Units that do not
     inherit a role template get a generic section label rather than
     "Unclassified".
     """
-    roles = defaults_role_templates()
+    roles = dict(defaults_role_templates())
+    # This role lives in the active D2K pack, not defaults.yaml. Engineers are
+    # explicitly support units (FORMULA_V2 §6b); do not infer arbitrary pack
+    # *Template names, which can describe behavior rather than a unit role.
+    if rs.actor("^EngineerInfantryTemplate") is not None:
+        roles["^EngineerInfantryTemplate"] = "EngineerInfantry"
     # Start from the actor's own Inherits and walk upward breadth-first so
     # the nearest (most specific) role template wins.
     queue = list(_parent_inherits(rs, local.key)) if local is not None else []
@@ -254,6 +316,12 @@ _WEAPON_CLASS_IGNORE = {
 # sidecar entry can never silently mis-price a unit again.
 _UNMAPPED_WEAPON_TEMPLATES: set[str] = set()
 
+# (ledger, actor) -> the non-null `design` judgment a committed ledger holds for an actor that
+# this extraction no longer emits. Design values never exist in yaml; they are carried over by
+# actor id, so a rename drops them. `main` refuses to write while this is non-empty unless
+# `--allow-design-drop` is given (see build_both).
+_DROPPED_DESIGN: dict[tuple[str, str], dict] = {}
+
 
 _MIX_ALLOWLIST = {
     "CombatTank", "SiegeTankSiegeCannon", "SiegeEngineCannon",
@@ -265,6 +333,64 @@ _MIX_ALLOWLIST = {
     "CabalReaperMissiles", "CabalHeavyReaperMissiles", "CabalManticoreMissiles",
     "CabalRocketCyborgRockets",
 }
+
+# Armament-level support tags are deliberately separate from weapon/warhead
+# families.  Point-defense weapons intercept incoming projectiles and should
+# not inflate the carrier's ordinary offensive pricing; their actor may still
+# have a separately priced ground or anti-air armament.
+_SUPPORT_ARMAMENT_TAGS = frozenset({"pointdefense", "pointdefensedeployed"})
+
+
+def armament_tag(node) -> str:
+    """Return the authored/inherited armament tag used for pricing policy."""
+
+    name = node.get("Name")
+    if name:
+        return str(name).strip().lower()
+    key = str(node.key or "").strip().lower()
+    return key.split("@", 1)[1] if "@" in key else ""
+
+
+def is_support_armament(node) -> bool:
+    """Whether an armament is a support route rather than priced offense."""
+
+    return armament_tag(node) in _SUPPORT_ARMAMENT_TAGS
+
+
+def _has_positive_damage(armament: dict) -> bool:
+    for warhead in armament.get("damage_warheads", []):
+        try:
+            if float(warhead.get("damage")) > 0:
+                return True
+        except (TypeError, ValueError, OverflowError):
+            continue
+    return False
+
+
+def pricing_guard(armaments: list[dict], buildable: bool) -> dict[str, object]:
+    """Expose an accidental all-unpriced positive-weapon state.
+
+    Support-only and non-buildable actors are valid zero-offense cases.  A
+    buildable actor that has positive damage but no priced positive armament is
+    different: it would silently enter pricing with DPS zero, so callers must
+    keep it unresolved until one armament is explicitly retained.
+    """
+
+    positive = [arm for arm in armaments if _has_positive_damage(arm)]
+    offensive_positive = [arm for arm in positive
+                          if not arm.get("support_armament")]
+    priced_positive = [arm for arm in offensive_positive if arm.get("pricing", True)]
+    result = {
+        "status": "OK",
+        "positive_armament_count": len(offensive_positive),
+        "priced_positive_armament_count": len(priced_positive),
+    }
+    if buildable and offensive_positive and not priced_positive:
+        result.update({
+            "status": "ALL_POSITIVE_ARMAMENTS_UNPRICED",
+            "reason": "buildable actor would enter pricing with zero offensive DPS",
+        })
+    return result
 
 
 def weapon_class_from_types(types: list[str]) -> float | None:
@@ -313,12 +439,31 @@ def weapon_class_from_types(types: list[str]) -> float | None:
     return sum(vals) / len(vals)
 
 
+def resolved_firepower_modifiers(resolved, local):
+    """Raw unconditional traits, including inherited and armament-scoped entries.
+
+    Keep percentages separately: their product is a pricing approximation, not
+    a simulation of engine integer damage rounding. Conditional traits are excluded.
+    """
+    result = []
+    for node in resolved.children_named("FirepowerMultiplier"):
+        if node.get("RequiresCondition"):
+            continue
+        modifier = int(node.get("Modifier") or "100")
+        own = child(local, node.key) if local is not None else None
+        source = (f"{rel(own.file)}#{node.key}.Modifier"
+                  if own is not None and own.get("Modifier") is not None else "inherited")
+        result.append({"trait": node.key, "modifier": modifier, "src": source,
+                       "types": [s.strip() for s in (node.get("Types") or "").split(",") if s.strip()]})
+    return result
+
+
 def firepower_multiplier(resolved, local):
     """Extract a single unconditional, locally-defined FirepowerMultiplier.
 
     Inherited template traits like FirepowerMultiplier@GlobalBuffs are NOT
-    captured, because they are not the per-actor fine-tuning knob.  Only
-    values written directly on the actor block are balance-relevant.
+    captured here, because this legacy field is the per-actor fine-tuning knob.
+    Class-fitting damage inputs use resolved_firepower_modifiers instead.
     Conditional FirepowerMultiplier traits (RequiresCondition) are also
     ignored for pricing because they are situational buffs/debuffs.
     The actor-specific FirepowerMultiplier@<actor> or unqualified
@@ -366,7 +511,18 @@ def warheads(rs, wname: str, _seen=None) -> list[str]:
     """Resolved ^-prefixed warhead templates (^Warhead_*) in the weapon's
     inheritance chain (deduped, document order). Other ^-parents are
     recursed but not emitted, so the list records only the actual
-    new-split warhead carriers."""
+    new-split warhead carriers.
+
+    ⛔ STRUCTURAL MIGRATION HELPERS ARE RECURSED BUT NOT EMITTED. A helper gives every damage
+    warhead it declares `Damage: 0`; it carries a `Versus` shape across a migration and applies
+    nothing. Emitting one puts it into `weapon_class_from_types`, which takes the arithmetic MEAN
+    of a weapon's class templates — so a helper drags the weapon's class toward its own.
+
+    ⚠ THESE USED TO BE NAMED `^Compatibility_*` AND WERE EXCLUDED BY THAT PREFIX. R12 renamed all
+    34 to `^Warhead_*_Flat`, which walks straight into the `startswith("^Warhead_")` test above,
+    and **33 `design_weapon_class` values moved**. Selection is now semantic
+    (`target_model.is_damage_inert`) and survives any rename. Caught by Astra on PR #372;
+    guarded by `tools/tests/test_shield_class_invariance.py`."""
     _seen = _seen if _seen is not None else set()
     if wname.lower() in _seen:
         return []
@@ -379,7 +535,8 @@ def warheads(rs, wname: str, _seen=None) -> list[str]:
         if c.key == "Inherits" or c.key.startswith("Inherits@"):
             parent = c.value
             if parent.startswith("^"):
-                if parent.startswith("^Warhead_") and parent not in out:
+                if (parent.startswith("^Warhead_") and parent not in out
+                        and parent not in tm.non_class_templates(rs)):
                     out.append(parent)
                 # recurse into every ^-parent to find nested ^Warhead_* carriers
                 for t in warheads(rs, parent, _seen):
@@ -466,6 +623,13 @@ def model_constants() -> dict:
             "ENGINE_DEFAULT_BURST": formula.ENGINE_DEFAULT_BURST,
             "ENGINE_DEFAULT_BURST_DELAY": formula.ENGINE_DEFAULT_BURST_DELAY,
             "ENGINE_DEFAULT_RANGE": formula.ENGINE_DEFAULT_RANGE,
+        },
+        "weapon_efficiency": {
+            "median_weapon_range": we.median_weapon_range(),
+            "RANGE_WEIGHT": we.RANGE_WEIGHT,
+            "RANGE_BOUNDS": list(we.RANGE_BOUNDS),
+            "TARGETS_FLOOR": we.TARGETS_FLOOR,
+            "DEADZONE_WEIGHT": we.DEADZONE_WEIGHT,
         },
         "percentage_damage": {
             "FOLDED_SCALE_DENOMINATOR": pd.FOLDED_SCALE_DENOMINATOR,
@@ -570,6 +734,12 @@ def derived_metrics(resolved, raw: dict) -> dict | None:
             if res["pct_absolute_context"] > 0:
                 out["dps_floor"] = round(
                     res["pct_absolute_context"] * burst / eff, 2)
+    if res is None:
+        # A pure emitter must not look like a fully modeled zero-damage weapon.
+        limitations = effmod.model_limitations(resolved)
+        if limitations:
+            out["model_limitations"] = limitations
+            out["model_status"] = "provisional"
     return out or None
 
 
@@ -823,18 +993,22 @@ def weapon_entry(rs, wname: str) -> dict | None:
 _DISABLING_PREREQS = {"disabled", "wip", "disable", "unavailable", "notbuildable"}
 
 
-def _is_balance_buildable(buildable) -> bool:
+def _is_balance_buildable(buildable, actor_name: str | None = None) -> bool:
     """True iff the actor can actually be built (maintainer law 2026-07-22):
     has a Buildable trait with a non-empty Queue and no disabling prerequisite
     (~disabled / ~wip / …). Legacy tokens (E1/E3 — Buildable but no Queue),
-    spawn/veterancy variants (no Buildable), and ~disabled units all fail."""
+    spawn/veterancy variants (no Buildable), and ~disabled units all fail.
+    A positive self prerequisite is Cameo's spawn-only idiom; a negated self
+    prerequisite is a build-limit gate and must remain eligible. This is a
+    roster filter, not a complete simulation of the prerequisite system."""
     if buildable is None:
         return False
     if not buildable.get("Queue"):
         return False
     prereq = buildable.get("Prerequisites") or ""
     toks = {t.strip().lstrip("~").strip().lower() for t in prereq.split(",")}
-    return not (toks & _DISABLING_PREREQS)
+    return not (toks & _DISABLING_PREREQS) and (
+        actor_name is None or actor_name.strip().lower() not in toks)
 
 
 def extract_actor(rs, key: str, section: str,
@@ -858,11 +1032,18 @@ def extract_actor(rs, key: str, section: str,
             ("armor", "Armor", "Type"),
             ("speed", "Mobile", "Speed"),
             ("speed_air", "Aircraft", "Speed"),
+            ("turn_speed_air", "Aircraft", "TurnSpeed"),
             ("turn_speed", "Mobile", "TurnSpeed"),
             ("sight", "RevealsShroud", "Range"),
             ("build_limit", "Buildable", "BuildLimit"),
             ("build_duration", "Buildable", "BuildDuration"),
-            ("self_heal_step", "ChangesHealth", "Step"),
+            # Cargo has a separate passenger-sum pricing rule. Retain these raw
+            # inputs so band checks cannot accidentally price it as an ordinary gun unit.
+            ("cargo_capacity", "Cargo", "MaxWeight"),
+            ("cargo_types", "Cargo", "Types"),
+            ("cargo_requires", "Cargo", "RequiresCondition"),
+            ("cargo_pause", "Cargo", "PauseOnCondition"),
+            ("repairable_hp_per_step", "Repairable", "HpPerStep"),
             # --- THE SURVIVABILITY LAYERS (E1, 2026-08-16) ---------------------------- #
             # Maintainer: *"shielded units and armored units need to have a price! it is
             # like extra survivability ... Extra shields and extra armor platings just make
@@ -888,6 +1069,18 @@ def extract_actor(rs, key: str, section: str,
         s = stat(resolved, local, trait, field)
         if s is not None:
             u[out_key] = s
+    # These are separate engine instances. Keep a named SelfHealing value as
+    # the canonical base-heal field; retain bare-only actors under that same
+    # applyable key, and preserve a simultaneous bare layer separately. Other
+    # named instances are ability/condition effects and remain excluded.
+    named_heal = stat(resolved, local, "ChangesHealth@SelfHealing", "Step")
+    bare_heal = stat(resolved, local, "ChangesHealth", "Step")
+    if named_heal is not None:
+        u["self_heal_step"] = named_heal
+        if bare_heal is not None:
+            u["self_heal_step_other"] = bare_heal
+    elif bare_heal is not None:
+        u["self_heal_step"] = bare_heal
     if buildable is not None:
         prereq = buildable.get("Prerequisites")
         if prereq:
@@ -899,8 +1092,9 @@ def extract_actor(rs, key: str, section: str,
     # if it can be built in some way. NON-buildable (no Buildable trait, no Queue,
     # or a disabling prereq like ~disabled/~wip) → excluded from balancing AND all
     # audits. Its cost is only an XP-on-kill value; its stats don't matter.
-    u["buildable"] = _is_balance_buildable(buildable)
+    u["buildable"] = _is_balance_buildable(buildable, key)
     arms = []
+    pricing_override = PRICING_ARMAMENT_OVERRIDES.get(key)
     for c in resolved.children:
         if c.key == "Armament" or c.key.startswith("Armament@"):
             wname = c.get("Weapon")
@@ -916,14 +1110,27 @@ def extract_actor(rs, key: str, section: str,
             req = c.get("RequiresCondition")
             if req:
                 entry["requires"] = req
-            if c.get("Name"):
-                entry["armament_name"] = c.get("Name")
+            if child(c, "Name") is not None:
+                entry["armament_name"] = c.get("Name") or ""
             arm_name = c.get("Name") or ""
-            entry["pricing"] = not ("garrison" in arm_name.lower()) and not (
-                entry.get("extraction_note") == "no_damage_warheads")
+            if is_support_armament(c):
+                entry["support_armament"] = True
+                entry["pricing"] = False
+                entry["pricing_reason"] = "support_armament"
+            elif pricing_override is not None:
+                entry["pricing"] = pricing_override.get(c.key) == wname
+                if not entry["pricing"]:
+                    entry["pricing_reason"] = "staged_gatling_nonbaseline"
+            else:
+                entry["pricing"] = not ("garrison" in arm_name.lower()) and not (
+                    entry.get("extraction_note") == "no_damage_warheads")
             arms.append(entry)
     if arms:
         u["armaments"] = arms
+        guard = pricing_guard(arms, u["buildable"])
+        if guard["status"] != "OK":
+            u["pricing_guard"] = guard
+        u["resolved_firepower_modifiers"] = resolved_firepower_modifiers(resolved, local)
     fp = firepower_multiplier(resolved, local)
     if fp:
         u["firepower_multiplier"] = fp
@@ -1032,6 +1239,7 @@ def build_ledgers(model: Model, only: str | None = None) -> dict[str, dict]:
 def build_both(model: Model, only: str | None = None) -> tuple[dict[str, dict],
                                                                dict[str, dict]]:
     """(raw ledgers, derived sidecars) from a single pass — they cannot desync."""
+    _DROPPED_DESIGN.clear()     # per pass: a previous call in the same process must not leak in
     rs = model.rs
     tm.use_ruleset(rs)          # reuse the built tree for the armor census (~8s saved)
     we.use_ruleset(rs)          # ... and for the median-weapon-range yardstick
@@ -1080,6 +1288,15 @@ def build_both(model: Model, only: str | None = None) -> tuple[dict[str, dict],
                     sec[a] = u
             if sec:
                 sections[section] = sec
+        # ⛔ A design value is carried over by ACTOR ID only (above). An actor that is no longer
+        # emitted — renamed, moved to another ledger, or deleted — takes its design judgment
+        # with it, silently: after #519's dot renames every plain re-extract turned
+        # `ra2e2_black.design.unit_class` 1.0 into null, in three PRs at once. Record the loss;
+        # `main` refuses to write it unless the caller says it is intended.
+        emitted = {a for sec in sections.values() for a in sec}
+        for actor, kept in keep_design.items():
+            if actor not in emitted:
+                _DROPPED_DESIGN[(ledger, actor)] = kept
         if sections:
             raw, derived = split_derived({"schema": 2, "ledger": ledger,
                                           "pack": info["pack"], "sections": sections})
@@ -1097,10 +1314,17 @@ def main() -> int:
     ap.add_argument("--check", action="store_true",
                     help="diff against the committed ledger; exit 1 on drift")
     ap.add_argument("--faction", help="ledger-name substring filter")
+    ap.add_argument("--output-dir", type=pathlib.Path,
+                    help="stage generated raw/derived ledgers here; still read design inputs from docs/balance")
     ap.add_argument("--check-weapon-classes", action="store_true",
                     help="fail if any weapon references a class template missing "
                          "from docs/balance/weapon_classes.yaml (the sidecar)")
+    ap.add_argument("--allow-design-drop", action="store_true",
+                    help="write even though a committed design value would be dropped "
+                         "(only for an actor that was really deleted)")
     args = ap.parse_args()
+    if args.output_dir and args.check:
+        ap.error("--output-dir cannot be combined with --check")
 
     ledgers, sidecars = build_both(Model(), args.faction)
 
@@ -1125,7 +1349,9 @@ def main() -> int:
     # Both trees are checked, but they are reported apart because they answer
     # different questions: raw drift = the GAME changed (someone hand-edited yaml),
     # model drift = a TOOL changed (re-run the extractor and commit the sidecar).
-    targets = [("raw", OUT, ledgers), ("model", DERIVED_OUT, sidecars)]
+    output = args.output_dir if args.output_dir is not None else OUT
+    derived_output = output / "derived"
+    targets = [("raw", output, ledgers), ("model", derived_output, sidecars)]
 
     if args.check:
         drift = 0
@@ -1146,6 +1372,17 @@ def main() -> int:
         print(f"balance check: {len(ledgers)} ledgers, {drift} drifted")
         return 1 if drift else 0
 
+    if _DROPPED_DESIGN and not args.allow_design_drop:
+        print("REFUSING TO WRITE — these committed design values belong to actors this "
+              "extraction no longer emits, and would be dropped:")
+        for (ledger, actor), kept in sorted(_DROPPED_DESIGN.items()):
+            print(f"  {ledger}: {actor}  {kept}")
+        print("Design values are not in yaml; they survive a re-extract only by actor id. "
+              "If the actor was RENAMED, rename its key in the committed ledger first, then "
+              "re-extract (the #528 procedure). If it was really deleted, re-run with "
+              "--allow-design-drop.")
+        return 2
+
     total = 0
     for label, root, docs in targets:
         root.mkdir(parents=True, exist_ok=True)
@@ -1156,10 +1393,10 @@ def main() -> int:
                 n = sum(len(s) for s in doc["sections"].values())
                 total += n
                 print(f"  {name}.json: {n} actors")
-    (DERIVED_OUT / "_model.json").write_text(serialize(model_constants()),
+    (derived_output / "_model.json").write_text(serialize(model_constants()),
                                              encoding="utf-8", newline="\n")
-    print(f"wrote {len(ledgers)} ledgers, {total} actors -> {rel(OUT)}")
-    print(f"wrote {len(sidecars)} derived sidecars -> {rel(DERIVED_OUT)}")
+    print(f"wrote {len(ledgers)} ledgers, {total} actors -> {output}")
+    print(f"wrote {len(sidecars)} derived sidecars -> {derived_output}")
 
     # `_model.json` above is GLOBAL — its armor census and weights are measured
     # across the whole roster — but a filtered run only rewrites the sidecars it

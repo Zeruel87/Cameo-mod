@@ -49,6 +49,10 @@ namespace OpenRA.Mods.CA.Traits
 		[Desc("Should visibility (Shroud, Fog, Cloak, etc) be considered when searching for capturable targets?")]
 		public readonly bool CheckCaptureTargetsForVisibility = true;
 
+		[Desc("LC1 (AI_MASTER_PLAN §3): ticks an engineer stays claimed for its capture. Only used where the player has a",
+			"lease service (genericbot); the unit is freed earlier when it dies or enters the target.")]
+		public readonly int CaptureLeaseTicks = 3000;
+
 		[Desc("Player stances that capturers should attempt to target.")]
 		public readonly PlayerRelationship CapturableRelationships = PlayerRelationship.Enemy | PlayerRelationship.Neutral;
 
@@ -123,6 +127,8 @@ namespace OpenRA.Mods.CA.Traits
 					yield return actor;
 		}
 
+		const string LeaseOwner = nameof(CaptureManagerBotModuleCA);
+
 		void QueueCaptureOrders(IBot bot)
 		{
 			if (player.WinState != WinState.Undefined)
@@ -134,8 +140,11 @@ namespace OpenRA.Mods.CA.Traits
 			if (!newUnits.Any())
 				return;
 
+			// LC1: IsIdle is not ownership — skip engineers another module has claimed (review P0b).
+			var leases = BotUnitLeases.Of(player);
 			var capturers = newUnits
-				.Where(a => a.IsIdle && Info.CapturingActorTypes.Contains(a.Info.Name))
+				.Where(a => a.IsIdle && Info.CapturingActorTypes.Contains(a.Info.Name.ToLowerInvariant())
+					&& !BotUnitLeases.IsClaimedByOther(leases, a, LeaseOwner))
 				.Select(a => new TraitPair<CaptureManager>(a, a.TraitOrDefault<CaptureManager>()))
 				.Where(tp => tp.Trait != null);
 
@@ -165,7 +174,8 @@ namespace OpenRA.Mods.CA.Traits
 						var priorityTarget = priorityTargets.First();
 
 						var captureManager = priorityTarget.TraitOrDefault<CaptureManager>();
-						if (captureManager != null && capturer.Trait.CanTarget(captureManager) && SafePath(capturer.Actor, priorityTarget).Type != TargetType.Invalid)
+						if (captureManager != null && capturer.Trait.CanTarget(captureManager) && SafePath(capturer.Actor, priorityTarget).Type != TargetType.Invalid
+							&& BotUnitLeases.TryClaim(leases, capturer.Actor, LeaseOwner, BotLeasePurpose.Capture, Info.CaptureLeaseTicks))
 						{
 							bot.QueueOrder(new Order("CaptureActor", capturer.Actor, Target.FromActor(priorityTarget), true));
 							AIUtils.BotDebug("AI ({0}): Ordered {1} {2} to capture {3} {4} in priority mode.",
@@ -182,8 +192,12 @@ namespace OpenRA.Mods.CA.Traits
 					return;
 			}
 
-			var randPlayer = world.Players.Where(p => !p.Spectating
-				&& Info.CapturableRelationships.HasRelationship(player.RelationshipWith(p))).Random(world.LocalRandom);
+			var randPlayers = world.Players.Where(p => !p.Spectating
+				&& Info.CapturableRelationships.HasRelationship(player.RelationshipWith(p))).ToList();
+			if (randPlayers.Count == 0)
+				return;
+
+			var randPlayer = randPlayers.Random(world.LocalRandom);
 
 			var targetOptions = Info.CheckCaptureTargetsForVisibility
 				? GetVisibleActorsBelongingToPlayer(randPlayer)
@@ -204,13 +218,16 @@ namespace OpenRA.Mods.CA.Traits
 			if (Info.CapturableActorTypes.Count > 0)
 				capturableTargetOptions = capturableTargetOptions.Where(target => Info.CapturableActorTypes.Contains(target.Info.Name.ToLowerInvariant()));
 
+			capturableTargetOptions = capturableTargetOptions.ToList();
+
 			if (!capturableTargetOptions.Any())
 				return;
 
 			foreach (var capturer in capturers)
 			{
 				var targetActor = capturableTargetOptions.MinByOrDefault(target => (target.CenterPosition - capturer.Actor.CenterPosition).LengthSquared);
-				if (targetActor == null || SafePath(capturer.Actor, targetActor).Type == TargetType.Invalid)
+				if (targetActor == null || SafePath(capturer.Actor, targetActor).Type == TargetType.Invalid
+					|| !BotUnitLeases.TryClaim(leases, capturer.Actor, LeaseOwner, BotLeasePurpose.Capture, Info.CaptureLeaseTicks))
 					continue;
 
 				bot.QueueOrder(new Order("CaptureActor", capturer.Actor, Target.FromActor(targetActor), true));

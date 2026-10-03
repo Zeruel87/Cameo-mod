@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Widgets;
@@ -120,15 +121,15 @@ namespace OpenRA.Mods.Cameo.Widgets
 			}
 		}
 
-		float2 CalcTextLocation(int y, int2 textSize)
+		Vector2 CalcTextLocation(int y, int2 textSize)
 		{
-			var location = new float2(Bounds.X, Bounds.Y + y);
+			var location = new Vector2(Bounds.X, Bounds.Y + y);
 
 			if (Align == TextAlign.Center)
-				location += new int2((Bounds.Width - textSize.X) / 2, 0);
+				location += new Vector2((Bounds.Width - textSize.X) / 2, 0);
 
 			if (Align == TextAlign.Right)
-				location += new int2(Bounds.Width - textSize.X, 0);
+				location += new Vector2(Bounds.Width - textSize.X, 0);
 
 			return location;
 		}

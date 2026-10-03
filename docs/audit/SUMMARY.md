@@ -3,21 +3,16 @@
 _One page. Live reports: [`latest/`](latest/) · comparison snapshots: [`baseline/`](baseline/) ·
 faction map: [`../factions/MATRIX.md`](../factions/MATRIX.md)._
 
-**Evidence date: 2026-08-23**, from `bash tools/audit/run_all.sh` at `e60aab63`, with
-`doc_claims` and `gen_sync` re-measured at `519175ae` (both read only tracked files, so they are
-trustworthy from any checkout). `level_ladder` was RETIRED on 2026-08-23 — it enforced a
+**Evidence date: 2026-09-24**, from `bash tools/audit/run_all.sh` on a complete tree (engine
+present) at the post-merge-wave master. `level_ladder` was RETIRED on 2026-08-23 — it enforced a
 damage-monotonic rule no law states — and replaced by `heaviness_bell`.
 Recurring code-health audits and their cadence: [`PERIODIC.md`](PERIODIC.md) +
 [`periodic.json`](periodic.json).
 
-⚠ **`latest/` is currently a MIXTURE of two environments and is owed one clean regenerate.**
-A dozen audits read `engine/` C# or full git history — neither of which exists in a fresh
-clone — and they respond by reporting *less* and still saying PASS (`dead_warhead_fields` 27071
-warhead nodes → 7014, `fluent` 5235 messages → 3640). Alternating Windows and container runs
-have been overwriting each other's numbers. `run_all` now refuses to write `latest/` from an
-incomplete tree (it diverts to the untracked `docs/audit/degraded/`; `--force-latest`
-overrides), so this is a one-time cleanup: **run the suite once on a complete tree and commit
-the result whole.**
+✅ The two-environment mixture is RESOLVED: `latest/` was regenerated whole on a complete tree
+(2026-09-24) and this page was rewritten from those reports in the same pass. `run_all` still
+refuses to write `latest/` from an incomplete tree (it diverts to `docs/audit/degraded/`), so
+keep it that way — never commit a degraded run as `latest/`.
 
 > **How to use this page.** Every number is a count from a report in `latest/`, named in the
 > "report" column. If a number here disagrees with that report, **the report wins** — re-run the
@@ -37,8 +32,8 @@ the file (CLAUDE.md rule 8).
 
 `audit_ai_personalities.py` verifies that the five personality-gated
 `SquadManagerBotModuleCA` instances retain byte-identical shared fields and
-that their consumed conditions exactly match the `GrantRandomCondition`
-selector. Personality-specific differences are restricted to an explicit
+that their consumed conditions exactly match the synchronized
+`BotPersonalityController`. Personality-specific differences are restricted to an explicit
 tuning allow-list.
 
 The implementation removes the stale `RushInterval` and
@@ -59,8 +54,8 @@ actor-value cache have not been observed in a long match; that is an in-game
 verification follow-up.
 
 The unit-builder composition consumer is opt-in through `UseCompositions`.
-Without an active composition, each personality's `UnitsToBuild` table remains
-the fallback. The pilot compositions are limited to TD vehicle queues and are
+Without an active composition, the single shared unit builder's `UnitsToBuild`
+table remains the fallback. The pilot compositions are limited to TD vehicle queues and are
 gated by their respective tech prerequisites; broader composition coverage is
 still a follow-up. Explicit unit requests continue to bypass composition
 shares.
@@ -70,48 +65,58 @@ shares.
 | class | what | count | report |
 |---|---|--:|---|
 | **B8** | crash-class content | **0** | — |
-| B1 | cross-faction leaks | 435 L1 · 20 L3 · 91 shared | `faction_leaks.md` |
-| B2 | illegal inherits | 281 V1 · **0** V2 · **0** V3 dangling · 1863 V4 depth>3 · 95 V5 | `inherits.md` |
-| B2b | duplicate inherit paths | 1770 definitions reach a parent by >1 path | `duplicate_inherits.md` |
-| B3 | upgrade direction | 594 items · 103 inverted · **0** dead · 19 dead tokens · 568 without an intent entry | `upgrades.md` |
-| B4 | upgrade coverage | 23 tagged upgrades · 21 uncovered unit slots | `upgrade_coverage.md` |
-| B5 | AI wiring | 1801 refs · **0** defined nowhere · **0** unloaded · **0** unwired pool factions | `ai.md` |
-| B6 | art/sequence refs | 2 missing images · **0** missing sequences · 595 unreferenced images | `sequences.md` |
-| B7 | metadata rot | 32 duplicate-tooltip groups · **0** missing tooltip names | `metadata.md` |
-| B9 | numeric drift | 176 robust outliers · **0** bounds over the 5×5 max | `outliers.md` |
-| B10 | dead content | 374 orphan weapons · **0** dangling refs · 15 dead conditions | `orphans.md` |
-| B11 | asset norms | 148 / 2006 PNGs over budget · 1817 / 4390 WAVs off-norm | `assets.md` |
-| B12 | localization | 1 unresolved fluent ref · 526 orphaned `actor-*` messages | `fluent.md` |
-| R2 | stacked multipliers | 790 units over the 2.0× power budget | `power_budget.md` |
-| W | weapon uniqueness (§10) | 34 same-faction · 34 cross-faction · 95 carrier-only | `weapon_uniqueness.md` |
-| G | garrison weapons (§11) | **6 G1** · 0 G2 · 0 G3 | `garrison_weapons.md` |
-| F | house stat formulas | 615 violations across 1910 roster actors | `stat_formulas.md` |
-| E | elite / rank wiring | 197 missing elite armaments · 21 ungated ELITE blocks · 52 decoration issues | `missing_elite.md`, `elite_gating.md`, `rank_decoration.md` |
-| Q | build order | prerequisite-order violations across 841 buildables | `buildable_order.md` |
-| D | duplicate keys | **88 D1 dropped inherits** · 439 D2 merged duplicates | `duplicate_keys.md` |
+| B1 | cross-faction leaks | 6 L1 · 0 L3 · 91 shared | `faction_leaks.md` |
+| B2 | illegal inherits | 276 V1 · **0** V2 · **0** V3 dangling · 2094 V4 depth>3 · 102 V5 | `inherits.md` |
+| B2b | duplicate inherit paths | 1990 definitions reach a parent by >1 path | `duplicate_inherits.md` |
+| B3 | upgrade direction | 624 items · **0** inverted · 1 deferred · 10 dead · 20 dead tokens · 587 without an intent entry | `upgrades.md` |
+| B4 | upgrade coverage | 24 tagged upgrades · 21 uncovered unit slots | `upgrade_coverage.md` |
+| B5 | AI wiring | 1867 refs · **0** defined nowhere · **0** unloaded · 2 unwired pool factions | `ai.md` |
+| B6 | art/sequence refs | **0** missing images · **0** missing sequences · 582 unreferenced images (of 3304) | `sequences.md` |
+| B7 | metadata rot | 38 duplicate-tooltip groups · **0** missing tooltip names | `metadata.md` |
+| B9 | numeric drift | 165 robust outliers · **0** bounds over the 5×5 max | `outliers.md` |
+| B10 | dead content | 395 orphan weapons · **0** dangling refs · 18 dead conditions | `orphans.md` |
+| B11 | asset norms | 127 / 1942 PNGs over budget · 3628 / 8540 WAVs off-norm | `assets.md` |
+| B12 | localization | **0** unresolved fluent refs · 534 orphaned `actor-*` messages | `fluent.md` |
+| B13 | basebuilder crate coverage | **31/31** factions covered | `basebuilder_crates.md` |
+| R2 | stacked multipliers | 823 units over the 2.0× power budget | `power_budget.md` |
+| W | weapon uniqueness (§10) | 37 same-faction · 31 cross-faction · 89 carrier-only | `weapon_uniqueness.md` |
+| G | garrison weapons (§11) | **7 G1** · 0 G2 · 0 G3 · **1 G4** | `garrison_weapons.md` |
+| F | house stat formulas | 685 violations across 2009 roster actors | `stat_formulas.md` |
+| E | elite / rank wiring | 197 missing elite armaments · 21 ungated ELITE blocks · 60 decoration issues | `missing_elite.md`, `elite_gating.md`, `rank_decoration.md` |
+| Q | build order | **1** prerequisite-order · 985 build-palette-order violations across 910 buildables | `buildable_order.md` |
+| D | duplicate keys | **0 D1 ambiguous labels** · 158 D2 merged duplicates (was 4,965; residual = `Inherits`-separated generations + value-differing overrides) | `duplicate_keys.md` |
 
 ## Green — and must stay green
 
-`empty_warhead` **0** of 2760 weapons (the boot-NRE class) · dangling weapon refs **0** ·
+`empty_warhead` **0** across 2995 nodes (the boot-NRE class) · dangling weapon refs **0** ·
 dangling inherit targets **0** · cross-faction concrete inherits **0** · rename-broken sprite
 refs **0** · missing voxels **0** · TS death-palette **0** · D2k rank decorations **0** ·
-promotion wiring clean · `MinRange` clean · duplicate uniquely-resolved traits clean ·
+promotion wiring clean · duplicate uniquely-resolved traits clean ·
 armor-plating invariants clean · plating exclusivity clean · physical-state warheads PASS ·
 cross-document consistency 73/0 · display text 0 active findings ·
-**documentation structure 0** (`doc_health.md`, D1–D8) · **balance-ledger drift 0** ·
-**doc claims 19 of 19 match** · **generator sync drift 0** (136 shared templates, no-op
-regenerate).
+**documentation structure 0** (`doc_health.md`, D1–D8) ·
+**generator sync drift 41** of 158 shared templates — improved from 184 after the W7 re-syncs;
+the remaining 41 `^Warhead_*` templates are generator-unemitted (mostly `*_Flat` and bespoke
+bespoke-family blocks), owned by the generator lane.
 
 ## Red right now
 
 | check | state | what to do |
 |---|---|---|
-| **level ladder** | **WARN — 9 broken, at ratchet 9** (7 inverted, 2 flat) | no longer failing: `a9f31258` fixed `Demolition`. Still blocked on a maintainer ruling. Full measured table + the diagnosis: [`../design/ROADMAP.md`](../design/ROADMAP.md) "BROKEN LADDERS". These are balance numbers: pipeline only, and **never raise the ratchet**. |
-| duplicate keys D1 | 88 dropped inherits | each one silently drops a template — same family as the `Parent type X was already inherited` boot crash |
-| warhead-split ratchet | at baseline | pre-existing W24 debt, not a regression; lower the baseline as W24 lands |
+| duplicate keys D1 | **0 ambiguous labels** (was 7 — cleared by the merge wave) | keep watching: this is the `Parent type X was already inherited` boot-crash family |
+| warhead-split ratchet | 14 vs baseline 69 | pre-existing W24 debt, much reduced (was 921); the 14 remaining are listed in `warhead_split.md`. Lower the baseline as W24 lands — never raise it. |
+| **MinRange** | **7 mismatches** | `min_range.md` — weapons whose `MinRange` ≠ round(Range/5) step 5 (e.g. `ra1_allies_alliedartillery_155mm` 2670 vs 2365). This row was wrongly listed under Green in the previous edition. |
+| **B13 crate coverage** | **fixed 2026-09-26 — 31/31** | `basebuilder_crates.md` — corrino `GiveBaseBuilderCrateAction` added in `rules/misc.yaml`. |
+| **G1 garrison weapons** | **7 missing** | `garrison_weapons.md` — armed garrison-capable infantry without a garrison weapon (e.g. `ra1_soviets_dog`). Was 0 in the previous edition. |
+| **G4 garrison acceptance** | **1 non-garrisonable** | `garrison_weapons.md` — ruling 2026-09-26: ALL infantry can garrison (`Garrisoner.GarrisonType: Infantry` vs `Garrisonable.Types`). 9 infantry-queue defects fixed 2026-09-26 (trait added; ranged got `Armament@GARRISONED` mirrors; melee knight/ogre → exceptions). Class ruling 2026-09-26: "all infantry garrison" means units BUILT in the Infantry queue — 6 Vehicle-queue mechs exempted via `vehicle_queue` in `garrison_exceptions.yaml` (pulverizermecha, plasmastrider, megalodon, poseidontank, stalker, whiterabbit). Remaining: `cabal_ravager` — moves to the Infantry queue in Claude's armour PR and then garrisons. 9 pure aircraft excluded. |
+| **Q prerequisite order** | **1 violation** | `buildable_order.md` — one buildable is gated by a prerequisite ordered after it. Was 0. |
+| **balance-ledger drift** | **25 ledgers drifted** | `balance_drift.md` — yaml moved without re-extraction, or sanctioned applies missing their `extract_stats.py` follow-up. Was 0 — flagged to lane owners. |
+| **doc claims** | **36 of 43 match — 7 MISMATCHED** | `doc_claims.md` — `shield_versus_mean`, `shield_hp_factor`, `shield_damage_share`, `percentage_denominator_unset`, `physical_state_fired_weapons`, `unconverted_template_inheritors`, `ledgers_drifted`. Several are pipeline-moved numbers needing re-pin, not bugs. |
 
-Cleared since the last edition of this page: **doc claims** (was 4 of 19 drifted, now 19 of 19
-matching) and **generator sync** (was non-zero, now 0).
+Retired since the last edition: **level_ladder** (RETIRED 2026-08-23 — enforced a
+damage-monotonic rule no law states; replaced by `heaviness_bell`). Its former WARN row is
+removed; the nine measured anomalies remain documented in
+[`../design/ROADMAP.md`](../design/ROADMAP.md) "BROKEN LADDERS" for the maintainer.
 
 ## Programme-scale debt
 
@@ -121,10 +126,10 @@ its §0a.
 
 | id | debt | measured |
 |---|---|--:|
-| W24 | directly fired weapons carrying more than one damage main | **494** |
-| W23 | fired weapons reaching a `^Warhead_*` family | **1231** |
-| W23 | direct inheritors of the legacy weapon templates | **1162** |
-| W26 | live `DamageMultiplier` declarations | **353** |
+| W24 | directly fired weapons carrying more than one damage main | **14** (broadcast ratchet, `warhead_split.md`) |
+| W23 | fired weapons reaching a `^Warhead_*` family | **1530** (`warhead_family_reach`) |
+| W23 | direct inheritors of the legacy weapon templates | **385** (`unconverted_template_inheritors`) |
+| W26 | live `DamageMultiplier` declarations | **326** (`live_damage_multipliers`) |
 | W11 | class anchors the maintainer has signed off | **0** — so no price is final |
 
 All five are pinned in [`doc_claims.yaml`](doc_claims.yaml) and re-measured on every suite run,
@@ -132,21 +137,23 @@ so they cannot rot in prose again.
 
 ## Recommended fix order
 
-1. **One clean suite run on a complete tree** — cheapest, and until `latest/` stops mixing two
-   environments no count on this page can be fully trusted.
-2. **The 9 broken level ladders** — a heavier level dealing less damage than a lighter one is
-   player-visible nonsense. Back at the ratchet rather than over it, so it no longer fails the
-   suite, but nothing about the nine has been ruled on.
-3. **B2b duplicate inherit paths / D1 dropped inherits** — the class that produces
-   `Parent type X was already inherited` boot crashes and silently-dropped templates. Only the
-   boot and `audit_duplicate_inherits` can see it.
-4. **G1 garrison weapons (6)** and **B6 missing images (2)** — small, bounded, player-visible.
-5. **B1 cross-faction leaks (435 L1)** — the count grew because the audit's faction coverage
-   grew, not only because the tree got worse. Triage before treating it as 435 bugs.
-6. **B3/B4 upgrade direction and coverage**, plus transcribing the remaining 568
+1. **B2b duplicate inherit paths (1,952)** — the diamond-path class; D1 ambiguous labels
+   are at 0 as of 2026-09-26. The class produces `Parent type X was already inherited`
+   boot crashes and silently-dropped templates. Only the boot and
+   `audit_duplicate_inherits` can see it.
+2. **G1 garrison weapons (7)**,
+   **Q prerequisite order (1)**, **MinRange (7)** —
+   small, bounded, player-visible. (B13 corrino crate: fixed 2026-09-26.)
+3. **balance-ledger drift (25) + doc-claims re-pins (7)** — mechanical hygiene; each drifted
+   ledger needs an `extract_stats.py` run from its owning lane.
+4. **B1 cross-faction leaks (6 L1)** — attribution fixed 2026-09-26 (`audit_faction_leaks.py`
+   aliased bare theme names only; pack owners arrive as `theme/subdir`). The old 433 were
+   namespace artifacts; the 6 survivors are real and listed in `faction_leaks.md` — each is a
+   per-lane intended-sharing decision (e.g. latinsyndicate building `naxis_*` units).
+5. **B3/B4 upgrade direction and coverage**, plus transcribing the remaining 587
    `upgrades_intent.yaml` entries so the audit can tell an intended drawback from a bug.
-7. **B10/B11 hygiene** — orphan purge, per-directory WAV normalisation. Good batch work.
-8. **R2 stacked multipliers (790)** — folds into W26; do not touch it separately.
+6. **B10/B11 hygiene** — orphan purge, per-directory WAV normalisation. Good batch work.
+7. **R2 stacked multipliers (823)** — folds into W26; do not touch it separately.
 
 ---
 
